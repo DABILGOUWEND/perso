@@ -47,14 +47,7 @@ export class PannesComponent {
   @ViewChild(MatPaginator) paginator: MatPaginator
   @ViewChild(MatSort) sort: MatSort;
 
-  engin: Engins = {
-    id: '',
-    code_parc: '',
-    designation: '',
-    classe_id: '',
-    immatriculation: '',
-    utilisateur_id: ''
-  };
+  engin: Engins;
   open_tab_pannes: boolean = false
   engins_panne: string[] = []
   engins_panne_en_cours:string[] = []

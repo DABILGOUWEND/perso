@@ -19,7 +19,8 @@ import {
     tab_unitesStore,
     tab_tachesEnginsStore,
     tab_tachesProjetStore,
-    tab_EntrepriseStore
+    tab_EntrepriseStore,
+    tab_Pannes
 } from "../models/modeles"
 import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -1252,7 +1253,8 @@ export const PersonnelStore = signalStore(
 export const EnginsStore = signalStore(
     { providedIn: 'root' },
     withState(initialEnginState),
-    withComputed((store, classe_store = inject(ClasseEnginsStore), monservice = inject(PersonnelStore)) => (
+    withComputed((store,
+        classe_store = inject(ClasseEnginsStore), monservice = inject(PersonnelStore)) => (
         {
             taille: computed(() => store.engins().length),
             donnees_engins: computed(() => {
@@ -1264,7 +1266,6 @@ export const EnginsStore = signalStore(
 
             }),
             donnees_utilisateur: computed(() => {
-                //monservice.loadPersonnel()
                 var mot = store.selectedDesignation()
                 let donnee = []
                 if (mot == '') { donnee = classeEngins(store.engins()) }
@@ -1348,11 +1349,41 @@ export const EnginsStore = signalStore(
             filterbyDesignation(mot: string) { patchState(store, { selectedDesignation: mot }) },
 
             loadengins: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallEngins().pipe(
-                    tap((data) => {
-                        patchState(store, { engins: classeEngins(data) })
-                    })
-                )
+                return monservice.getallEngins().pipe(switchMap((engins) => {
+                    return monservice.getallGasoil().pipe(
+                        switchMap((gasoil) => {
+                            return monservice.getallpannes().pipe(
+                                tap((pannes) => {
+                                    engins.forEach(element => {
+                                        let tab_gasoil = gasoil.filter(x => x.id_engin == element.id).map(x => {
+
+                                            return {
+                                                compteur: x.compteur,
+                                                quantite_go: x.quantite_go,
+                                                date: x.date
+                                            }
+                                        });
+                                        let tab_pannes: tab_Pannes[] = pannes.filter(y => y.engin_id == element.id).map(x => {
+                                            return {
+                                                debut_panne: x.debut_panne,
+                                                fin_panne: x.fin_panne,
+                                                heure_debut: x.heure_debut,
+                                                heure_fin: x.heure_fin,
+                                                motif_panne: x.motif_panne,
+                                                situation: x.situation
+                                            }
+                                        })
+                                        element.gasoil = tab_gasoil;
+                                        element.panne = tab_pannes
+                                    });
+
+                                    patchState(store, { engins: classeEngins(engins) })
+                                })
+                            )
+                        })
+                    )
+                }
+                ))
             }
             )))
             ,
@@ -3201,7 +3232,7 @@ export const EntrepriseStore = signalStore(
         {
             taille: computed(() => store.liste_entreprise().length),
             donnees_entreprise: computed(() => {
-               return store.liste_entreprise();
+                return store.liste_entreprise();
             })
         }
     )
@@ -3209,7 +3240,7 @@ export const EntrepriseStore = signalStore(
     withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
     (
         {
-          
+
             loadEntreprises: rxMethod<void>(pipe(switchMap(() => {
                 return monservice.getAllEntreprises().pipe(
                     tap((data) => {

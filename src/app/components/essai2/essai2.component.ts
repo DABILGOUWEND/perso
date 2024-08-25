@@ -14,9 +14,7 @@ export class Essai2Component  implements OnInit{
   constructor()
   {
     effect(()=>{
-     let gasoil=this.gasoilstore.conso_data().filter(x=>x.id_engin=="98bg6qCYbSyCcqeLw0zD" && this.service.convertDate(x.date).getTime()>= this.service.convertDate("01/07/2024").getTime()).map(
-      x=>Number(x.quantite_go))
-     console.log(this.service.somme(gasoil))
+    console.log(this.enginsstore.donnees_engins());
     })
   }
   ngOnInit() {

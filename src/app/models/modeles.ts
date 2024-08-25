@@ -4,7 +4,10 @@ export interface Engins {
     code_parc: string,
     immatriculation: string,
     utilisateur_id: string,
-    classe_id: string
+    classe_id: string,
+    gasoil:tab_gasoil[],
+    panne:tab_Pannes[]
+    
 }
 
 export interface classe_engins {
@@ -12,8 +15,24 @@ export interface classe_engins {
     designation: string,
     taches:string[]
 }
-
-
+export interface tab_gasoil {
+    date: string,
+    quantite_go: string,
+    compteur: string
+}
+export interface tab_Pannes{
+    debut_panne:string,
+    fin_panne:string,
+    heure_debut:string,
+    heure_fin:string,
+    motif_panne:string,
+    situation:string
+}
+export interface tab_travaux{
+    date:string,
+    tacheId:string,
+    duree:string,
+}
 export interface Pannes {
     id: string,
     engin_id: string,

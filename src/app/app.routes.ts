@@ -19,9 +19,10 @@ import { DecomptesComponent } from './components/decomptes/decomptes.component';
 import { PointageTrvxEnginsComponent } from './components/pointage-trvx-engins/pointage-trvx-engins.component';
 import { TacheProjetStore } from './store/appstore';
 import { TableauBordComponent } from './components/tableau-bord/tableau-bord.component';
+import { EssaiComponent } from './components/essai/essai.component';
 
 export const routes: Routes = [{ 
-    path: "", component: TableauBordComponent },
+    path: "", component: Essai2Component },
 {
     path: 'accueil', component: AccueilComponent
 },
