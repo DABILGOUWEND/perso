@@ -40,7 +40,7 @@ export class TachesProjetsComponent implements OnInit {
       quantiteDqe: new FormControl(0,  [Validators.required, Validators.min(1)]),
       projet_id: new FormControl('',  Validators.required),
       tache_id: new FormControl('',  Validators.required),
-      unite: new FormControl({ value: '', disabled: true }),
+      unite: new FormControl({ value: '', disabled: false  }),
     }
   );
 
