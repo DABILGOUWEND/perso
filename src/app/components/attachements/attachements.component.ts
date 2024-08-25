@@ -1620,7 +1620,4 @@ export class AttachementsComponent implements OnInit {
     this.verif_exist()
   }
   
-  mysfonction() {
-
-  }
 }
