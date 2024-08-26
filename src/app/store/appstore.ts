@@ -3026,40 +3026,11 @@ export const Pointage_trvx_enginsStore = signalStore(
             donnees_pointMach: computed(() => {
                 return store.pointMach_data();
             }),
-            last_numero: computed(() => {
-                let numeros = store.pointMach_data().map(x => Number(x.numero));
-                if (numeros.length > 0) {
-                    return Math.max(...numeros);
-                } else {
-                    return 0
-                }
-
-            }),
             donnees_pointMachFiltres: computed(() => {
                 let date = store.selected_date();
                 let projet_id = store.selected_projetId();
-                if (date == "") {
-                    if (projet_id == "") {
-                        return store.pointMach_data();
-                    } else {
-                        let data = store.pointMach_data().filter(x => x.projet_id == projet_id);
-                        return data.sort((a, b) => {
-                            return new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime()
-                        });
-                    }
-                } else {
-                    if (projet_id == "") {
-                        let data = store.pointMach_data().filter(x => x.date == date);
-                        return data.sort((a, b) => {
-                            return new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime()
-                        });
-                    } else {
-                        let data = store.pointMach_data().filter(x => x.projet_id == projet_id && x.date == date);
-                        return data.sort((a, b) => {
-                            return new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime()
-                        });
-                    }
-                }
+                return store.pointMach_data();
+ 
             })
         }
     )
@@ -3076,9 +3047,8 @@ export const Pointage_trvx_enginsStore = signalStore(
             loadPointMach: rxMethod<void>(pipe(switchMap(() => {
                 return monservice.getAllPointage_travaux().pipe(
                     tap((data) => {
-                        let mydata = data.sort((a, b) => new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime()
-                            || Number(b.numero) - Number(a.numero));
-                        patchState(store, { pointMach_data: mydata });
+            
+                        patchState(store, { pointMach_data: data });
                     })
                 )
             }

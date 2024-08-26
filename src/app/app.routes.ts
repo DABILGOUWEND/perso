@@ -21,7 +21,7 @@ import { TacheProjetStore } from './store/appstore';
 import { TableauBordComponent } from './components/tableau-bord/tableau-bord.component';
 
 export const routes: Routes = [{ 
-    path: "", component: AccueilComponent },
+    path: "", component: TableauBordComponent },
 {
     path: 'accueil', component: AccueilComponent
 },

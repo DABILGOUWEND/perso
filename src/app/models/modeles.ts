@@ -431,13 +431,10 @@ export interface tab_tachesStore {
 }
 export interface pointage_machine {
     'id': string,
-    'date': string,
     'tache_id': string,
-    'projet_id': string,
+    'pointage_id': string,
     'engin_id': string,
-    'quantite_exec': string
-    'duree': string,
-    'numero':string
+    'duree': string
 }
 
 export interface tab_pointMachStore {
