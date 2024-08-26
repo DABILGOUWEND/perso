@@ -19,39 +19,38 @@ import { DecomptesComponent } from './components/decomptes/decomptes.component';
 import { PointageTrvxEnginsComponent } from './components/pointage-trvx-engins/pointage-trvx-engins.component';
 import { TacheProjetStore } from './store/appstore';
 import { TableauBordComponent } from './components/tableau-bord/tableau-bord.component';
-import { EssaiComponent } from './components/essai/essai.component';
 
 export const routes: Routes = [{ 
-    path: "", component: Essai2Component },
+    path: "", component: AccueilComponent },
 {
-    path: 'accueil'
+    path: 'accueil', component: AccueilComponent
 },
 {
-    path: 'login'
+    path: 'login', component: LoginComponent
 },
 {
-    path: 'travaux'
+    path: 'travaux', component: TravauxComponent
 },
 
 {
-    path: 'pannes'
+    path: 'pannes', component: PannesComponent
 },
 {
-    path: 'pointage'
+    path: 'pointage', component: PointageComponent
 },
 {
-    path: 'materiel'
+    path: 'materiel', component: EnginsComponent
 },
 {
-    path: 'personnel'
+    path: 'personnel', component: PersonnelComponent
 }
 ,
 {
-    path: 'gasoil'
+    path: 'gasoil', component: GasoilComponent
 }
 ,
 {
-    path: 'rapportpannes', component: RapportPanneComponent,canActivate: [authGuard]
+    path: 'rapportpannes', component: RapportPanneComponent
 }
 ,
 {
@@ -59,23 +58,23 @@ export const routes: Routes = [{
 } 
 ,
 {
-    path: 'sstrce', component: SousTraitanceComponent,canActivate: [authGuard]
+    path: 'sstrce', component: SousTraitanceComponent
 }
 ,
 {
-    path: 'constats', component: ConstatsComponent,canActivate: [authGuard]
+    path: 'constats', component: ConstatsComponent
 }
 ,
 {
-    path: 'attachements', component: AttachementsComponent,canActivate: [authGuard]
+    path: 'attachements', component: AttachementsComponent
 }
 ,
 {
-    path: 'prestation', component: PrestationComponent,canActivate: [authGuard]
+    path: 'prestation', component: PrestationComponent
 }
 ,
 {
-    path: 'decomptes', component: DecomptesComponent,canActivate: [authGuard]
+    path: 'decomptes', component: DecomptesComponent
 },
 {
     path: 'pointagestrvx', component:PointageTrvxEnginsComponent
