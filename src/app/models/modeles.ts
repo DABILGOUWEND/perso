@@ -471,6 +471,11 @@ export interface taches_projet{
     'quantiteDqe':number
 
 }
+export interface taches_projet_exec{
+    'tache_projet_Id':string,
+    'quantiteExec':number
+
+}
 export interface tab_tachesProjetStore {
     taches_data: taches_projet[],
     message:string,
@@ -489,4 +494,11 @@ export interface tab_EntrepriseStore{
     liste_entreprise:Entreprise[],
     message:string,
     selectedId:string
+}
+export interface pointage_travaux{
+    'id':string,
+    'projetId':string,
+    'date':string,
+    'pointage_mach':pointage_machine[],
+    'taches_travaux':taches_projet_exec[]
 }
