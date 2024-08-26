@@ -24,30 +24,30 @@ import { EssaiComponent } from './components/essai/essai.component';
 export const routes: Routes = [{ 
     path: "", component: Essai2Component },
 {
-    path: 'accueil', component: AccueilComponent
+    path: 'accueil'
 },
 {
-    path: 'login', component: LoginComponent
+    path: 'login'
 },
 {
-    path: 'travaux', component: TravauxComponent,canActivate: [authGuard]
+    path: 'travaux'
 },
 
 {
-    path: 'pannes', component: PannesComponent,canActivate: [authGuard]
+    path: 'pannes'
 },
 {
-    path: 'pointage', component: PointageComponent,canActivate: [authGuard]
+    path: 'pointage'
 },
 {
-    path: 'materiel', component: EnginsComponent,canActivate: [authGuard]
+    path: 'materiel'
 },
 {
-    path: 'personnel', component: PersonnelComponent,canActivate: [authGuard]
+    path: 'personnel'
 }
 ,
 {
-    path: 'gasoil', component: GasoilComponent,canActivate: [authGuard]
+    path: 'gasoil'
 }
 ,
 {
