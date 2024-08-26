@@ -523,7 +523,9 @@ export class GasoilComponent {
     }
 
     doc.text(periode, 15, yline + 10);
-    let data = this.gasoil_store.datasource();
+    doc.text("TOTAL CONSOMME: "+this._service.FormatMonnaie( this.total_conso())+" litres", 15, yline + 20);
+    let data = this.gasoil_store.datasource().
+    sort((a, b) => new Date(this._service.convertDate(a.date)).getTime() - new Date(this._service.convertDate(b.date)).getTime());;
     let data_imp = []
     for (let row of data) {
       let engin = this.engins_store.donnees_engins().find(x => x.id == row.id_engin);
@@ -671,7 +673,7 @@ export class GasoilComponent {
     }
 
     let doker: any = {
-      startY: yline + 20,
+      startY: yline + 30,
       tableLineWidth: 0.1,
       head: [head0],
       styles: {
