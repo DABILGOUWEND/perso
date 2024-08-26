@@ -15,7 +15,6 @@ import {
     ModelAttachement,
     ModelDecompte,
     tab_tachesStore,
-    tab_pointMachStore,
     tab_unitesStore,
     tab_tachesEnginsStore,
     tab_tachesProjetStore,
@@ -208,14 +207,7 @@ const initialTachesState: tab_tachesStore =
     taches_data: [],
     selected_type: ''
 }
-const initialPointageTrvxSTate: tab_pointMachStore =
-{
-    message: '',
-    pointMach_data: [],
-    selected_enginId: '',
-    selected_date: '',
-    selected_projetId: ''
-}
+
 const initialUnitesState: tab_unitesStore =
 {
     message: '',
@@ -3017,98 +3009,7 @@ export const TachesEnginsStore = signalStore(
         }
     ))
 )
-export const Pointage_trvx_enginsStore = signalStore(
-    { providedIn: 'root' },
-    withState(initialPointageTrvxSTate),
-    withComputed((store) => (
-        {
-            taille: computed(() => store.pointMach_data().length),
-            donnees_pointMach: computed(() => {
-                return store.pointMach_data();
-            }),
-            donnees_pointMachFiltres: computed(() => {
-                let date = store.selected_date();
-                let projet_id = store.selected_projetId();
-                return store.pointMach_data();
- 
-            })
-        }
-    )
-    ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
-    (
-        {
-            filterByDate(date: string) {
-                patchState(store, { selected_date: date })
-            },
-            filterByProjet(projet_id: string) {
-                patchState(store, { selected_projetId: projet_id })
-            },
-            loadPointMach: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getAllPointage_travaux().pipe(
-                    tap((data) => {
-            
-                        patchState(store, { pointMach_data: data });
-                    })
-                )
-            }
-            ))),
-            addPointMach: rxMethod<any>(pipe(
-                switchMap((pointage) => {
-                    return monservice.addPointage_travaux(pointage).pipe(
-                        tap({
-                            next: () => {
-                                const updatedonnes = [...store.pointMach_data(), pointage]
-                                //patchState(store, { pointMach_data: updatedonnes })
-                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
-                            }, error: () => {
-                                patchState(store, { message: "échoué" });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            )),
-            removePointMach: rxMethod<string>(pipe(
-                switchMap((id) => {
-                    return monservice.deletePointage_travaux(id).pipe(tap(
-                        {
-                            next: () => {
-                                const updatedonnes = store.pointMach_data().filter(x => x.id != id)
-                                patchState(store, { pointMach_data: updatedonnes })
-                                Showsnackerbaralert('élément supprimé', 'pass', snackbar)
-                            },
-                            error: () => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
 
-                    ))
-                }))),
-            updatePointMach: rxMethod<any>(pipe(
-                switchMap((pointage) => {
-                    return monservice.updatePointage_travaux(pointage).pipe(
-                        tap({
-                            next: () => {
-                                var data = store.pointMach_data();
-                                var index = data.findIndex(x => x.id == pointage.id)
-                                data[index] = pointage
-                                patchState(store, { pointMach_data: data })
-                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
-                            }, error: () => {
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            ))
-
-        }
-    ))
-)
 export const TacheProjetStore = signalStore(
     { providedIn: 'root' },
     withState(initialTacheProjetState),
