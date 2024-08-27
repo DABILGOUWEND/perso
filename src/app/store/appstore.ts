@@ -19,7 +19,8 @@ import {
     tab_tachesEnginsStore,
     tab_tachesProjetStore,
     tab_EntrepriseStore,
-    tab_Pannes
+    tab_Pannes,
+    tab_pointage_travauxStore
 } from "../models/modeles"
 import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -233,6 +234,12 @@ const initialTacheProjetState: tab_tachesProjetStore =
     taches_data: [],
     selectedProjetId: '',
     selectedTacheId: ''
+}
+const initialPointageTrvxState: tab_pointage_travauxStore =
+{
+    selectedId: '',
+    message: '',
+    pointage_data: [],
 }
 export const ProjetStore = signalStore(
     { providedIn: 'root' },
@@ -3161,6 +3168,84 @@ export const EntrepriseStore = signalStore(
                                 var index = data.findIndex(x => x.id == entreprise.id)
                                 data[index] = entreprise
                                 patchState(store, { liste_entreprise: data })
+                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                            }, error: () => {
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            ))
+
+        }
+    ))
+)
+export const PointageTrvxStore = signalStore(
+    { providedIn: 'root' },
+    withState(initialPointageTrvxState),
+    withComputed((store) => (
+        {
+            taille: computed(() => store.pointage_data().length),
+            donnees_pointage_trvx: computed(() => {
+                return store.pointage_data();
+            })
+        }
+    )
+    ),
+    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    (
+        {
+
+            loadPointageTrvx: rxMethod<void>(pipe(switchMap(() => {
+                return monservice.getAllPointage_travaux().pipe(
+                    tap((data) => {
+                        patchState(store, { pointage_data: data });
+                    })
+                )
+            }
+            ))),
+            addPointageTrvx: rxMethod<any>(pipe(
+                switchMap((pointage) => {
+                    return monservice.addPointage_travaux(pointage).pipe(
+                        tap({
+                            next: () => {
+                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
+                            }, error: () => {
+                                patchState(store, { message: "échoué" });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+            removePointageTrvx: rxMethod<string>(pipe(
+                switchMap((id) => {
+                    return monservice.deletePointage_travaux(id).pipe(tap(
+                        {
+                            next: () => {
+                                const updatedonnes = store.pointage_data().filter(x => x.id != id)
+                                patchState(store, { pointage_data: updatedonnes })
+                                Showsnackerbaralert('élément supprimé', 'pass', snackbar)
+                            },
+                            error: () => {
+                                patchState(store, { message: 'echoué' });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+
+                    ))
+                }))),
+            updatePointageTrvx: rxMethod<any>(pipe(
+                switchMap((entreprise) => {
+                    return monservice.updatePointage_travaux(entreprise).pipe(
+                        tap({
+                            next: () => {
+                                var data = store.pointage_data();
+                                var index = data.findIndex(x => x.id == entreprise.id)
+                                data[index] = entreprise
+                                patchState(store, { pointage_data: data })
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)

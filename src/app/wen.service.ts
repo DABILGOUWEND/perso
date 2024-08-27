@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { Observable, from, switchMap, of, concatMap, forkJoin, map } from 'rxjs';
-import { Engins, classe_engins, Gasoil, appro_gasoil, tab_personnel, Pannes, travaux, nature_travaux, Users, pointage, tab_ressources, tab_familles, tab_categories, datesPointages, tab_composites, Contrats, Projet, sous_traitant, tab_Essais, Statuts, Devis, Ligne_devis, Constats, ModelAttachement, ModelDecompte, unites, taches, pointage_machine, taches_engins, taches_projet, Entreprise } from './models/modeles';
+import { Engins, classe_engins, Gasoil, appro_gasoil, tab_personnel, Pannes, travaux, nature_travaux, Users, pointage, tab_ressources, tab_familles, tab_categories, datesPointages, tab_composites, Contrats, Projet, sous_traitant, tab_Essais, Statuts, Devis, Ligne_devis, Constats, ModelAttachement, ModelDecompte, unites, taches, pointage_machine, taches_engins, taches_projet, Entreprise, pointage_travaux } from './models/modeles';
 import jsPDF from 'jspdf'
 import autoTable, { Styles } from 'jspdf-autotable';
 import { HttpClient } from '@angular/common/http';
@@ -818,9 +818,9 @@ export class WenService {
   }
 
   //pointages travaux
-  getAllPointage_travaux(): Observable<pointage_machine[]> {
+  getAllPointage_travaux(): Observable<pointage_travaux[]> {
     const Collection = collection(this.db, 'pointage_trvx')
-    return collectionData(Collection, { idField: 'id' }) as Observable<pointage_machine[]>
+    return collectionData(Collection, { idField: 'id' }) as Observable<pointage_travaux[]>
   }
   addPointage_travaux(data: any): Observable<string> {
     const Collection = collection(this.db, 'pointage_trvx')
