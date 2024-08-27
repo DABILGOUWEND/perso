@@ -491,5 +491,10 @@ export interface pointage_travaux{
     'projetId':string,
     'date':string,
     'pointage_mach':pointage_machine[],
-    'taches_travaux':taches_projet_exec[]
+    'metre_travaux':taches_projet_exec[]
+}
+export interface pointage_travauxStore{
+    pointage_data:pointage_travaux[],
+    message:string,
+    selectedId:string
 }
