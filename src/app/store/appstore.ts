@@ -20,7 +20,8 @@ import {
     tab_tachesProjetStore,
     tab_EntrepriseStore,
     tab_Pannes,
-    tab_pointage_travauxStore
+    tab_pointage_travauxStore,
+    pointage_travaux
 } from "../models/modeles"
 import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -3200,6 +3201,37 @@ export const PointageTrvxStore = signalStore(
             loadPointageTrvx: rxMethod<void>(pipe(switchMap(() => {
                 return monservice.getAllPointage_travaux().pipe(
                     tap((data) => {
+                        let mydata: pointage_travaux[] = [];
+                        data.forEach(element => {
+                            let pointage_mach: any = [];
+                            let engins_id = element.engins_id;
+                            let tache_id = element.tache_id;
+                            let duree = element.duree;
+                            for (let i in engins_id) {
+                                pointage_mach.push({
+                                    'engins_id': engins_id[i],
+                                    'tache_id': tache_id[i],
+                                    'duree': duree[i]
+                                })
+                            }
+                            let metre_travaux: any = [];
+                            let tache_projet_Id = element.tache_projet_Id;
+                            let taches_projet_exec = element.taches_projet_exec;
+                            for (let i in tache_projet_Id) {
+                                metre_travaux.push({
+                                    'tache_projet_Id': tache_projet_Id[i],
+                                    'taches_projet_exec': taches_projet_exec[i]
+                                })
+                            }
+                            mydata.push({
+                                'id': element.id,
+                                'projetId': element.projetId,
+                                'date': element.date,
+                                'pointage_mach': pointage_mach,
+                                'metre_travaux': metre_travaux
+                            })
+                        });
+
                         patchState(store, { pointage_data: data });
                     })
                 )

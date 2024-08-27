@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { ImportedModule } from '../../modules/imported/imported.module';
-import { ClasseEnginsStore, EnginsStore, ProjetStore, TachesEnginsStore, TachesStore, UnitesStore } from '../../store/appstore';
+import { ClasseEnginsStore, EnginsStore, PointageTrvxStore, ProjetStore, TachesEnginsStore, TachesStore, UnitesStore } from '../../store/appstore';
 import { NonNullableFormBuilder, FormControl, Validators } from '@angular/forms';
 import { EssaiComponent } from '../essai/essai.component';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
@@ -13,9 +13,10 @@ import { WenService } from '../../wen.service';
   templateUrl: './pointage-trvx-engins.component.html',
   styleUrl: './pointage-trvx-engins.component.scss'
 })
-export class PointageTrvxEnginsComponent implements OnInit{
+export class PointageTrvxEnginsComponent implements OnInit {
+  _pointage_trvx_store = inject(PointageTrvxStore);
   ngOnInit() {
-
+    this._pointage_trvx_store.loadPointageTrvx();
   }
-  
+
 }

@@ -818,9 +818,9 @@ export class WenService {
   }
 
   //pointages travaux
-  getAllPointage_travaux(): Observable<pointage_travaux[]> {
+  getAllPointage_travaux(): Observable<any[]> {
     const Collection = collection(this.db, 'pointage_trvx')
-    return collectionData(Collection, { idField: 'id' }) as Observable<pointage_travaux[]>
+    return collectionData(Collection, { idField: 'id' }) as Observable<any[]>
   }
   addPointage_travaux(data: any): Observable<string> {
     const Collection = collection(this.db, 'pointage_trvx')
