@@ -3232,7 +3232,7 @@ export const PointageTrvxStore = signalStore(
                             })
                         });
 
-                        patchState(store, { pointage_data: data });
+                        patchState(store, { pointage_data: mydata });
                     })
                 )
             }

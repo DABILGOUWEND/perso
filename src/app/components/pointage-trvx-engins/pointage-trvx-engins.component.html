@@ -1,0 +1,75 @@
+<table mat-table [dataSource]="datasource()" class="wen-table" multiTemplateDataRows>
+
+    <ng-container matColumnDef="engin">
+        <th mat-header-cell *matHeaderCellDef> ENGIN
+
+        </th>
+        <td mat-cell *matCellDef="let element">
+            {{element.engin}}
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="duree">
+        <th mat-header-cell *matHeaderCellDef> DUREE
+        </th>
+        <td mat-cell *matCellDef="let element">
+            {{element.duree }}
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>
+        </th>
+        <td mat-cell *matCellDef="let element">
+            @if (element.duree==0) {
+            <button mat-mini-fab (click)="ajouter(element)"> <mat-icon>add</mat-icon></button>
+            }
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="expand">
+        <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+        <td mat-cell *matCellDef="let element">
+            erer
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="expan1">
+        <td mat-cell *matCellDef="let element">
+            @if(current_row().id==element.id)
+            { <mat-form-field>
+                <mat-select placeholder="Engin" [(value)]="engin">
+                    <mat-option *ngFor="let engin of _engins_store.donnees_engins()" [value]="engin.id">
+                        {{engin.designation}}
+
+                    </mat-option>
+                </mat-select>
+            </mat-form-field> 
+        }
+
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="expan2">
+        <td mat-cell *matCellDef="let element">
+            @if(current_row().id==element.id)
+            {
+                <mat-form-field>
+                    <mat-label>Input</mat-label>
+                    <input matInput    [(ngModel)]="duree" placeholder="Durée travail" value="{{element.duree}}">
+                </mat-form-field>
+            }
+          
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="expan3">
+      
+        <td mat-cell *matCellDef="let element">
+            @if(current_row().id==element.id)
+            {
+                <button mat-mini-fab (click)="ajout_tache()"> <mat-icon>save</mat-icon></button>
+            }
+            
+        </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="taches_machineColumnsStr"></tr>
+    <tr mat-row *matRowDef="let element; columns: taches_machineColumnsStr;"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['expan1','expan2','expan3']" class="example-detail-row"></tr>
+</table>
