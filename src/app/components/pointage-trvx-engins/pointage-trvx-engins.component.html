@@ -4,7 +4,8 @@
         <th mat-header-cell *matHeaderCellDef> ENGIN
 
         </th>
-        <td mat-cell *matCellDef="let element">
+        <td mat-cell *matCellDef="let element;"[ngClass]="{
+        'decal0':element.type=='enfant'}" >
             {{element.engin}}
         </td>
     </ng-container>
@@ -20,21 +21,16 @@
         <th mat-header-cell *matHeaderCellDef>
         </th>
         <td mat-cell *matCellDef="let element">
-            @if (element.duree==0) {
+            @if (element.type=="parent")
+            {
             <button mat-mini-fab (click)="ajouter(element)"> <mat-icon>add</mat-icon></button>
             }
         </td>
     </ng-container>
 
-    <ng-container matColumnDef="expand">
-        <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
-        <td mat-cell *matCellDef="let element">
-            erer
-        </td>
-    </ng-container>
     <ng-container matColumnDef="expan1">
         <td mat-cell *matCellDef="let element">
-            @if(current_row().id==element.id)
+            @if(current_row()==element )
             { <mat-form-field>
                 <mat-select placeholder="Engin" [(value)]="engin">
                     <mat-option *ngFor="let engin of _engins_store.donnees_engins()" [value]="engin.id">
@@ -42,34 +38,35 @@
 
                     </mat-option>
                 </mat-select>
-            </mat-form-field> 
-        }
+            </mat-form-field>
+            }
 
         </td>
     </ng-container>
     <ng-container matColumnDef="expan2">
         <td mat-cell *matCellDef="let element">
-            @if(current_row().id==element.id)
+            @if(current_row()==element )
             {
-                <mat-form-field>
-                    <mat-label>Input</mat-label>
-                    <input matInput    [(ngModel)]="duree" placeholder="Durée travail" value="{{element.duree}}">
-                </mat-form-field>
+            <mat-form-field>
+                <mat-label>Input</mat-label>
+                <input matInput [(ngModel)]="duree" type="number"  placeholder="Durée travail" value="{{element.duree}}">
+            </mat-form-field>
             }
-          
+
         </td>
     </ng-container>
     <ng-container matColumnDef="expan3">
-      
+
         <td mat-cell *matCellDef="let element">
-            @if(current_row().id==element.id)
+            @if(current_row()==element)
             {
-                <button mat-mini-fab (click)="ajout_tache()"> <mat-icon>save</mat-icon></button>
+            <button mat-mini-fab (click)="ajout_tache()"> <mat-icon>save</mat-icon></button>
             }
-            
+
         </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="taches_machineColumnsStr"></tr>
-    <tr mat-row *matRowDef="let element; columns: taches_machineColumnsStr;"></tr>
+    <tr mat-row *matRowDef="let element; columns: taches_machineColumnsStr;"
+        [ngClass]="{'classe_parent0':element.type=='parent'}"></tr>
     <tr mat-row *matRowDef="let row; columns: ['expan1','expan2','expan3']" class="example-detail-row"></tr>
 </table>

@@ -13,6 +13,7 @@ type pointMachine = {
   'engin_id': string,
   'duree': number,
   'niveau': string,
+  'type': string
 };
 @Component({
   selector: 'app-pointage-trvx-engins',
@@ -62,7 +63,8 @@ export class PointageTrvxEnginsComponent implements OnInit {
       tableau.push({
         id: element0.id,
         engin: element0.nom,
-        duree: 0
+        duree: 0,
+        type: "parent"
       });
       let pointmach = this.pointage_machines().filter((pointage) => {
         return pointage.id == element0.id
@@ -74,7 +76,8 @@ export class PointageTrvxEnginsComponent implements OnInit {
         tableau.push({
           id: element0.id,
           engin: engin?.designation + " " + engin?.code_parc,
-          duree: element.duree
+          duree: element.duree,
+          type: "enfant",
         }
         )
       });
@@ -88,7 +91,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
 
   //simples properties
   current_row = signal<any>([]);
-  taches_machineColumnsStr = ["engin", "duree", "actions", "expand"];
+  taches_machineColumnsStr = ["engin", "duree", "actions"];
   titre_taches = [
     { id: 1, identifiant: ["E8XQLrBOG1oXBTelHa8y", "oe39MfblrBDc9ny2yEvS"], nom: "Gerbages emprunt" },
     { id: 2, identifiant: ["E8XQLrBOG1oXBTelHa8y", "itL1Zri5sjGN9bynkpUw"], nom: "Débrousaillage" },
@@ -113,7 +116,17 @@ export class PointageTrvxEnginsComponent implements OnInit {
   }
   //methods
   ajouter(data: any) {
-    this.current_row.set(data);
+
+    let element = this.donnees_pointage_machines().filter((pointage) =>
+      pointage.id == data.id
+    );
+    if (element.length == 0) {
+      this.current_row.set(data);
+    }
+    else {
+      let lg=element.length;
+      this.current_row.set(element[lg-1]);
+    }
   }
   ajout_tache() {
     this.pointage_machines.update((pointage) => [...pointage,
@@ -121,7 +134,8 @@ export class PointageTrvxEnginsComponent implements OnInit {
       id: this.current_row().id,
       niveau: this.current_row().niveau,
       engin_id: this.engin(),
-      duree: this.duree()
+      duree: this.duree(),
+      type: "enfant"
     }]);
     this.current_row.set([]);
 
