@@ -44,7 +44,8 @@ export class PointageTrvxEnginsComponent implements OnInit {
   pointage_machines = signal<pointMachine[]>([]);
   duree = signal(0);
   engin = signal("");
-
+  date = signal(new Date().toLocaleDateString());
+  projetId = signal("");
 
 
   // computed properties
@@ -58,6 +59,11 @@ export class PointageTrvxEnginsComponent implements OnInit {
 
   });
   donnees_pointage_machines = computed(() => {
+    let selected_pointage = this._pointage_trvx_store.donnees_pointage_trvx().find((pointage) => {
+      return pointage.projetId == this.projetId() && pointage.date == this.date();
+    });
+    let pointMac = selected_pointage?.pointage_mach;
+
     let tableau: any[] = [];
     this.titre_taches.forEach(element0 => {
       tableau.push({
@@ -66,21 +72,24 @@ export class PointageTrvxEnginsComponent implements OnInit {
         duree: 0,
         type: "parent"
       });
-      let pointmach = this.pointage_machines().filter((pointage) => {
-        return pointage.id == element0.id
-      });
-      pointmach.forEach(element => {
-        let engin = this._engins_store.donnees_engins().find((engin) => {
-          return engin.id == element.engin_id
+      if (pointMac) {
+        let pointmach = pointMac.filter((pointage) => {
+          return pointage.tache_id == element0.id
         });
-        tableau.push({
-          id: element0.id,
-          engin: engin?.designation + " " + engin?.code_parc,
-          duree: element.duree,
-          type: "enfant",
-        }
-        )
-      });
+        pointmach.forEach(element => {
+          let engin = this._engins_store.donnees_engins().find((engin) => {
+            return engin.id == element.engin_id
+          });
+          tableau.push({
+            id: element0.id,
+            engin: engin?.designation + " " + engin?.code_parc,
+            duree: element.duree,
+            type: "enfant",
+          }
+          )
+        });
+      }
+
     })
     return tableau;
   });
@@ -93,20 +102,18 @@ export class PointageTrvxEnginsComponent implements OnInit {
   current_row = signal<any>([]);
   taches_machineColumnsStr = ["engin", "duree", "actions"];
   titre_taches = [
-    { id: 1, identifiant: ["E8XQLrBOG1oXBTelHa8y", "oe39MfblrBDc9ny2yEvS"], nom: "Gerbages emprunt" },
-    { id: 2, identifiant: ["E8XQLrBOG1oXBTelHa8y", "itL1Zri5sjGN9bynkpUw"], nom: "Débrousaillage" },
-    { id: 3, identifiant: ["oaTI4ZtWZDIs5OR6PsPN", "42TDHnqUNEu5WZKaiKzt"], nom: "Approvisionnement latérite" },
-    { id: 4, identifiant: ["itL1Zri5sjGN9bynkpUw", "E8XQLrBOG1oXBTelHa8y", "42TDHnqUNEu5WZKaiKzt"], nom: "Déblais" },
-    { id: 5, identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Décapage terre végétale" },
-    { id: 6, identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Mise en oeuvre PST" },
-    { id: 7, identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Mise en oeuvre remblais" },
-    { id: 8, identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Mise en oeuvre couche de fondation" },
-    { id: 9, identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Mise en oeuvre couche de base" },
-    { id: 10, identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Réglage couche de base" },
-    { id: 11, identifiant: ["8mjmJ2vK1X7Y6pX5zZwg"], nom: "Compactage" },
-    { id: 12, identifiant: ["XpgjvqaniSlnqPoT57LG"], nom: "Arrosage" }];
-
-
+    { id: "1", identifiant: ["E8XQLrBOG1oXBTelHa8y", "oe39MfblrBDc9ny2yEvS"], nom: "Gerbages emprunt" },
+    { id: "2", identifiant: ["E8XQLrBOG1oXBTelHa8y", "itL1Zri5sjGN9bynkpUw"], nom: "Débrousaillage" },
+    { id: "3", identifiant: ["oaTI4ZtWZDIs5OR6PsPN", "42TDHnqUNEu5WZKaiKzt"], nom: "Approvisionnement latérite" },
+    { id: "4", identifiant: ["itL1Zri5sjGN9bynkpUw", "E8XQLrBOG1oXBTelHa8y", "42TDHnqUNEu5WZKaiKzt"], nom: "Déblais" },
+    { id: "5", identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Décapage terre végétale" },
+    { id: "6", identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Mise en oeuvre PST" },
+    { id: "7", identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Mise en oeuvre remblais" },
+    { id: "8", identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Mise en oeuvre couche de fondation" },
+    { id: "9", identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Mise en oeuvre couche de base" },
+    { id: "10", identifiant: ["itL1Zri5sjGN9bynkpUw"], nom: "Réglage couche de base" },
+    { id: "11", identifiant: ["8mjmJ2vK1X7Y6pX5zZwg"], nom: "Compactage" },
+    { id: "12", identifiant: ["XpgjvqaniSlnqPoT57LG"], nom: "Arrosage" }];
 
   constructor() {
     effect(() => {
@@ -124,18 +131,18 @@ export class PointageTrvxEnginsComponent implements OnInit {
       this.current_row.set(data);
     }
     else {
-      let lg=element.length;
-      this.current_row.set(element[lg-1]);
+      let lg = element.length;
+      this.current_row.set(element[lg - 1]);
     }
   }
   ajout_tache() {
-    
+
     this.pointage_machines.update((pointage) => [...pointage,
     {
       id: this.current_row().id,
       niveau: this.current_row().niveau,
       engin_id: this.engin(),
-      duree: this.duree(),   
+      duree: this.duree(),
       type: "enfant"
     }]);
     this.current_row.set([]);
