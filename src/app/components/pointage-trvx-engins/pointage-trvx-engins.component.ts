@@ -129,12 +129,13 @@ export class PointageTrvxEnginsComponent implements OnInit {
     }
   }
   ajout_tache() {
+    
     this.pointage_machines.update((pointage) => [...pointage,
     {
       id: this.current_row().id,
       niveau: this.current_row().niveau,
       engin_id: this.engin(),
-      duree: this.duree(),
+      duree: this.duree(),   
       type: "enfant"
     }]);
     this.current_row.set([]);
