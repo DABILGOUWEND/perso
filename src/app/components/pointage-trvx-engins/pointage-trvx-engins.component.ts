@@ -45,13 +45,18 @@ export class PointageTrvxEnginsComponent implements OnInit {
   engin = signal("");
   date = signal(new Date().toLocaleDateString());
   projetId = signal("");
-  selected_pointage=signal<pointage_travaux|undefined>(undefined);
+
 
 
   // computed properties
   donnees_pointage_trvx = computed(() => {
 
-  })
+  });
+  selected_pointage = computed(() => {
+    return this._pointage_trvx_store.donnees_pointage_trvx().find((pointage) => {
+      return pointage.projetId == this.projetId() && pointage.date == this.date();
+    });
+  });
   donnees_projet = computed(() => {
     return this._projet_store.donnees_projet().map((projet) => {
       return { id: projet.id, nom: projet.intitule }
@@ -59,16 +64,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
 
   });
   donnees_pointage_machines = computed(() => {
-    this.selected_pointage.update((pointage)=>{
-      return this._pointage_trvx_store.donnees_pointage_trvx().find((pointage) => {
-        return pointage.projetId == this.projetId() && pointage.date == this.date();
-      });
-    }
-    );
-
     let pointMac = this.selected_pointage()?.pointage_mach;
-    
-
     let tableau: any[] = [];
     this.titre_taches.forEach(element0 => {
       tableau.push({
@@ -141,11 +137,13 @@ export class PointageTrvxEnginsComponent implements OnInit {
     }
   }
   ajout_tache() {
-    this._pointage_trvx_store.addPointageTrvx({
-      projetId: this.projetId(),
-      date: this.date(),
-      pointage_mach: []
-    });
-    this.current_row.set([]);
+    if (this.selected_pointage()) {
+      this._pointage_trvx_store.addPointageTrvx({
+        projetId: this.projetId(),
+        date: this.date(),
+        pointage_mach: []
+      });
+      this.current_row.set([]);
+    }
   }
 }
