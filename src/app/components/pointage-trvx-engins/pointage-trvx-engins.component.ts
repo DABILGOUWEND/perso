@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { ImportedModule } from '../../modules/imported/imported.module';
-import { ClasseEnginsStore, EnginsStore, PointageTrvxStore, ProjetStore, TachesEnginsStore, TachesStore, UnitesStore } from '../../store/appstore';
+import { ClasseEnginsStore, EnginsStore, PointageTrvxStore, ProjetStore, TacheProjetStore, TachesEnginsStore, TachesStore, UnitesStore } from '../../store/appstore';
 import { EssaiComponent } from '../essai/essai.component';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
 import { WenService } from '../../wen.service';
@@ -29,6 +29,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   _engins_store = inject(EnginsStore);
   _taches_engins_store = inject(TachesEnginsStore);
   _classes_engins_store = inject(ClasseEnginsStore);
+  _tachesProjetStore = inject(TacheProjetStore);
 
   ngOnInit() {
     this._pointage_trvx_store.loadPointageTrvx();
@@ -53,9 +54,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
 
   });
   selected_pointage = computed(() => {
-    return this._pointage_trvx_store.donnees_pointage_trvx().find((pointage) => {
-      return pointage.projetId == this.projetId() && pointage.date == this.date();
-    });
+    return this._pointage_trvx_store.donnees_pointage_trvx();
   });
   donnees_projet = computed(() => {
     return this._projet_store.donnees_projet().map((projet) => {
@@ -94,6 +93,25 @@ export class PointageTrvxEnginsComponent implements OnInit {
     })
     return tableau;
   });
+  tache_projet_Ids = computed(() => {
+    return this._tachesProjetStore.donnees_taches_projet().filter(x => {
+      return x.projetId == this.projetId();
+    }
+    ).map(x => {
+      return {
+        tache_projet_Id: x.id
+      }
+    })
+  });
+  tache_projet_quantiteExec = computed(() => {
+    let selected_taches_projet = this.selected_pointage()?.metre_travaux;
+    return selected_taches_projet?.map(x => {
+      return {
+        quantite: x.quantiteExec
+      }
+    })
+  }
+  );
 
   datasource = computed(
     () => new MatTableDataSource(this.donnees_pointage_machines()),
@@ -137,13 +155,20 @@ export class PointageTrvxEnginsComponent implements OnInit {
     }
   }
   ajout_tache() {
-    if (this.selected_pointage()) {
-      this._pointage_trvx_store.addPointageTrvx({
+    let current_point_mach = this._pointage_trvx_store.donnees_pointage_trvx()?.pointage_mach;
+    if (current_point_mach) {
+      this._pointage_trvx_store.updatePointageTrvx({
+        id:this.selected_pointage()?.id,
         projetId: this.projetId(),
         date: this.date(),
-        pointage_mach: []
-      });
-      this.current_row.set([]);
+        tache_id:[...current_point_mach.map(x=>x.tache_id),this.current_row().id],
+        engin_id: [...current_point_mach.map(x => x.engin_id), this.engin()],
+        duree: [...current_point_mach.map(x => x.duree), this.duree],
+        quantite_exec:this.tache_projet_quantiteExec()?.map(x=>x.quantite),
+      })
+    } else {
+
     }
+    this.current_row.set([]);
   }
 }

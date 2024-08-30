@@ -496,5 +496,7 @@ export interface pointage_travaux{
 export interface tab_pointage_travauxStore{
     pointage_data:pointage_travaux[],
     message:string,
-    selectedId:string
+    selectedId:string,
+    selectedDate:string,
+    selectedProjetId:string
 }

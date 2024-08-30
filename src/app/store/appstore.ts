@@ -241,6 +241,8 @@ const initialPointageTrvxState: tab_pointage_travauxStore =
     selectedId: '',
     message: '',
     pointage_data: [],
+    selectedDate: '',
+    selectedProjetId: ''
 }
 export const ProjetStore = signalStore(
     { providedIn: 'root' },
@@ -3189,7 +3191,11 @@ export const PointageTrvxStore = signalStore(
         {
             taille: computed(() => store.pointage_data().length),
             donnees_pointage_trvx: computed(() => {
-                return store.pointage_data();
+                let date=store.selectedDate();
+                let projet_id=store.selectedProjetId();
+                return store.pointage_data().find(x=>
+                    x.date==date && x.projetId==projet_id
+                );
             })
         }
     )
@@ -3197,7 +3203,12 @@ export const PointageTrvxStore = signalStore(
     withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
     (
         {
-
+            filtrebyDate(date: string) {
+                patchState(store, { selectedDate: date })
+            },
+            filtrebyProjetId(projetId: string) {
+                patchState(store, { selectedProjetId: projetId })
+            },
             loadPointageTrvx: rxMethod<void>(pipe(switchMap(() => {
                 return monservice.getAllPointage_travaux().pipe(
                     tap((data) => {
