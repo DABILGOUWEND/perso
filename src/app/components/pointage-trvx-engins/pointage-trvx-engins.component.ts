@@ -12,7 +12,6 @@ type pointMachine = {
   'id': number,
   'engin_id': string,
   'duree': number,
-  'niveau': string,
   'type': string
 };
 @Component({
@@ -140,7 +139,6 @@ export class PointageTrvxEnginsComponent implements OnInit {
     this.pointage_machines.update((pointage) => [...pointage,
     {
       id: this.current_row().id,
-      niveau: this.current_row().niveau,
       engin_id: this.engin(),
       duree: this.duree(),
       type: "enfant"
