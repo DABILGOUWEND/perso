@@ -7,12 +7,12 @@ import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
 import { WenService } from '../../wen.service';
 import e from 'express';
 import { sign } from 'crypto';
+import { pointage_travaux } from '../../models/modeles';
 
 type pointMachine = {
-  'id': number,
+  'tacheId': number,
   'engin_id': string,
-  'duree': number,
-  'type': string
+  'duree': number
 };
 @Component({
   selector: 'app-pointage-trvx-engins',
@@ -45,6 +45,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   engin = signal("");
   date = signal(new Date().toLocaleDateString());
   projetId = signal("");
+  selected_pointage=signal<pointage_travaux|undefined>(undefined);
 
 
   // computed properties
@@ -58,10 +59,15 @@ export class PointageTrvxEnginsComponent implements OnInit {
 
   });
   donnees_pointage_machines = computed(() => {
-    let selected_pointage = this._pointage_trvx_store.donnees_pointage_trvx().find((pointage) => {
-      return pointage.projetId == this.projetId() && pointage.date == this.date();
-    });
-    let pointMac = selected_pointage?.pointage_mach;
+    this.selected_pointage.update((pointage)=>{
+      return this._pointage_trvx_store.donnees_pointage_trvx().find((pointage) => {
+        return pointage.projetId == this.projetId() && pointage.date == this.date();
+      });
+    }
+    );
+
+    let pointMac = this.selected_pointage()?.pointage_mach;
+    
 
     let tableau: any[] = [];
     this.titre_taches.forEach(element0 => {
@@ -135,15 +141,11 @@ export class PointageTrvxEnginsComponent implements OnInit {
     }
   }
   ajout_tache() {
-
-    this.pointage_machines.update((pointage) => [...pointage,
-    {
-      id: this.current_row().id,
-      engin_id: this.engin(),
-      duree: this.duree(),
-      type: "enfant"
-    }]);
+    this._pointage_trvx_store.addPointageTrvx({
+      projetId: this.projetId(),
+      date: this.date(),
+      pointage_mach: []
+    });
     this.current_row.set([]);
-
   }
 }
