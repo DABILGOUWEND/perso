@@ -1,4 +1,4 @@
-<table mat-table [dataSource]="datasource()" class="wen-table" multiTemplateDataRows>
+<!-- <table mat-table [dataSource]="datasource()" class="wen-table" multiTemplateDataRows>
 
     <ng-container matColumnDef="engin">
         <th mat-header-cell *matHeaderCellDef> ENGIN
@@ -69,4 +69,7 @@
     <tr mat-row *matRowDef="let element; columns: taches_machineColumnsStr;"
         [ngClass]="{'classe_parent0':element.type=='parent'}"></tr>
     <tr mat-row *matRowDef="let row; columns: ['expan1','expan2','expan3']" class="example-detail-row"></tr>
-</table>
+</table> -->
+<button (click)="initialiser()">
+    <mat-icon>add</mat-icon>
+</button>

@@ -430,6 +430,7 @@ export interface tab_tachesStore {
      message:string
 }
 export interface pointage_machine {
+    'numero': number,
     'tache_id': string
     'engin_id': string,
     'duree': string
@@ -464,8 +465,8 @@ export interface taches_projet{
 
 }
 export interface taches_projet_exec{
-    'tache_projet_Id':string,
-    'quantiteExec':number
+    'tache_projet_id':string,
+    'quantite_exec':number
 }
 export interface tab_tachesProjetStore {
     taches_data: taches_projet[],

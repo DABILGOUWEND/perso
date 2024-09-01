@@ -3220,14 +3220,16 @@ export const PointageTrvxStore = signalStore(
                             let duree = element.duree;
                             for (let i in engins_id) {
                                 pointage_mach.push({
+                                    'numero': i,
                                     'engins_id': engins_id[i],
                                     'tache_id': tache_id[i],
                                     'duree': duree[i]
                                 })
                             }
                             let metre_travaux: any = [];
-                            let tache_projet_Id = element.tache_projet_Id;
-                            let taches_projet_exec = element.taches_projet_exec;
+                            
+                            let tache_projet_Id = element.tache_projet_id;
+                            let taches_projet_exec = element.quantite_exec;
                             for (let i in tache_projet_Id) {
                                 metre_travaux.push({
                                     'tache_projet_Id': tache_projet_Id[i],
@@ -3242,7 +3244,6 @@ export const PointageTrvxStore = signalStore(
                                 'metre_travaux': metre_travaux
                             })
                         });
-
                         patchState(store, { pointage_data: mydata });
                     })
                 )
