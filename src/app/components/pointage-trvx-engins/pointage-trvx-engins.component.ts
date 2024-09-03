@@ -211,7 +211,6 @@ export class PointageTrvxEnginsComponent implements OnInit {
   }
 
   add_tache_engin() {
-    this.numeros.update(numero => numero + 1);
     let myuuid = uuidv4();
     this.donnees_pointage_engins.update(donnees => [...donnees,
     {
@@ -219,12 +218,11 @@ export class PointageTrvxEnginsComponent implements OnInit {
       duree:this.duree(),
       engin_id: this.engin(),
       tache_id: this.current_row().tache_id,
-
     }]);
   }
 
   remove_tache_engin(data: any) {
-    this.numeros.update(numero => numero + 1);
+    if (confirm('voulez-vous supprimer cet élement?'))
     this.donnees_pointage_engins.update(donnees => donnees.filter(
       item => item.id !== data.id)
     )
