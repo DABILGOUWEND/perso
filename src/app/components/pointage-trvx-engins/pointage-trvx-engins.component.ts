@@ -198,7 +198,6 @@ export class PointageTrvxEnginsComponent implements OnInit {
     this.modif_row.set(data);
     this.duree.set(data.duree);
     this.engin.set(data.engin_id);
-    console.log(this.engin())
   }
   update_tache_engin() {
     this.donnees_pointage_engins.update(donnees => donnees.map(
@@ -208,7 +207,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
         engin_id: this.engin(),
         tache_id: this.modif_row().tache_id
       } : item));
-    ;
+    this.modif_row.set([]);
   }
 
   add_tache_engin() {
@@ -222,8 +221,6 @@ export class PointageTrvxEnginsComponent implements OnInit {
       tache_id: this.current_row().tache_id,
 
     }]);
-    ;
-    ;
   }
 
   remove_tache_engin(data: any) {
