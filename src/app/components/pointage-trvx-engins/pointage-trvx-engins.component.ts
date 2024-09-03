@@ -4,7 +4,7 @@ import { ImportedModule } from '../../modules/imported/imported.module';
 import { ClasseEnginsStore, EnginsStore, PointageTrvxStore, ProjetStore, TacheProjetStore, TachesEnginsStore, TachesStore, UnitesStore } from '../../store/appstore';
 import { EssaiComponent } from '../essai/essai.component';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
-import { pointage_machine} from '../../models/modeles';
+import { pointage_machine } from '../../models/modeles';
 import { v4 as uuidv4 } from 'uuid';
 type pointMachine = {
   'tacheId': number,
@@ -22,7 +22,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   // constructor
   constructor() {
     effect(() => {
-      console.log(this.donnees_pointage_engins())
+      //console.log(this.donnees_pointage_engins())
     });
   }
 
@@ -42,7 +42,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   date = signal(new Date().toLocaleDateString());
   projetId = signal("7mn80ei1Tryv5M92bJGw");
   donnees_pointage_engins = signal<pointage_machine[]>([]);
-  numeros=signal(0);
+  numeros = signal(0);
 
   // computed properties
   selected_pointage = computed(() => {
@@ -67,6 +67,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
         id: myuuid,
         tache_id: element0.id,
         engin: element0.nom,
+        engin_id: "",
         duree: 0,
         type: "parent"
       });
@@ -81,6 +82,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
           tableau.push({
             id: element.id,
             tache_id: element0.id,
+            engin_id: element.engin_id,
             engin: engin?.designation + " " + engin?.code_parc,
             duree: element.duree,
             type: "enfant",
@@ -116,6 +118,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
 
   //simples properties
   current_row = signal<any>([]);
+  modif_row = signal<any>([]);
   taches_machineColumnsStr = ["engin", "duree", "actions"];
   titre_taches = [
     { id: "1", identifiant: ["E8XQLrBOG1oXBTelHa8y", "oe39MfblrBDc9ny2yEvS"], nom: "Gerbages emprunt" },
@@ -152,17 +155,16 @@ export class PointageTrvxEnginsComponent implements OnInit {
 
   }
   ajouter(data: any) {
-
-    let element = this.donnees_pointage_machines().filter((pointage) =>
-      pointage.id == data.id
-    );
-    if (element.length == 0) {
-      this.current_row.set(data);
-    }
-    else {
-      let lg = element.length;
-      this.current_row.set(element[lg - 1]);
-    }
+        let element = this.donnees_pointage_machines().filter((pointage) =>
+          pointage.tache_id == data.tache_id && pointage.type == "enfant"
+        );
+        if (element.length == 0) {
+          this.current_row.set(data);
+        }
+        else {
+          let lg = element.length;
+          this.current_row.set(element[lg - 1]);
+        } 
   }
   ajout_tache() {
     let current_point_mach = this._pointage_trvx_store.donnees_pointage_trvx()?.pointage_mach;
@@ -192,26 +194,32 @@ export class PointageTrvxEnginsComponent implements OnInit {
       quantite_exec: this.tache_projet_Ids().map(x => 0),
     });
   }
-  update_tache_engin(data: any) {
+  edif_element(data: any) {
+    this.modif_row.set(data);
+    this.duree.set(data.duree);
+    this.engin.set(data.engin_id);
+    console.log(this.engin())
+  }
+  update_tache_engin() {
     this.donnees_pointage_engins.update(donnees => donnees.map(
-      item => (item.id == data.id) ? {
-        id: data.id,
-        duree: data.duree,
-        engin_id:   data.engin_id,
-        tache_id: data.tache_id
+      item => (item.id == this.modif_row().id) ? {
+        id: this.modif_row().id,  
+        duree: this.duree(),
+        engin_id: this.engin(),
+        tache_id: this.modif_row().tache_id
       } : item));
     ;
   }
 
-  add_tache_engin(data: any) {
-    this.numeros.update(numero=>numero + 1);
+  add_tache_engin() {
+    this.numeros.update(numero => numero + 1);
     let myuuid = uuidv4();
     this.donnees_pointage_engins.update(donnees => [...donnees,
     {
       id: myuuid,
-      duree: data.duree,
-      engin_id: data.engin_id,
-      tache_id: data.tache_id,
+      duree:this.duree(),
+      engin_id: this.engin(),
+      tache_id: this.current_row().tache_id,
 
     }]);
     ;
@@ -219,7 +227,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   }
 
   remove_tache_engin(data: any) {
-    this.numeros.update(numero=>numero + 1);
+    this.numeros.update(numero => numero + 1);
     this.donnees_pointage_engins.update(donnees => donnees.filter(
       item => item.id !== data.id)
     )

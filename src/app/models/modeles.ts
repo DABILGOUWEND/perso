@@ -433,7 +433,7 @@ export interface pointage_machine {
     'id': string,
     'tache_id': string
     'engin_id': string,
-    'duree': string
+    'duree': number
 }
 
 
