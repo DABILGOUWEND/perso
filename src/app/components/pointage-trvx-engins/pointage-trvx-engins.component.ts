@@ -220,7 +220,6 @@ export class PointageTrvxEnginsComponent implements OnInit {
       tache_id: this.current_row().tache_id,
     }]);
   }
-
   remove_tache_engin(data: any) {
     if (confirm('voulez-vous supprimer cet élement?'))
     this.donnees_pointage_engins.update(donnees => donnees.filter(
