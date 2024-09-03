@@ -26,7 +26,7 @@ import {
 import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { WenService } from "../wen.service";
-
+import { v4 as uuidv4 } from 'uuid';
 const initialGasoilState: gasoilStore = {
     conso_data: [],
     err: null,
@@ -3219,8 +3219,15 @@ export const PointageTrvxStore = signalStore(
                             let tache_id = element.tache_id;
                             let duree = element.duree;
                             for (let i in engins_id) {
+                                let myuuid = uuidv4();
                                 pointage_mach.push({
-                                    'numero': i,
+                                    'id': myuuid,
+                                    'engins_id': engins_id[i],
+                                    'tache_id': tache_id[i],
+                                    'duree': duree[i]
+                                })
+                                pointage_mach.push({
+                                    'id': i,
                                     'engins_id': engins_id[i],
                                     'tache_id': tache_id[i],
                                     'duree': duree[i]

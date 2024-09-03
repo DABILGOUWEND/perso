@@ -4,11 +4,8 @@ import { ImportedModule } from '../../modules/imported/imported.module';
 import { ClasseEnginsStore, EnginsStore, PointageTrvxStore, ProjetStore, TacheProjetStore, TachesEnginsStore, TachesStore, UnitesStore } from '../../store/appstore';
 import { EssaiComponent } from '../essai/essai.component';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
-import { WenService } from '../../wen.service';
-import e from 'express';
-import { sign } from 'crypto';
-import { pointage_machine, pointage_travaux } from '../../models/modeles';
-
+import { pointage_machine} from '../../models/modeles';
+import { v4 as uuidv4 } from 'uuid';
 type pointMachine = {
   'tacheId': number,
   'engin_id': string,
@@ -25,6 +22,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   // constructor
   constructor() {
     effect(() => {
+      console.log(this.donnees_pointage_engins())
     });
   }
 
@@ -36,8 +34,6 @@ export class PointageTrvxEnginsComponent implements OnInit {
   _classes_engins_store = inject(ClasseEnginsStore);
   _tachesProjetStore = inject(TacheProjetStore);
 
-
-
   //signals
   selected_projet_id = signal("");
   pointage_machines = signal<pointMachine[]>([]);
@@ -45,26 +41,31 @@ export class PointageTrvxEnginsComponent implements OnInit {
   engin = signal("");
   date = signal(new Date().toLocaleDateString());
   projetId = signal("7mn80ei1Tryv5M92bJGw");
-  donnees_pointage_engins = signal<pointage_machine[] | undefined>([]);
-
+  donnees_pointage_engins = signal<pointage_machine[]>([]);
+  numeros=signal(0);
 
   // computed properties
-
   selected_pointage = computed(() => {
     return this._pointage_trvx_store.donnees_pointage_trvx();
   });
   donnees_projet = computed(() => {
     return this._projet_store.donnees_projet().map((projet) => {
-      return { id: projet.id, nom: projet.intitule }
+      return {
+        id: projet.id,
+        nom: projet.intitule
+      }
     });
 
   });
+
   donnees_pointage_machines = computed(() => {
-    let pointMac = this.selected_pointage()?.pointage_mach;
+    let pointMac = this.donnees_pointage_engins();
     let tableau: any[] = [];
     this.titre_taches.forEach(element0 => {
+      let myuuid = uuidv4();
       tableau.push({
-        id: element0.id,
+        id: myuuid,
+        tache_id: element0.id,
         engin: element0.nom,
         duree: 0,
         type: "parent"
@@ -78,7 +79,8 @@ export class PointageTrvxEnginsComponent implements OnInit {
             return engin.id == element.engin_id;
           });
           tableau.push({
-            id: element0.id,
+            id: element.id,
+            tache_id: element0.id,
             engin: engin?.designation + " " + engin?.code_parc,
             duree: element.duree,
             type: "enfant",
@@ -90,6 +92,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
     })
     return tableau;
   });
+
   tache_projet_Ids = computed(() => {
     return this._tachesProjetStore.taches_data().filter(x => {
       return x.projetId == this.projetId();
@@ -137,9 +140,16 @@ export class PointageTrvxEnginsComponent implements OnInit {
     this._taches_engins_store.loadTachesEngins();
     this._classes_engins_store.loadclasses();
     this._tachesProjetStore.loadTachesProjet();
-    this.donnees_pointage_engins.set(this.selected_pointage()?.pointage_mach);
+
     this._pointage_trvx_store.filtrebyDate('01/09/2024');
-    this._pointage_trvx_store.filtrebyProjetId('7mn80ei1Tryv5M92bJGw'); 
+    this._pointage_trvx_store.filtrebyProjetId('7mn80ei1Tryv5M92bJGw');
+    if (this.selected_pointage() !== undefined) {
+      let donnees = this.selected_pointage()?.pointage_mach
+      if (donnees) {
+        this.donnees_pointage_engins.set(donnees);
+      }
+    }
+
   }
   ajouter(data: any) {
 
@@ -181,5 +191,37 @@ export class PointageTrvxEnginsComponent implements OnInit {
       tache_projet_id: this.tache_projet_Ids(),
       quantite_exec: this.tache_projet_Ids().map(x => 0),
     });
+  }
+  update_tache_engin(data: any) {
+    this.donnees_pointage_engins.update(donnees => donnees.map(
+      item => (item.id == data.id) ? {
+        id: data.id,
+        duree: data.duree,
+        engin_id:   data.engin_id,
+        tache_id: data.tache_id
+      } : item));
+    ;
+  }
+
+  add_tache_engin(data: any) {
+    this.numeros.update(numero=>numero + 1);
+    let myuuid = uuidv4();
+    this.donnees_pointage_engins.update(donnees => [...donnees,
+    {
+      id: myuuid,
+      duree: data.duree,
+      engin_id: data.engin_id,
+      tache_id: data.tache_id,
+
+    }]);
+    ;
+    ;
+  }
+
+  remove_tache_engin(data: any) {
+    this.numeros.update(numero=>numero + 1);
+    this.donnees_pointage_engins.update(donnees => donnees.filter(
+      item => item.id !== data.id)
+    )
   }
 }

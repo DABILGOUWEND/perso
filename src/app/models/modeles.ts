@@ -430,7 +430,7 @@ export interface tab_tachesStore {
      message:string
 }
 export interface pointage_machine {
-    'numero': number,
+    'id': string,
     'tache_id': string
     'engin_id': string,
     'duree': string
