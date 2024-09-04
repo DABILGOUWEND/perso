@@ -34,7 +34,7 @@
         </div>
         <div class="content_body">
             <mat-tab-group fitInkBarToContent>
-                <mat-tab label=label_tab1() >
+                <mat-tab [label]="label_tab1()" >
             
                     <table mat-table [dataSource]="datasource()" class="wen-table" multiTemplateDataRows>
                         <ng-container matColumnDef="engin">
@@ -140,7 +140,7 @@
                         <tr mat-row *matRowDef="let row; columns: ['modif1']" class="example-detail-row"></tr>
                     </table>
                 </mat-tab>
-                <mat-tab label="Metré des travaux">
+                <mat-tab  [label]="label_tab2()">
             
                 </mat-tab>
             

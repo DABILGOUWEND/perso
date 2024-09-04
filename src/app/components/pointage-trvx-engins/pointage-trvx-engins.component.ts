@@ -41,12 +41,12 @@ export class PointageTrvxEnginsComponent implements OnInit {
   pointage_machines = signal<pointMachine[]>([]);
   duree = signal(0);
   engin = signal("");
-  date = signal('03/09/2024');
+  date = signal('');
   projetId = signal("");
   donnees_pointage_engins = signal<pointage_machine[]>([]);
   numeros = signal(0);
   label_tab1 = signal("Pointage des engins");
-
+  label_tab2 = signal("Metré des taches");
   // computed properties
   selected_pointage = computed(() => {
     return this._pointage_trvx_store.donnees_pointage_trvx();
@@ -278,6 +278,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   selectDate(event: MatDatepickerInputEvent<any>) {
     this.date.set(event.value.toLocaleDateString());
     this._pointage_trvx_store.filtrebyDate(event.value.toLocaleDateString());
-    this.label_tab1.set("Pointage des engins au " + this.date())
+    this.label_tab1.set("Pointage des engins au " + this.date());
+    this.label_tab2.set("Metré des taches au " + this.date())
   }
 }
