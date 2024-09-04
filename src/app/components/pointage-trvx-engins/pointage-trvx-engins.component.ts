@@ -149,6 +149,10 @@ export class PointageTrvxEnginsComponent implements OnInit {
     this._tachesProjetStore.loadTachesProjet();
   }
   ajouter(data: any) {
+    this.current_row.set([]);
+    this.modif_row.set([]);
+    this.duree.set(0);
+    this.engin.set('');
     let element = this.donnees_pointage_machines().filter((pointage) =>
       pointage.tache_id == data.tache_id && pointage.type == "enfant"
     );
@@ -280,5 +284,9 @@ export class PointageTrvxEnginsComponent implements OnInit {
     this._pointage_trvx_store.filtrebyDate(event.value.toLocaleDateString());
     this.label_tab1.set("Pointage des engins au " + this.date());
     this.label_tab2.set("Metré des taches au " + this.date())
+  }
+  annuler() {
+    this.current_row.set([]);
+    this.modif_row.set([]);
   }
 }

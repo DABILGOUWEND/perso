@@ -28,7 +28,7 @@
                 </mat-form-field>
 
                 <button mat-flat-button (click)="initialiser()"
-                    [disabled]="_pointage_trvx_store.donnees_pointage_trvx()!=undefined ||projetId()==''">
+                    [disabled]="_pointage_trvx_store.donnees_pointage_trvx()!=undefined ||projetId()=='' || date()==''">
                     Nouveau</button>
             </div>
         </div>
@@ -65,7 +65,7 @@
                                 <button mat-icon-button (click)="ajouter(element)"> <mat-icon>add</mat-icon></button>
                                 }@else
                                 {
-                                <button mat-icon-button (click)="edit_element(element)"> <mat-icon>edit</mat-icon></button>
+                                <button mat-icon-button (click)="edit_element(element)" > <mat-icon>edit</mat-icon></button>
                                 <button mat-icon-button (click)="remove_tache_engin(element)"> <mat-icon>delete</mat-icon></button>
                                 }
                             </td>
@@ -94,7 +94,8 @@
                                         </mat-form-field>
                                     </div>
                                     <div class="part3">
-                                        <button mat-icon-button (click)="ajout_tache()"> <mat-icon>save</mat-icon></button>
+                                        <button mat-flat-button (click)="ajout_tache()" color="primary" [disabled]="engin()=='' || duree()==0"> Enregistrer</button>
+                                        <button mat-flat-button (click)="annuler()" color="warn"> Annuler</button>
                                     </div>
                                 </div>
                                 }
@@ -125,7 +126,8 @@
                                         </mat-form-field>
                                     </div>
                                     <div class="part3">
-                                        <button mat-icon-button (click)="update_tache_engin()"> <mat-icon>save</mat-icon></button>
+                                        <button mat-flat-button (click)="update_tache_engin()" color="primary" [disabled]="engin()==''  || duree()==0">  Modifier</button>
+                                        <button mat-flat-button (click)="annuler()" color="warn"> Annuler</button>
                                     </div>
                                 </div>
                                 }
