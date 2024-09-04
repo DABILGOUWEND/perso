@@ -3370,3 +3370,40 @@ tr.example-element-row:not(.example-expanded-row):active {
 .hidden {
   display: none;
 }
+.row_table{
+  display: flex;
+  padding-top: 20px;
+  padding-bottom: 5px;
+  .part1{
+    width: 40%;
+    mat-label{
+      font-size: 24px;
+      font-weight: bold;
+    }
+    mat-form-field {
+      width: 90%;
+      margin-left: 5px;
+      margin-right: 5px;
+      font-size: 22px;
+    }
+  }
+  .part2{
+    width: 30%;
+    mat-label{
+      font-size: 24px;
+      font-weight: bold;
+    }
+    mat-form-field {
+      width: 90%;
+      margin-left: 5px;
+      margin-right: 5px;
+      font-size: 22px;
+    }
+  }
+  .part3{
+    width: 30%;
+    button{margin-left: 10px;
+      margin-top: 20px;
+    }
+  }
+}

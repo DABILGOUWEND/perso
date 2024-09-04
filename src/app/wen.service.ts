@@ -841,6 +841,17 @@ export class WenService {
     const promise = setDoc(docRef, data)
     return from(promise)
   }
+  updateByMachine( data_machine: any): Observable<void> {
+    const docRef1 = doc(this.db, 'pointage_trvx/' + data_machine.id)
+    const docRef = updateDoc(docRef1, {
+      engin_id: data_machine.engin_id,
+      duree: data_machine.duree,
+      tache_id: data_machine.tache_id
+    }).then
+      (response => { }
+      )
+    return from(docRef)
+  }
 
   //taches projet
   getAllTachesProjet(): Observable<taches_projet[]> {
@@ -867,8 +878,8 @@ export class WenService {
     return from(promise)
   }
   //
-   //entreprises
-   getAllEntreprises(): Observable<Entreprise[]> {
+  //entreprises
+  getAllEntreprises(): Observable<Entreprise[]> {
     const Collection = collection(this.db, 'entreprises')
     return collectionData(Collection, { idField: 'id' }) as Observable<Entreprise[]>
   }
@@ -916,7 +927,7 @@ export class WenService {
     const promise = setDoc(docRef, data)
     return from(promise)
   }
-  
+
   convertDate(strdate: string): Date {
     const [day1, month1, year1] = strdate.split("/")
     const date1 = new Date(+year1, +month1 - 1, +day1)

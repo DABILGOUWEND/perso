@@ -1,6 +1,6 @@
 import { computed, inject } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Observable, forkJoin, pipe, switchMap, tap } from "rxjs";
+import { Observable, forkJoin, of, pipe, switchMap, tap } from "rxjs";
 import {
     gasoilStore, tab_ProjetStore, ApprogoStore, Tab_EnginsStore,
     Tab_classeEnginsStore, Tab_personnelStore, tab_SoustraitantStore, tab_PannesStore,
@@ -242,7 +242,8 @@ const initialPointageTrvxState: tab_pointage_travauxStore =
     message: '',
     pointage_data: [],
     selectedDate: '',
-    selectedProjetId: ''
+    selectedProjetId: '',
+    pointage_mach: []
 }
 export const ProjetStore = signalStore(
     { providedIn: 'root' },
@@ -3191,10 +3192,10 @@ export const PointageTrvxStore = signalStore(
         {
             taille: computed(() => store.pointage_data().length),
             donnees_pointage_trvx: computed(() => {
-                let date=store.selectedDate();
-                let projet_id=store.selectedProjetId();
-                return store.pointage_data().find(x=>
-                    x.date==date && x.projetId==projet_id
+                let date = store.selectedDate();
+                let projet_id = store.selectedProjetId();
+                return store.pointage_data().find(x =>
+                    x.date == date && x.projetId == projet_id
                 );
             })
         }
@@ -3212,29 +3213,24 @@ export const PointageTrvxStore = signalStore(
             loadPointageTrvx: rxMethod<void>(pipe(switchMap(() => {
                 return monservice.getAllPointage_travaux().pipe(
                     tap((data) => {
+
                         let mydata: pointage_travaux[] = [];
                         data.forEach(element => {
                             let pointage_mach: any = [];
-                            let engins_id = element.engins_id;
+                            let engins_id = element.engin_id;
                             let tache_id = element.tache_id;
                             let duree = element.duree;
                             for (let i in engins_id) {
                                 let myuuid = uuidv4();
                                 pointage_mach.push({
                                     'id': myuuid,
-                                    'engins_id': engins_id[i],
-                                    'tache_id': tache_id[i],
-                                    'duree': duree[i]
-                                })
-                                pointage_mach.push({
-                                    'id': i,
-                                    'engins_id': engins_id[i],
+                                    'engin_id': engins_id[i],
                                     'tache_id': tache_id[i],
                                     'duree': duree[i]
                                 })
                             }
                             let metre_travaux: any = [];
-                            
+
                             let tache_projet_Id = element.tache_projet_id;
                             let taches_projet_exec = element.quantite_exec;
                             for (let i in tache_projet_Id) {
@@ -3298,6 +3294,20 @@ export const PointageTrvxStore = signalStore(
                                 data[index] = entreprise
                                 patchState(store, { pointage_data: data })
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                            }, error: () => {
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+            updatePointageMach: rxMethod<any>(pipe(
+                switchMap((entreprise) => {
+                    return monservice.updateByMachine(entreprise).pipe(
+                        tap({
+                            next: () => {
+                                //Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
                             }

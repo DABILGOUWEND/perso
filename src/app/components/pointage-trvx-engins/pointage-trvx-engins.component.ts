@@ -22,7 +22,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   // constructor
   constructor() {
     effect(() => {
-      //console.log(this.donnees_pointage_engins())
+
     });
   }
 
@@ -39,8 +39,8 @@ export class PointageTrvxEnginsComponent implements OnInit {
   pointage_machines = signal<pointMachine[]>([]);
   duree = signal(0);
   engin = signal("");
-  date = signal(new Date().toLocaleDateString());
-  projetId = signal("7mn80ei1Tryv5M92bJGw");
+  date = signal('03/09/2024');
+  projetId = signal("");
   donnees_pointage_engins = signal<pointage_machine[]>([]);
   numeros = signal(0);
 
@@ -55,11 +55,11 @@ export class PointageTrvxEnginsComponent implements OnInit {
         nom: projet.intitule
       }
     });
-
   });
 
   donnees_pointage_machines = computed(() => {
-    let pointMac = this.donnees_pointage_engins();
+    let mydata = this._pointage_trvx_store.donnees_pointage_trvx();
+    let pointMac = mydata?.pointage_mach;
     let tableau: any[] = [];
     this.titre_taches.forEach(element0 => {
       let myuuid = uuidv4();
@@ -143,44 +143,33 @@ export class PointageTrvxEnginsComponent implements OnInit {
     this._taches_engins_store.loadTachesEngins();
     this._classes_engins_store.loadclasses();
     this._tachesProjetStore.loadTachesProjet();
-
-    this._pointage_trvx_store.filtrebyDate('01/09/2024');
-    this._pointage_trvx_store.filtrebyProjetId('7mn80ei1Tryv5M92bJGw');
-    if (this.selected_pointage() !== undefined) {
-      let donnees = this.selected_pointage()?.pointage_mach
-      if (donnees) {
-        this.donnees_pointage_engins.set(donnees);
-      }
-    }
-
   }
   ajouter(data: any) {
-        let element = this.donnees_pointage_machines().filter((pointage) =>
-          pointage.tache_id == data.tache_id && pointage.type == "enfant"
-        );
-        if (element.length == 0) {
-          this.current_row.set(data);
-        }
-        else {
-          let lg = element.length;
-          this.current_row.set(element[lg - 1]);
-        } 
+    let element = this.donnees_pointage_machines().filter((pointage) =>
+      pointage.tache_id == data.tache_id && pointage.type == "enfant"
+    );
+    if (element.length == 0) {
+      this.current_row.set(data);
+    }
+    else {
+      let lg = element.length;
+      this.current_row.set(element[lg - 1]);
+    }
   }
   ajout_tache() {
     let current_point_mach = this._pointage_trvx_store.donnees_pointage_trvx()?.pointage_mach;
     if (current_point_mach) {
-      this._pointage_trvx_store.updatePointageTrvx({
+      this._pointage_trvx_store.updatePointageMach({
         id: this.selected_pointage()?.id,
-        projetId: this.projetId(),
-        date: this.date(),
-        tache_id: [...current_point_mach.map(x => x.tache_id), this.current_row().id],
+        tache_id: [...current_point_mach.map(x => x.tache_id), this.current_row().tache_id],
         engin_id: [...current_point_mach.map(x => x.engin_id), this.engin()],
-        duree: [...current_point_mach.map(x => x.duree), this.duree],
-        quantite_exec: this.tache_projet_quantiteExec()?.map(x => x.quantite),
+        duree: [...current_point_mach.map(x => x.duree), this.duree()]
       })
     } else {
 
     }
+    this.duree.set(0);
+    this.engin.set('');
     this.current_row.set([]);
   }
   initialiser() {
@@ -194,20 +183,53 @@ export class PointageTrvxEnginsComponent implements OnInit {
       quantite_exec: this.tache_projet_Ids().map(x => 0),
     });
   }
-  edif_element(data: any) {
+  modif_data() {
+    this._pointage_trvx_store.updatePointageTrvx({
+      id: this.selected_pointage()?.id,
+      projetId: this.projetId(),
+      date: this.date(),
+      tache_id: this.donnees_pointage_engins().map(x => x.tache_id),
+      engin_id: this.donnees_pointage_engins().map(x => x.engin_id),
+      duree: this.donnees_pointage_engins().map(x => x.duree),
+      tache_projet_id: this.tache_projet_Ids(),
+      quantite_exec: this.tache_projet_Ids().map(x => 0),
+    });
+  }
+  edit_element(data: any) {
     this.modif_row.set(data);
     this.duree.set(data.duree);
     this.engin.set(data.engin_id);
   }
   update_tache_engin() {
-    this.donnees_pointage_engins.update(donnees => donnees.map(
-      item => (item.id == this.modif_row().id) ? {
-        id: this.modif_row().id,  
-        duree: this.duree(),
-        engin_id: this.engin(),
-        tache_id: this.modif_row().tache_id
-      } : item));
+    let current_point_mach = this.selected_pointage()?.pointage_mach;
+    console.log(current_point_mach)
+    if (current_point_mach) {
+      let duree = current_point_mach.map(item =>
+        item.id == this.modif_row().id ?
+          this.duree()
+          : item.duree
+      );
+      let engin_id = current_point_mach.map(item =>
+        item.id == this.modif_row().id ?
+          this.engin()
+          : item.engin_id
+      );
+      let tache_id = current_point_mach.map(item =>
+        item.id == this.modif_row().id ?
+          this.modif_row().tache_id
+          : item.tache_id
+      );
+
+      this._pointage_trvx_store.updatePointageMach({
+        id: this.selected_pointage()?.id,
+        tache_id: tache_id,
+        engin_id: engin_id,
+        duree: duree
+      })
+    }
     this.modif_row.set([]);
+    this.duree.set(0);
+    this.engin.set('');
   }
 
   add_tache_engin() {
@@ -215,15 +237,38 @@ export class PointageTrvxEnginsComponent implements OnInit {
     this.donnees_pointage_engins.update(donnees => [...donnees,
     {
       id: myuuid,
-      duree:this.duree(),
+      duree: this.duree(),
       engin_id: this.engin(),
       tache_id: this.current_row().tache_id,
     }]);
+    this.modif_data()
   }
   remove_tache_engin(data: any) {
-    if (confirm('voulez-vous supprimer cet élement?'))
-    this.donnees_pointage_engins.update(donnees => donnees.filter(
-      item => item.id !== data.id)
-    )
+    if (confirm('voulez-vous supprimer cet élement?')) {
+      let current_point_mach = this.selected_pointage()?.pointage_mach;
+      if (current_point_mach) {
+        let duree = current_point_mach.filter(x => x.id != data.id).map(item =>
+          item.duree
+        );
+        let engin_id = current_point_mach.filter(x => x.id != data.id).map(item =>
+          item.engin_id
+        );
+        let tache_id = current_point_mach.filter(x => x.id != data.id).map(item =>
+          item.tache_id
+        );
+
+        this._pointage_trvx_store.updatePointageMach({
+          id: this.selected_pointage()?.id,
+          tache_id: tache_id,
+          engin_id: engin_id,
+          duree: duree
+        })
+      }
+    }
+  }
+  selectedChange(data: any) {
+    this.projetId.set(data);
+    this._pointage_trvx_store.filtrebyProjetId(data);
+    this._pointage_trvx_store.filtrebyDate(this.date());
   }
 }
