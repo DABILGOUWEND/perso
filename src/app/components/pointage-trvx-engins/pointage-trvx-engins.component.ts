@@ -6,6 +6,8 @@ import { EssaiComponent } from '../essai/essai.component';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
 import { pointage_machine } from '../../models/modeles';
 import { v4 as uuidv4 } from 'uuid';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { sign } from 'crypto';
 type pointMachine = {
   'tacheId': number,
   'engin_id': string,
@@ -43,6 +45,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   projetId = signal("");
   donnees_pointage_engins = signal<pointage_machine[]>([]);
   numeros = signal(0);
+  label_tab1 = signal("Pointage des engins");
 
   // computed properties
   selected_pointage = computed(() => {
@@ -61,17 +64,17 @@ export class PointageTrvxEnginsComponent implements OnInit {
     let mydata = this._pointage_trvx_store.donnees_pointage_trvx();
     let pointMac = mydata?.pointage_mach;
     let tableau: any[] = [];
-    this.titre_taches.forEach(element0 => {
-      let myuuid = uuidv4();
-      tableau.push({
-        id: myuuid,
-        tache_id: element0.id,
-        engin: element0.nom,
-        engin_id: "",
-        duree: 0,
-        type: "parent"
-      });
-      if (pointMac) {
+    if (pointMac) {
+      this.titre_taches.forEach(element0 => {
+        let myuuid = uuidv4();
+        tableau.push({
+          id: myuuid,
+          tache_id: element0.id,
+          engin: element0.nom,
+          engin_id: "",
+          duree: 0,
+          type: "parent"
+        });
         let pointmach = pointMac.filter((pointage) => {
           return pointage.tache_id == element0.id
         });
@@ -89,9 +92,10 @@ export class PointageTrvxEnginsComponent implements OnInit {
           }
           )
         });
-      }
 
-    })
+
+      })
+    }
     return tableau;
   });
 
@@ -270,5 +274,10 @@ export class PointageTrvxEnginsComponent implements OnInit {
     this.projetId.set(data);
     this._pointage_trvx_store.filtrebyProjetId(data);
     this._pointage_trvx_store.filtrebyDate(this.date());
+  }
+  selectDate(event: MatDatepickerInputEvent<any>) {
+    this.date.set(event.value.toLocaleDateString());
+    this._pointage_trvx_store.filtrebyDate(event.value.toLocaleDateString());
+    this.label_tab1.set("Pointage des engins au " + this.date())
   }
 }
