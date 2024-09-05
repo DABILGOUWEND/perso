@@ -3315,6 +3315,20 @@ export const PointageTrvxStore = signalStore(
                         )
                     )
                 })
+            )),
+            updatePointageMetre: rxMethod<any>(pipe(
+                switchMap((donnees) => {
+                    return monservice.updateByMachine(donnees).pipe(
+                        tap({
+                            next: () => {
+                                //Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                            }, error: () => {
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
             ))
 
         }

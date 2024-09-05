@@ -56,8 +56,8 @@ export class PointageTrvxEnginsComponent implements OnInit {
   current_row = signal<any>([]);
   modif_row = signal<any>([]);
   current_row_metre = signal<any>([]);
-  quantite=signal(0);
-  
+  quantite = signal(0);
+
 
   // computed properties
   selected_pointage = computed(() => {
@@ -277,7 +277,6 @@ export class PointageTrvxEnginsComponent implements OnInit {
   }
   update_tache_engin() {
     let current_point_mach = this.selected_pointage()?.pointage_mach;
-    console.log(current_point_mach)
     if (current_point_mach) {
       let duree = current_point_mach.map(item =>
         item.id == this.modif_row().id ?
@@ -366,8 +365,21 @@ export class PointageTrvxEnginsComponent implements OnInit {
   annuler_metre(data: any) {
     this.current_row_metre.set([]);
   }
-  update_metre(data:any)
-  {
+  ajout_metre(data: any) {
+    let current_metre = this._pointage_trvx_store.donnees_pointage_trvx()?.metre_travaux;
+    if (current_metre) {
+      let quantite = current_metre.map(item =>
+        item.tache_projet_id == data.tache_projet_id ?
+          this.quantite()
+          : item.quantite_exec
+      );
 
+      this._pointage_trvx_store.updatePointageMetre({
+        id: this.selected_pointage()?.id,
+        quantite_exec: quantite
+      })
+      this.quantite.set(0);
+      this.current_row_metre.set([]);
+    }
   }
 }
