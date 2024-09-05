@@ -3231,12 +3231,12 @@ export const PointageTrvxStore = signalStore(
                             }
                             let metre_travaux: any = [];
 
-                            let tache_projet_Id = element.tache_projet_id;
+                            let tache_projet_id = element.tache_projet_id;
                             let taches_projet_exec = element.quantite_exec;
-                            for (let i in tache_projet_Id) {
+                            for (let i in tache_projet_id) {
                                 metre_travaux.push({
-                                    'tache_projet_Id': tache_projet_Id[i],
-                                    'taches_projet_exec': taches_projet_exec[i]
+                                    'tache_projet_id': tache_projet_id[i],
+                                    'quantite_exec': taches_projet_exec[i]
                                 })
                             }
                             mydata.push({

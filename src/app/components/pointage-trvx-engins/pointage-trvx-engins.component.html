@@ -16,8 +16,8 @@
 
                 <mat-form-field class="example-form-field">
                     <mat-label>Choisir une date</mat-label>
-                    <input matInput [matDatepicker]="datepicker" (dateInput)="selectDate( $event)"
-                        [ngModel]="date" placeholder="DATE">
+                    <input matInput [matDatepicker]="datepicker" (dateInput)="selectDate( $event)" [ngModel]="date"
+                        placeholder="DATE">
                     <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
                     <mat-datepicker #datepicker>
                         <mat-datepicker-actions>
@@ -27,19 +27,19 @@
                     </mat-datepicker>
                 </mat-form-field>
 
-                <button mat-flat-button (click)="initialiser()"
-                    [disabled]="_pointage_trvx_store.donnees_pointage_trvx()!=undefined ||projetId()=='' || date()==''">
+                <button mat-flat-button (click)="initialiser()" [disabled]="
+                (_pointage_trvx_store.donnees_pointage_trvx()!=undefined ||
+                    projetId()=='' || date()=='' ) || !projet_ids().includes(projetId())">
                     Nouveau</button>
             </div>
         </div>
         <div class="content_body">
-            <mat-tab-group fitInkBarToContent>
-                <mat-tab [label]="label_tab1()" >
-            
+            <mat-tab-group (selectedIndexChange)="selectData($event)">
+                <mat-tab [label]="label_tab1()">
                     <table mat-table [dataSource]="datasource()" class="wen-table" multiTemplateDataRows>
                         <ng-container matColumnDef="engin">
                             <th mat-header-cell *matHeaderCellDef> ENGIN
-            
+
                             </th>
                             <td mat-cell *matCellDef="let element;" [ngClass]="{
                             'decal0':element.type=='enfant'}">
@@ -65,12 +65,14 @@
                                 <button mat-icon-button (click)="ajouter(element)"> <mat-icon>add</mat-icon></button>
                                 }@else
                                 {
-                                <button mat-icon-button (click)="edit_element(element)" > <mat-icon>edit</mat-icon></button>
-                                <button mat-icon-button (click)="remove_tache_engin(element)"> <mat-icon>delete</mat-icon></button>
+                                <button mat-icon-button (click)="edit_element(element)">
+                                    <mat-icon>edit</mat-icon></button>
+                                <button mat-icon-button (click)="remove_tache_engin(element)">
+                                    <mat-icon>delete</mat-icon></button>
                                 }
                             </td>
                         </ng-container>
-            
+
                         <ng-container matColumnDef="expan1">
                             <td mat-cell *matCellDef="let element" colspan="3">
                                 @if(current_row()==element )
@@ -80,26 +82,30 @@
                                         <mat-form-field>
                                             <mat-label>Engin</mat-label>
                                             <mat-select [(ngModel)]="engin">
-                                                <mat-option *ngFor="let engin of _engins_store.donnees_engins()" [value]="engin.id">
+                                                @for( engin of element.list;track engin.id)
+                                                {
+                                                <mat-option [value]="engin.id">
                                                     {{engin.designation+" "+engin.code_parc}}
                                                 </mat-option>
+                                                }
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
                                     <div class="part2">
                                         <mat-form-field>
                                             <mat-label>Durée</mat-label>
-                                            <input matInput [(ngModel)]="duree" type="number" placeholder="Durée travail"
-                                                value="{{element.duree}}">
+                                            <input matInput [(ngModel)]="duree" type="number"
+                                                placeholder="Durée travail" value="{{element.duree}}">
                                         </mat-form-field>
                                     </div>
                                     <div class="part3">
-                                        <button mat-flat-button (click)="ajout_tache()" color="primary" [disabled]="engin()=='' || duree()==0"> Enregistrer</button>
+                                        <button mat-flat-button (click)="ajout_tache()" color="primary"
+                                            [disabled]="engin()=='' || duree()==0"> Enregistrer</button>
                                         <button mat-flat-button (click)="annuler()" color="warn"> Annuler</button>
                                     </div>
                                 </div>
                                 }
-            
+
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="modif1">
@@ -112,47 +118,119 @@
                                         <mat-form-field>
                                             <mat-label>Engin</mat-label>
                                             <mat-select [(value)]="engin">
-                                                <mat-option *ngFor="let engin of _engins_store.donnees_engins()" [value]="engin.id">
+                                                @for( engin of element.list;track engin.id)
+                                                {
+                                                <mat-option [value]="engin.id">
                                                     {{engin.designation+" "+engin.code_parc}}
                                                 </mat-option>
+                                                }
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
                                     <div class="part2">
                                         <mat-form-field>
                                             <mat-label>Durée</mat-label>
-                                            <input matInput [(ngModel)]="duree" type="number" placeholder="Durée travail"
-                                                value="{{element.duree}}">
+                                            <input matInput [(ngModel)]="duree" type="number"
+                                                placeholder="Durée travail" value="{{element.duree}}">
                                         </mat-form-field>
                                     </div>
                                     <div class="part3">
-                                        <button mat-flat-button (click)="update_tache_engin()" color="primary" [disabled]="engin()==''  || duree()==0">  Modifier</button>
+                                        <button mat-flat-button (click)="update_tache_engin()" color="primary"
+                                            [disabled]="engin()==''  || duree()==0"> Modifier</button>
                                         <button mat-flat-button (click)="annuler()" color="warn"> Annuler</button>
                                     </div>
                                 </div>
                                 }
                             </td>
                         </ng-container>
-            
-            
+
+
                         <tr mat-header-row *matHeaderRowDef="taches_machineColumnsStr"></tr>
                         <tr mat-row *matRowDef="let element; columns: taches_machineColumnsStr;"
-                            [ngClass]="{'classe_parent0':element.type=='parent'}" [class.hidden]="modif_row()==element"></tr>
+                            [ngClass]="{'classe_parent0':element.type=='parent'}" [class.hidden]="modif_row()==element">
+                        </tr>
                         <tr mat-row *matRowDef="let row; columns: ['expan1']" class="example-detail-row"></tr>
                         <tr mat-row *matRowDef="let row; columns: ['modif1']" class="example-detail-row"></tr>
                     </table>
                 </mat-tab>
-                <mat-tab  [label]="label_tab2()">
-            
+                <mat-tab [label]="label_tab2()">
+                    <div *ngIf="selected_tab()==1">
+                        <table mat-table [dataSource]="datasource_metre()" class="wen-table" multiTemplateDataRows>
+                            <ng-container matColumnDef="tache">
+                                <th mat-header-cell *matHeaderCellDef> TACHE
+
+                                </th>
+                                <td mat-cell *matCellDef="let element">
+                                    {{element.tache}}
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="unite">
+                                <th mat-header-cell *matHeaderCellDef> UNITE
+                                </th>
+                                <td mat-cell *matCellDef="let element">
+                                    {{element.unite}}
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="quantite_dqe">
+                                <th mat-header-cell *matHeaderCellDef> QUANTITE DQE
+                                </th>
+                                <td mat-cell *matCellDef="let element">
+                                    {{element.quantite_dqe}}
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="quantite_exec">
+                                <th mat-header-cell *matHeaderCellDef> QUANTITE CUMULEE
+                                </th>
+                                <td mat-cell *matCellDef="let element">
+                                    {{element.quantite_exec}}
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="quantite">
+                                <th mat-header-cell *matHeaderCellDef> QUANTITE
+                                </th>
+                                <td mat-cell *matCellDef="let element">
+                                    @if(current_row_metre()==element )
+                                    {
+                                    <mat-form-field>
+                                        <input matInput [(ngModel)]="quantite" type="number" placeholder="quantite"
+                                            value="{{element.quantite}}">
+                                    </mat-form-field>
+                                    }@else {
+                                    {{element.quantite}}
+                                    }
+
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="actions">
+                                <th mat-header-cell *matHeaderCellDef>
+                                </th>
+                               
+                                <td mat-cell *matCellDef="let element">
+                                    @if(current_row_metre()==element )
+                                    {<button mat-flat-button (click)="update_metre(element)" [disabled]="quantite()==0 ||quantite()==null">
+                                        Modifier</button> 
+
+                                        <button mat-flat-button (click)="annuler_metre(element)" color="warn">
+                                            Annuler</button> 
+                                      }@else
+                                    {  
+                                        <button mat-icon-button (click)="modif_metre(element)">
+                                            <mat-icon>edit</mat-icon></button>
+                                     }
+                                    
+                                </td>
+                            </ng-container>
+
+                            <tr mat-header-row *matHeaderRowDef="metreColumnsStr"></tr>
+                            <tr mat-row *matRowDef="let element; columns: metreColumnsStr">
+                            </tr>
+                        </table>
+                    </div>
+
                 </mat-tab>
-            
+
             </mat-tab-group>
         </div>
     </mat-drawer-content>
 </mat-drawer-container>
-
-
-
-
-
-
