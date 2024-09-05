@@ -852,6 +852,15 @@ export class WenService {
       )
     return from(docRef)
   }
+  updateByMetre( data_metre: any): Observable<void> {
+    const docRef1 = doc(this.db, 'pointage_trvx/' + data_metre.id)
+    const docRef = updateDoc(docRef1, {
+      quantite_exec: data_metre.quantite_exec
+    }).then
+      (response => { }
+      )
+    return from(docRef)
+  }
 
   //taches projet
   getAllTachesProjet(): Observable<taches_projet[]> {
