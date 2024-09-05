@@ -369,7 +369,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
     let current_metre = this._pointage_trvx_store.donnees_pointage_trvx()?.metre_travaux;
     if (current_metre) {
       let quantite = current_metre.map(item =>
-        item.tache_projet_id == data.tache_projet_id ?
+        item.tache_projet_id == data.id ?
           this.quantite()
           : item.quantite_exec
       );
