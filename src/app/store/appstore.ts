@@ -3318,7 +3318,7 @@ export const PointageTrvxStore = signalStore(
             )),
             updatePointageMetre: rxMethod<any>(pipe(
                 switchMap((donnees) => {
-                    return monservice.updateByMachine(donnees).pipe(
+                    return monservice.updateByMetre(donnees).pipe(
                         tap({
                             next: () => {
                                 //Showsnackerbaralert('modifié avec succes', 'pass', snackbar)

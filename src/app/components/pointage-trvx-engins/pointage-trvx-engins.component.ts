@@ -7,13 +7,8 @@ import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
 import { pointage_machine } from '../../models/modeles';
 import { v4 as uuidv4 } from 'uuid';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { sign } from 'crypto';
 import { WenService } from '../../wen.service';
-type pointMachine = {
-  'tacheId': number,
-  'engin_id': string,
-  'duree': number
-};
+
 @Component({
   selector: 'app-pointage-trvx-engins',
   standalone: true,
@@ -25,7 +20,6 @@ export class PointageTrvxEnginsComponent implements OnInit {
   // constructor
   constructor() {
     effect(() => {
-      console.log(this.donnees_metre())
     });
   }
 
@@ -41,14 +35,12 @@ export class PointageTrvxEnginsComponent implements OnInit {
   _service = inject(WenService);
 
   //signals
-  selected_projet_id = signal("");
-  pointage_machines = signal<pointMachine[]>([]);
+  selected_projet_id = signal('');
   duree = signal(0);
-  engin = signal("");
+  engin = signal('');
   date = signal('');
-  projetId = signal("");
-  donnees_pointage_engins = signal<pointage_machine[]>([]);
-  numeros = signal(0);
+  quantite = signal(0);
+  projetId = signal('');
   label_tab1 = signal("Pointage des engins");
   label_tab2 = signal("Metré des taches");
   projet_ids = signal<string[]>([]);
@@ -56,27 +48,17 @@ export class PointageTrvxEnginsComponent implements OnInit {
   current_row = signal<any>([]);
   modif_row = signal<any>([]);
   current_row_metre = signal<any>([]);
-  quantite = signal(0);
 
 
   // computed properties
   selected_pointage = computed(() => {
     return this._pointage_trvx_store.donnees_pointage_trvx();
   });
-  donnees_projet = computed(() => {
-    return this._projet_store.donnees_projet().map((projet) => {
-      return {
-        id: projet.id,
-        nom: projet.intitule
-      }
-    });
-  });
   quantite_exec = computed(() => {
     let data = this._pointage_trvx_store.pointage_data().filter(x => x.projetId == this.projetId() &&
       this._service.convertDate(x.date).getTime() <= this._service.convertDate(this.date()).getTime());
-    let ids = this.tache_projet_quantiteExec()?.map(x => x.id);
     let tableau: any[] = [];
-    ids?.forEach(element => {
+   this.tache_projet_Ids().forEach(element => {
       let sum = 0;
       data.forEach(element1 => {
         let quantite = element1.metre_travaux.map(x => x.quantite_exec);
@@ -108,9 +90,9 @@ export class PointageTrvxEnginsComponent implements OnInit {
           id: element.tache_projet_id,
           tache: tache?.designation,
           unite: unite,
-          quantite_dqe: tache_projet?.quantiteDqe,
-          quantite_exec: cumul,
-          quantite: element.quantite_exec,
+          quantite_dqe: (tache_projet?.quantiteDqe)?.toFixed(2),
+          quantite_exec: cumul.toFixed(2),
+          quantite: element.quantite_exec.toFixed(2),
         });
       });
     }
@@ -167,17 +149,6 @@ export class PointageTrvxEnginsComponent implements OnInit {
     }
     ).map(x => x.id);
   });
-  tache_projet_quantiteExec = computed(() => {
-    let selected_taches_projet = this.selected_pointage()?.metre_travaux;
-    return selected_taches_projet?.map(x => {
-      return {
-        id: x.tache_projet_id,
-        quantite: x.quantite_exec
-      }
-    })
-  }
-  );
-
   datasource = computed(
     () => new MatTableDataSource(this.donnees_pointage_machines()),
   );
@@ -185,9 +156,8 @@ export class PointageTrvxEnginsComponent implements OnInit {
     () => new MatTableDataSource(this.donnees_metre()),
   );
   //simples properties
-
   taches_machineColumnsStr = ["engin", "duree", "actions"];
-  metreColumnsStr = ["tache", "unite", "quantite_dqe", "quantite_exec", "quantite", "actions"];
+  metreColumnsStr = ["tache", "unite", "quantite_dqe",  "quantite","quantite_exec", "actions"];
   titre_taches = [
     { id: "1", identifiant: ["E8XQLrBOG1oXBTelHa8y", "oe39MfblrBDc9ny2yEvS"], nom: "Gerbages emprunt" },
     { id: "2", identifiant: ["E8XQLrBOG1oXBTelHa8y", "itL1Zri5sjGN9bynkpUw"], nom: "Débrousaillage" },
@@ -213,7 +183,6 @@ export class PointageTrvxEnginsComponent implements OnInit {
     this._tachesProjetStore.loadTachesProjet();
     this._taches.loadTaches();
     this._unites_store.loadUnites();
-
   }
   ajouter(data: any) {
     this.current_row.set([]);
@@ -258,18 +227,6 @@ export class PointageTrvxEnginsComponent implements OnInit {
       quantite_exec: this.tache_projet_Ids().map(x => 0),
     });
   }
-  modif_data() {
-    this._pointage_trvx_store.updatePointageTrvx({
-      id: this.selected_pointage()?.id,
-      projetId: this.projetId(),
-      date: this.date(),
-      tache_id: this.donnees_pointage_engins().map(x => x.tache_id),
-      engin_id: this.donnees_pointage_engins().map(x => x.engin_id),
-      duree: this.donnees_pointage_engins().map(x => x.duree),
-      tache_projet_id: this.tache_projet_Ids(),
-      quantite_exec: this.tache_projet_Ids().map(x => 0),
-    });
-  }
   edit_element(data: any) {
     this.modif_row.set(data);
     this.duree.set(data.duree);
@@ -306,17 +263,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
     this.engin.set('');
   }
 
-  add_tache_engin() {
-    let myuuid = uuidv4();
-    this.donnees_pointage_engins.update(donnees => [...donnees,
-    {
-      id: myuuid,
-      duree: this.duree(),
-      engin_id: this.engin(),
-      tache_id: this.current_row().tache_id,
-    }]);
-    this.modif_data()
-  }
+
   remove_tache_engin(data: any) {
     if (confirm('voulez-vous supprimer cet élement?')) {
       let current_point_mach = this.selected_pointage()?.pointage_mach;
@@ -361,6 +308,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   }
   modif_metre(data: any) {
     this.current_row_metre.set(data);
+    this.quantite.set(data.quantite);
   }
   annuler_metre(data: any) {
     this.current_row_metre.set([]);
