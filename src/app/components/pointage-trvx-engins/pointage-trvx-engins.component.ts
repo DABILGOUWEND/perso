@@ -53,7 +53,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   // computed properties
   selected_pointage = computed(() => {
     return this._pointage_trvx_store.donnees_pointage_trvx();
-  });
+  })
   quantite_exec = computed(() => {
     let data = this._pointage_trvx_store.pointage_data().filter(x => x.projetId == this.projetId() &&
       this._service.convertDate(x.date).getTime() <= this._service.convertDate(this.date()).getTime());
@@ -76,7 +76,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
     })
     return tableau;
 
-  });
+  })
   donnees_metre = computed(() => {
     let tableau: any[] = [];
     let selected_taches_projet = this.selected_pointage()?.metre_travaux;
@@ -141,20 +141,20 @@ export class PointageTrvxEnginsComponent implements OnInit {
       })
     }
     return tableau;
-  });
+  })
 
   tache_projet_Ids = computed(() => {
     return this._tachesProjetStore.taches_data().filter(x => {
       return x.projetId == this.projetId();
     }
     ).map(x => x.id);
-  });
+  })
   datasource = computed(
     () => new MatTableDataSource(this.donnees_pointage_machines()),
-  );
+  )
   datasource_metre = computed(
     () => new MatTableDataSource(this.donnees_metre()),
-  );
+  )
   //simples properties
   taches_machineColumnsStr = ["engin", "duree", "actions"];
   metreColumnsStr = ["tache", "unite", "quantite_dqe",  "quantite","quantite_exec", "actions"];
