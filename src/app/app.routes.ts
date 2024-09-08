@@ -21,7 +21,7 @@ import { TacheProjetStore } from './store/appstore';
 import { TableauBordComponent } from './components/tableau-bord/tableau-bord.component';
 
 export const routes: Routes = [{ 
-    path: "", component: AccueilComponent },
+    path: "", component: TableauBordComponent },
 {
     path: 'accueil', component: AccueilComponent
 },
@@ -29,28 +29,28 @@ export const routes: Routes = [{
     path: 'login', component: LoginComponent
 },
 {
-    path: 'travaux', component: TravauxComponent,canActivate: [authGuard]
+    path: 'travaux', component: TravauxComponent
 },
 
 {
-    path: 'pannes', component: PannesComponent,canActivate: [authGuard]
+    path: 'pannes', component: PannesComponent
 },
 {
-    path: 'pointage', component: PointageComponent,canActivate: [authGuard]
+    path: 'pointage', component: PointageComponent
 },
 {
-    path: 'materiel', component: EnginsComponent,canActivate: [authGuard]
+    path: 'materiel', component: EnginsComponent
 },
 {
-    path: 'personnel', component: PersonnelComponent,canActivate: [authGuard]
+    path: 'personnel', component: PersonnelComponent
 }
 ,
 {
-    path: 'gasoil', component: GasoilComponent,canActivate: [authGuard]
+    path: 'gasoil', component: GasoilComponent
 }
 ,
 {
-    path: 'rapportpannes', component: RapportPanneComponent,canActivate: [authGuard]
+    path: 'rapportpannes', component: RapportPanneComponent
 }
 ,
 {
@@ -58,23 +58,23 @@ export const routes: Routes = [{
 } 
 ,
 {
-    path: 'sstrce', component: SousTraitanceComponent,canActivate: [authGuard]
+    path: 'sstrce', component: SousTraitanceComponent
 }
 ,
 {
-    path: 'constats', component: ConstatsComponent,canActivate: [authGuard]
+    path: 'constats', component: ConstatsComponent
 }
 ,
 {
-    path: 'attachements', component: AttachementsComponent,canActivate: [authGuard]
+    path: 'attachements', component: AttachementsComponent
 }
 ,
 {
-    path: 'prestation', component: PrestationComponent,canActivate: [authGuard]
+    path: 'prestation', component: PrestationComponent
 }
 ,
 {
-    path: 'decomptes', component: DecomptesComponent,canActivate: [authGuard]
+    path: 'decomptes', component: DecomptesComponent
 },
 {
     path: 'pointagestrvx', component:PointageTrvxEnginsComponent

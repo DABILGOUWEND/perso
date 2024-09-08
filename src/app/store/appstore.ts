@@ -1,6 +1,6 @@
 import { computed, inject } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Observable, forkJoin, pipe, switchMap, tap } from "rxjs";
+import { Observable, forkJoin, of, pipe, switchMap, tap } from "rxjs";
 import {
     gasoilStore, tab_ProjetStore, ApprogoStore, Tab_EnginsStore,
     Tab_classeEnginsStore, Tab_personnelStore, tab_SoustraitantStore, tab_PannesStore,
@@ -15,16 +15,18 @@ import {
     ModelAttachement,
     ModelDecompte,
     tab_tachesStore,
-    tab_pointMachStore,
     tab_unitesStore,
     tab_tachesEnginsStore,
     tab_tachesProjetStore,
-    tab_EntrepriseStore
+    tab_EntrepriseStore,
+    tab_Pannes,
+    tab_pointage_travauxStore,
+    pointage_travaux
 } from "../models/modeles"
 import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { WenService } from "../wen.service";
-
+import { v4 as uuidv4 } from 'uuid';
 const initialGasoilState: gasoilStore = {
     conso_data: [],
     err: null,
@@ -207,14 +209,7 @@ const initialTachesState: tab_tachesStore =
     taches_data: [],
     selected_type: ''
 }
-const initialPointageTrvxSTate: tab_pointMachStore =
-{
-    message: '',
-    pointMach_data: [],
-    selected_enginId: '',
-    selected_date: '',
-    selected_projetId: ''
-}
+
 const initialUnitesState: tab_unitesStore =
 {
     message: '',
@@ -240,6 +235,15 @@ const initialTacheProjetState: tab_tachesProjetStore =
     taches_data: [],
     selectedProjetId: '',
     selectedTacheId: ''
+}
+const initialPointageTrvxState: tab_pointage_travauxStore =
+{
+    selectedId: '',
+    message: '',
+    pointage_data: [],
+    selectedDate: '',
+    selectedProjetId: '',
+    pointage_mach: []
 }
 export const ProjetStore = signalStore(
     { providedIn: 'root' },
@@ -1252,7 +1256,8 @@ export const PersonnelStore = signalStore(
 export const EnginsStore = signalStore(
     { providedIn: 'root' },
     withState(initialEnginState),
-    withComputed((store, classe_store = inject(ClasseEnginsStore), monservice = inject(PersonnelStore)) => (
+    withComputed((store,
+        classe_store = inject(ClasseEnginsStore), monservice = inject(PersonnelStore)) => (
         {
             taille: computed(() => store.engins().length),
             donnees_engins: computed(() => {
@@ -1264,7 +1269,6 @@ export const EnginsStore = signalStore(
 
             }),
             donnees_utilisateur: computed(() => {
-                //monservice.loadPersonnel()
                 var mot = store.selectedDesignation()
                 let donnee = []
                 if (mot == '') { donnee = classeEngins(store.engins()) }
@@ -1348,11 +1352,41 @@ export const EnginsStore = signalStore(
             filterbyDesignation(mot: string) { patchState(store, { selectedDesignation: mot }) },
 
             loadengins: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallEngins().pipe(
-                    tap((data) => {
-                        patchState(store, { engins: classeEngins(data) })
-                    })
-                )
+                return monservice.getallEngins().pipe(switchMap((engins) => {
+                    return monservice.getallGasoil().pipe(
+                        switchMap((gasoil) => {
+                            return monservice.getallpannes().pipe(
+                                tap((pannes) => {
+                                    engins.forEach(element => {
+                                        let tab_gasoil = gasoil.filter(x => x.id_engin == element.id).map(x => {
+
+                                            return {
+                                                compteur: x.compteur,
+                                                quantite_go: x.quantite_go,
+                                                date: x.date
+                                            }
+                                        });
+                                        let tab_pannes: tab_Pannes[] = pannes.filter(y => y.engin_id == element.id).map(x => {
+                                            return {
+                                                debut_panne: x.debut_panne,
+                                                fin_panne: x.fin_panne,
+                                                heure_debut: x.heure_debut,
+                                                heure_fin: x.heure_fin,
+                                                motif_panne: x.motif_panne,
+                                                situation: x.situation
+                                            }
+                                        })
+                                        element.gasoil = tab_gasoil;
+                                        element.panne = tab_pannes
+                                    });
+
+                                    patchState(store, { engins: classeEngins(engins) })
+                                })
+                            )
+                        })
+                    )
+                }
+                ))
             }
             )))
             ,
@@ -2986,128 +3020,7 @@ export const TachesEnginsStore = signalStore(
         }
     ))
 )
-export const Pointage_trvx_enginsStore = signalStore(
-    { providedIn: 'root' },
-    withState(initialPointageTrvxSTate),
-    withComputed((store) => (
-        {
-            taille: computed(() => store.pointMach_data().length),
-            donnees_pointMach: computed(() => {
-                return store.pointMach_data();
-            }),
-            last_numero: computed(() => {
-                let numeros = store.pointMach_data().map(x => Number(x.numero));
-                if (numeros.length > 0) {
-                    return Math.max(...numeros);
-                } else {
-                    return 0
-                }
 
-            }),
-            donnees_pointMachFiltres: computed(() => {
-                let date = store.selected_date();
-                let projet_id = store.selected_projetId();
-                if (date == "") {
-                    if (projet_id == "") {
-                        return store.pointMach_data();
-                    } else {
-                        let data = store.pointMach_data().filter(x => x.projet_id == projet_id);
-                        return data.sort((a, b) => {
-                            return new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime()
-                        });
-                    }
-                } else {
-                    if (projet_id == "") {
-                        let data = store.pointMach_data().filter(x => x.date == date);
-                        return data.sort((a, b) => {
-                            return new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime()
-                        });
-                    } else {
-                        let data = store.pointMach_data().filter(x => x.projet_id == projet_id && x.date == date);
-                        return data.sort((a, b) => {
-                            return new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime()
-                        });
-                    }
-                }
-            })
-        }
-    )
-    ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
-    (
-        {
-            filterByDate(date: string) {
-                patchState(store, { selected_date: date })
-            },
-            filterByProjet(projet_id: string) {
-                patchState(store, { selected_projetId: projet_id })
-            },
-            loadPointMach: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getAllPointage_travaux().pipe(
-                    tap((data) => {
-                        let mydata = data.sort((a, b) => new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime()
-                            || Number(b.numero) - Number(a.numero));
-                        patchState(store, { pointMach_data: mydata });
-                    })
-                )
-            }
-            ))),
-            addPointMach: rxMethod<any>(pipe(
-                switchMap((pointage) => {
-                    return monservice.addPointage_travaux(pointage).pipe(
-                        tap({
-                            next: () => {
-                                const updatedonnes = [...store.pointMach_data(), pointage]
-                                //patchState(store, { pointMach_data: updatedonnes })
-                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
-                            }, error: () => {
-                                patchState(store, { message: "échoué" });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            )),
-            removePointMach: rxMethod<string>(pipe(
-                switchMap((id) => {
-                    return monservice.deletePointage_travaux(id).pipe(tap(
-                        {
-                            next: () => {
-                                const updatedonnes = store.pointMach_data().filter(x => x.id != id)
-                                patchState(store, { pointMach_data: updatedonnes })
-                                Showsnackerbaralert('élément supprimé', 'pass', snackbar)
-                            },
-                            error: () => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-
-                    ))
-                }))),
-            updatePointMach: rxMethod<any>(pipe(
-                switchMap((pointage) => {
-                    return monservice.updatePointage_travaux(pointage).pipe(
-                        tap({
-                            next: () => {
-                                var data = store.pointMach_data();
-                                var index = data.findIndex(x => x.id == pointage.id)
-                                data[index] = pointage
-                                patchState(store, { pointMach_data: data })
-                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
-                            }, error: () => {
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            ))
-
-        }
-    ))
-)
 export const TacheProjetStore = signalStore(
     { providedIn: 'root' },
     withState(initialTacheProjetState),
@@ -3201,7 +3114,7 @@ export const EntrepriseStore = signalStore(
         {
             taille: computed(() => store.liste_entreprise().length),
             donnees_entreprise: computed(() => {
-               return store.liste_entreprise();
+                return store.liste_entreprise();
             })
         }
     )
@@ -3209,7 +3122,7 @@ export const EntrepriseStore = signalStore(
     withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
     (
         {
-          
+
             loadEntreprises: rxMethod<void>(pipe(switchMap(() => {
                 return monservice.getAllEntreprises().pipe(
                     tap((data) => {
@@ -3260,6 +3173,155 @@ export const EntrepriseStore = signalStore(
                                 data[index] = entreprise
                                 patchState(store, { liste_entreprise: data })
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                            }, error: () => {
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            ))
+
+        }
+    ))
+)
+export const PointageTrvxStore = signalStore(
+    { providedIn: 'root' },
+    withState(initialPointageTrvxState),
+    withComputed((store) => (
+        {
+            taille: computed(() => store.pointage_data().length),
+            donnees_pointage_trvx: computed(() => {
+                let date = store.selectedDate();
+                let projet_id = store.selectedProjetId();
+                return store.pointage_data().find(x =>
+                    x.date == date && x.projetId == projet_id
+                );
+            })
+        }
+    )
+    ),
+    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    (
+        {
+            filtrebyDate(date: string) {
+                patchState(store, { selectedDate: date })
+            },
+            filtrebyProjetId(projetId: string) {
+                patchState(store, { selectedProjetId: projetId })
+            },
+            loadPointageTrvx: rxMethod<void>(pipe(switchMap(() => {
+                return monservice.getAllPointage_travaux().pipe(
+                    tap((data) => {
+
+                        let mydata: pointage_travaux[] = [];
+                        data.forEach(element => {
+                            let pointage_mach: any = [];
+                            let engins_id = element.engin_id;
+                            let tache_id = element.tache_id;
+                            let duree = element.duree;
+                            for (let i in engins_id) {
+                                let myuuid = uuidv4();
+                                pointage_mach.push({
+                                    'id': myuuid,
+                                    'engin_id': engins_id[i],
+                                    'tache_id': tache_id[i],
+                                    'duree': duree[i]
+                                })
+                            }
+                            let metre_travaux: any = [];
+
+                            let tache_projet_id = element.tache_projet_id;
+                            let taches_projet_exec = element.quantite_exec;
+                            for (let i in tache_projet_id) {
+                                metre_travaux.push({
+                                    'tache_projet_id': tache_projet_id[i],
+                                    'quantite_exec': taches_projet_exec[i]
+                                })
+                            }
+                            mydata.push({
+                                'id': element.id,
+                                'projetId': element.projetId,
+                                'date': element.date,
+                                'pointage_mach': pointage_mach,
+                                'metre_travaux': metre_travaux
+                            })
+                        });
+                        patchState(store, { pointage_data: mydata });
+                    })
+                )
+            }
+            ))),
+            addPointageTrvx: rxMethod<any>(pipe(
+                switchMap((pointage) => {
+                    return monservice.addPointage_travaux(pointage).pipe(
+                        tap({
+                            next: () => {
+                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
+                            }, error: () => {
+                                patchState(store, { message: "échoué" });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+            removePointageTrvx: rxMethod<string>(pipe(
+                switchMap((id) => {
+                    return monservice.deletePointage_travaux(id).pipe(tap(
+                        {
+                            next: () => {
+                                const updatedonnes = store.pointage_data().filter(x => x.id != id)
+                                patchState(store, { pointage_data: updatedonnes })
+                                Showsnackerbaralert('élément supprimé', 'pass', snackbar)
+                            },
+                            error: () => {
+                                patchState(store, { message: 'echoué' });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+
+                    ))
+                }))),
+            updatePointageTrvx: rxMethod<any>(pipe(
+                switchMap((entreprise) => {
+                    return monservice.updatePointage_travaux(entreprise).pipe(
+                        tap({
+                            next: () => {
+                                var data = store.pointage_data();
+                                var index = data.findIndex(x => x.id == entreprise.id)
+                                data[index] = entreprise
+                                patchState(store, { pointage_data: data })
+                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                            }, error: () => {
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+            updatePointageMach: rxMethod<any>(pipe(
+                switchMap((donnees) => {
+                    return monservice.updateByMachine(donnees).pipe(
+                        tap({
+                            next: () => {
+                                //Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                            }, error: () => {
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+            updatePointageMetre: rxMethod<any>(pipe(
+                switchMap((donnees) => {
+                    return monservice.updateByMetre(donnees).pipe(
+                        tap({
+                            next: () => {
+                                //Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
                             }

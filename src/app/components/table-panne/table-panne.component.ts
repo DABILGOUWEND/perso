@@ -23,7 +23,7 @@ export class TablePanneComponent implements OnInit, OnChanges {
   datasource = computed(
     () => new MatTableDataSource<Pannes>(this.PanneStore.donnees_PannesById()),
   );
-  @Input() engin: Engins
+  @Input() engin: Engins;
   @Output() close: EventEmitter<any> = new EventEmitter();
   @ViewChild(MatPaginator) paginator: MatPaginator
   @ViewChild(MatSort) sort: MatSort;

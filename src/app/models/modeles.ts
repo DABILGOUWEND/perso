@@ -4,7 +4,10 @@ export interface Engins {
     code_parc: string,
     immatriculation: string,
     utilisateur_id: string,
-    classe_id: string
+    classe_id: string,
+    gasoil:tab_gasoil[],
+    panne:tab_Pannes[]
+    
 }
 
 export interface classe_engins {
@@ -12,8 +15,24 @@ export interface classe_engins {
     designation: string,
     taches:string[]
 }
-
-
+export interface tab_gasoil {
+    date: string,
+    quantite_go: string,
+    compteur: string
+}
+export interface tab_Pannes{
+    debut_panne:string,
+    fin_panne:string,
+    heure_debut:string,
+    heure_fin:string,
+    motif_panne:string,
+    situation:string
+}
+export interface tab_travaux{
+    date:string,
+    tacheId:string,
+    duree:string,
+}
 export interface Pannes {
     id: string,
     engin_id: string,
@@ -412,22 +431,12 @@ export interface tab_tachesStore {
 }
 export interface pointage_machine {
     'id': string,
-    'date': string,
-    'tache_id': string,
-    'projet_id': string,
+    'tache_id': string
     'engin_id': string,
-    'quantite_exec': string
-    'duree': string,
-    'numero':string
+    'duree': number
 }
 
-export interface tab_pointMachStore {
-    pointMach_data: pointage_machine[],
-    message:string,
-    selected_projetId: string,
-    selected_date: string,
-    selected_enginId: string,
-}
+
 export interface unites {
     'id': string,
     'unite': string
@@ -455,6 +464,10 @@ export interface taches_projet{
     'quantiteDqe':number
 
 }
+export interface taches_projet_exec{
+    'tache_projet_id':string,
+    'quantite_exec':number
+}
 export interface tab_tachesProjetStore {
     taches_data: taches_projet[],
     message:string,
@@ -473,4 +486,19 @@ export interface tab_EntrepriseStore{
     liste_entreprise:Entreprise[],
     message:string,
     selectedId:string
+}
+export interface pointage_travaux{
+    'id':string,
+    'projetId':string,
+    'date':string,
+    'pointage_mach':pointage_machine[],
+    'metre_travaux':taches_projet_exec[]
+}
+export interface tab_pointage_travauxStore{
+    pointage_data:pointage_travaux[],
+    message:string,
+    selectedId:string,
+    selectedDate:string,
+    selectedProjetId:string,
+    pointage_mach:pointage_machine[]
 }

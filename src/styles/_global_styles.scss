@@ -257,6 +257,7 @@ wen-table:make-gold {
           font-size: 28px;
           margin-top: 5px;
         }
+
         h3 {
           text-align: center;
           font-size: 24px;
@@ -754,6 +755,7 @@ wen-table:make-gold {
       }
 
     }
+
     .content_head_engins {
       background-color: rgb(72, 80, 114);
       padding-top: 10px;
@@ -1019,29 +1021,33 @@ wen-table:make-gold {
 
       .AlignGauche {
         width: 20%;
+
         button {
           width: 60%;
           margin-left: 20%;
           margin-right: 20%;
-          background-color: #93cca3!important;
+          background-color: #93cca3 !important;
         }
       }
 
       .AlignMilieu {
         width: 60%;
-        h2{
+
+        h2 {
           font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
           font-size: 26px;
           margin-top: 10px;
           font-weight: bold;
           text-align: center;
         }
-        h3{
+
+        h3 {
           font-size: 22px;
           color: #07498a;
           text-align: center;
         }
-        h4{
+
+        h4 {
           font-size: 20px;
           color: #1777d7;
           text-align: center;
@@ -1050,11 +1056,12 @@ wen-table:make-gold {
 
       .AlignDroite {
         width: 20%;
+
         button {
           width: 60%;
           margin-left: 20%;
           margin-right: 20%;
-          background-color: #75a4e5!important;
+          background-color: #75a4e5 !important;
         }
       }
     }
@@ -3311,8 +3318,36 @@ tr.example-element-row:not(.example-expanded-row):active {
 
 }
 
+
+
+.mat-mdc-tab
+{
+  font-weight: bold;
+  font-size: 20px!important;
+}
+
+.mat-mdc-row {
+  font-size: 18px !important;
+}
+
 .mat-mdc-row:hover .mat-mdc-cell {
-  border-color: currentColor !important;
+  background-color: rgba(220, 228, 228, 0.277) !important;
+}
+
+.mat-mdc-cell {
+  mat-form-field {
+    margin-top: 20px;
+    font-size: 18px;
+  }
+
+  button {
+    margin-left: 10px;
+  }
+}
+
+th {
+  background-color: rgb(223, 218, 218) !important;
+  font-size: 18px !important;
 }
 
 .demo-row-is-clicked {
@@ -3366,4 +3401,56 @@ tr.example-element-row:not(.example-expanded-row):active {
 
 .mat-icon-button.mat-success {
   color: #155724;
+}
+
+.hidden {
+  display: none;
+}
+
+.row_table {
+  display: flex;
+  padding-top: 20px;
+  padding-bottom: 5px;
+
+  .part1 {
+    width: 40%;
+
+    mat-label {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    mat-form-field {
+      width: 90%;
+      margin-left: 5px;
+      margin-right: 5px;
+      font-size: 22px;
+    }
+  }
+
+  .part2 {
+    width: 30%;
+
+    mat-label {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    mat-form-field {
+      width: 90%;
+      margin-left: 5px;
+      margin-right: 5px;
+      font-size: 20px;
+
+    }
+  }
+
+  .part3 {
+    width: 30%;
+
+    button {
+      margin-left: 20px;
+      margin-top: 20px;
+    }
+  }
 }
