@@ -6,15 +6,16 @@ import jsPDF from 'jspdf'
 import autoTable, { Styles } from 'jspdf-autotable';
 import { HttpClient } from '@angular/common/http';
 import { formatNumber } from '@angular/common';
+import { Auth, createUserWithEmailAndPassword, updateProfile } from '@angular/fire/auth';
 @Injectable({
   providedIn: 'root'
 })
 export class WenService {
 
-  constructor(private firestore: Firestore,
-    private _http: HttpClient) {
+  _http = inject(HttpClient);
+  firestore = inject(Firestore);
+  _auth = inject(Auth);
 
-  }
   addevis(data: Devis): Observable<string> {
     const DevisCollection = collection(this.firestore, 'Devis')
     const docRef = addDoc(DevisCollection, data).then
@@ -23,6 +24,14 @@ export class WenService {
       )
     return from(docRef)
   }
+ register(email: string, password: string, usernamme: string): Observable<any> {
+    let promise = createUserWithEmailAndPassword(
+      this._auth,
+      email,
+      password).then(response =>
+        updateProfile(response.user, {displayName: usernamme }));
+        return from(promise);
+  }; 
   addLdevis(data: Ligne_devis): Observable<string> {
     const DevisCollection = collection(this.firestore, 'Lignedevis')
     const docRef = addDoc(DevisCollection, data).then
@@ -841,7 +850,7 @@ export class WenService {
     const promise = setDoc(docRef, data)
     return from(promise)
   }
-  updateByMachine( data_machine: any): Observable<void> {
+  updateByMachine(data_machine: any): Observable<void> {
     const docRef1 = doc(this.db, 'pointage_trvx/' + data_machine.id)
     const docRef = updateDoc(docRef1, {
       engin_id: data_machine.engin_id,
@@ -852,7 +861,7 @@ export class WenService {
       )
     return from(docRef)
   }
-  updateByMetre( data_metre: any): Observable<void> {
+  updateByMetre(data_metre: any): Observable<void> {
     const docRef1 = doc(this.db, 'pointage_trvx/' + data_metre.id)
     const docRef = updateDoc(docRef1, {
       quantite_exec: data_metre.quantite_exec
