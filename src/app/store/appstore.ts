@@ -1709,7 +1709,7 @@ export const ApproGasoilStore = signalStore(
         }
     ))
 )
-export const UserStore = signalStore(
+/* export const UserStore = signalStore(
     { providedIn: 'root' },
     withState(initialUserState),
     withComputed((store) => (
@@ -1778,7 +1778,7 @@ export const UserStore = signalStore(
 
         }
     ))
-)
+) */
 export const TravauxStore = signalStore(
     { providedIn: 'root' },
     withState(initialTravauxStore),

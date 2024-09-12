@@ -258,10 +258,6 @@ export class SousTraitanceComponent implements OnInit {
     return codes
   }
   ajouter() {
-    if (this.authservice.is_connected()?.niveau != 3) {
-      alert("Vous n'avez pas les droits nécessaires pour effectuer cette opération")
-    }
-    else {
       this.is_rubrique_parent.set(false)
       this.is_table_updated.set(false)
       this.is_table_opened.set(true)
@@ -275,7 +271,7 @@ export class SousTraitanceComponent implements OnInit {
           'code': devis?.code + 'LN' + this.last_num().toString()
         }
       )
-    }
+    
 
   }
   clicker(data: any) {
@@ -353,10 +349,6 @@ export class SousTraitanceComponent implements OnInit {
     this.is_table_opened.set(false)
   }
   edit(value: any) {
-    if (this.authservice.is_connected()?.niveau != 3) {
-      alert("Vous n'avez pas les droits nécessaires pour effectuer cette opération")
-    }else
-    {
       this.ligne_parent = value
       this.current_code.set(value.code)
       if (this.has_child().includes(this.current_code())) {
@@ -382,15 +374,11 @@ export class SousTraitanceComponent implements OnInit {
           poste: value.poste,
         }
       )
-    }
+    
 
   }
   delete(data: any) {
-    if (this.authservice.is_connected()?.niveau != 3) {
-      alert("Vous n'avez pas les droits nécessaires pour effectuer cette opération")
-    }
-    else
-    {
+  
       let ids1: any = []
       let ids2: any = []
       if (confirm("La suppression de cet élement entrainera la supression d'autres élements liés, voulez-vous supprimer cet élement?")) {
@@ -407,16 +395,13 @@ export class SousTraitanceComponent implements OnInit {
           });
         }
         this.LigneDevis_Store.removeLigneManyDevis(ids1.concat(ids2, data.id))
-      }
+      
 
     }
 
   }
   ajouter_rubrique() {
-    if (this.authservice.is_connected()?.niveau != 3) {
-      alert("Vous n'avez pas les droits nécessaires pour effectuer cette opération")
-    }else
-    {
+
       this.is_table_updated.set(false)
       this.is_table_opened.set(true)
       this.is_rubrique_parent.set(true)
@@ -428,8 +413,7 @@ export class SousTraitanceComponent implements OnInit {
           'code': devis?.code + 'LN' + this.last_num().toString()
         }
       )
-    }
-
+    
   }
   choix_type_rubrique() {
 

@@ -1,9 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { EntrepriseStore, UserStore } from '../../store/appstore';
+import { EntrepriseStore } from '../../store/appstore';
 import { AuthenService } from '../../authen.service';
 import { Router } from '@angular/router';
 import { ImportedModule } from '../../modules/imported/imported.module';
+import { WenService } from '../../wen.service';
+import { error } from 'console';
 
 @Component({
   selector: 'app-login',
@@ -13,8 +15,8 @@ import { ImportedModule } from '../../modules/imported/imported.module';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  users_store=inject(UserStore);
   entreprise_store=inject(EntrepriseStore);
+  _service=inject(WenService);
   loginForm: FormGroup
   message: string = 'vous êtes déconnecté'
   constructor(
@@ -24,8 +26,8 @@ export class LoginComponent {
   ) {
     this.loginForm = this._fb.group(
       {
-        identifiant: new FormControl('', Validators.required),
-        mot_de_passe: new FormControl('', Validators.required),
+        email: new FormControl('', Validators.required),
+        password: new FormControl('', Validators.required),
       }
     )
 
@@ -42,8 +44,13 @@ export class LoginComponent {
   }
   sumitlogin() {
     this.message = 'tentative de connection en cours...'
-    let value = this.loginForm.value
-    this.authservice.login(value.identifiant, value.mot_de_passe).subscribe(response => {
+    let value = this.loginForm.getRawValue();
+    this._service.login(value.email,value.password).subscribe({
+      next:()=>
+      {this.router.navigateByUrl('/accueil')},
+      error:error=>{console.log(error)}
+    })
+  /*   this.authservice.login(value.identifiant, value.mot_de_passe).subscribe(response => {
       this.setMessage();
       if (response) {
        
@@ -56,7 +63,7 @@ export class LoginComponent {
         this.loginForm.get('mot_de_passe')?.setValue('')
         this.router.navigateByUrl('/login')
       }
-    })
+    }) */
   }
   choiceEntreprise(data:any){
 

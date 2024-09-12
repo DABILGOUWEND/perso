@@ -1,21 +1,37 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, of, delay, tap } from 'rxjs';
+import { Observable, of, delay, tap, from } from 'rxjs';
 import { Users } from './models/modeles';
 import { Router } from '@angular/router';
-import { UserStore } from './store/appstore';
 import { NativeDateAdapter } from '@angular/material/core';
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, user } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenService {
   isloggedIn: boolean = false
-  router = inject(Router)
-  user_store = inject(UserStore)
+  router = inject(Router);
+  _auth = inject(Auth);
+  user$=user(this._auth);
+  currentUserSignal = signal<Users | undefined | null>(undefined);
+  is_connected = signal<Users | undefined | null>(undefined);
+  register(email: string, password: string, usernamme: string): Observable<any> {
+    let promise = createUserWithEmailAndPassword(
+      this._auth,
+      email,
+      password).then(response =>
+        updateProfile(response.user, { displayName: usernamme }));
+    return from(promise);
+  };
 
-  is_connected = signal<Users | undefined | null>(undefined)
-
-  login(name: string, password: string): Observable<boolean> {
+  loginFirebase(email: string, password: string): Observable<any> {
+    let promise = signInWithEmailAndPassword(this._auth,
+      email,
+      password).then(() => { })
+    return from(promise);
+  }
+  
+ /*  login(name: string, password: string): Observable<boolean> {
     let users = this.user_store.users()
     let identifiants = users.map(x => x.identifiant)
     let motdepasses = users.map(x => x.mot_de_passe)
@@ -65,7 +81,7 @@ export class AuthenService {
       }
       )
     )
-  }
+  } */
 
   logout() {
     this.isloggedIn = false

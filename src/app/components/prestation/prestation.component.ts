@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { Router, RouterOutlet } from '@angular/router';
-import { AttachementStore, ConstatStore, DevisStore, LigneDevisStore, SstraitantStore, UserStore } from '../../store/appstore';
+import { AttachementStore, ConstatStore, DevisStore, LigneDevisStore, SstraitantStore } from '../../store/appstore';
 import { SousTraitanceComponent } from '../sous-traitance/sous-traitance.component';
 import { AttachementsComponent } from '../attachements/attachements.component';
 import { ConstatsComponent } from "../constats/constats.component";
@@ -17,7 +17,6 @@ import { DecomptesComponent } from '../decomptes/decomptes.component';
 })
 export class PrestationComponent implements OnInit {
   router = inject(Router)
-  users_store = inject(UserStore)
   _constat_store = inject(ConstatStore)
   _ligneDevis_Store = inject(LigneDevisStore)
   _devisStore = inject(DevisStore)

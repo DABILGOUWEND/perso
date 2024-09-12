@@ -18,7 +18,7 @@ import { PointageTrvxEnginsComponent } from './components/pointage-trvx-engins/p
 import { TableauBordComponent } from './components/tableau-bord/tableau-bord.component';
 
 export const routes: Routes = [{ 
-    path: "", component: Essai2Component },
+    path: "", component: LoginComponent },
 {
     path: 'accueil', component: AccueilComponent
 },

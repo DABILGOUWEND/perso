@@ -1,6 +1,6 @@
 import { Component, OnInit, computed, inject } from '@angular/core';
 import { ImportedModule } from '../../modules/imported/imported.module';
-import { ApproGasoilStore, EnginsStore, GasoilStore, TravauxStore, UserStore } from '../../store/appstore';
+import { ApproGasoilStore, EnginsStore, GasoilStore, TravauxStore } from '../../store/appstore';
 import { WenService } from '../../wen.service';
 
 

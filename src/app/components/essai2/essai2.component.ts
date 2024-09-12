@@ -36,8 +36,15 @@ export class Essai2Component  implements OnInit{
   unites_store=inject(UnitesStore)
   taches_engins=inject(TachesEnginsStore)
   valider() {
-    // let enginId=this.enginsstore.donnees_engins().map(x=>x.id);
-    //this.service. uploadGasoilNumero(enginId).subscribe()
+
+    this.service.register('dabilgou10@gmail.com','dabilgou2520','dabilgou').subscribe({
+      next: data => {
+        console.log(data);
+      },
+      error: error => {
+        console.error('There was an error!', error);
+      }
+    })
   
   }
 
