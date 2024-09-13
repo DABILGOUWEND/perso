@@ -341,8 +341,9 @@ export interface tab_dateStore {
     selectedId: string,
 }
 export interface Users {
-    email: string,
-    password: string,
+    id: string,
+    email: string|null,
+    role: string|undefined
 }
 export interface tab_userStore {
     users_data: Users[],

@@ -37,14 +37,7 @@ export class Essai2Component  implements OnInit{
   taches_engins=inject(TachesEnginsStore)
   valider() {
 
-    this.service.register('dabilgou10@gmail.com','dabilgou2520','dabilgou').subscribe({
-      next: data => {
-        console.log(data);
-      },
-      error: error => {
-        console.error('There was an error!', error);
-      }
-    })
+   
   
   }
 

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { EntrepriseStore } from '../../store/appstore';
 import { AuthenService } from '../../authen.service';
@@ -15,10 +15,11 @@ import { error } from 'console';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  entreprise_store=inject(EntrepriseStore);
-  _service=inject(WenService);
-  loginForm: FormGroup
-  message: string = 'vous êtes déconnecté'
+  entreprise_store = inject(EntrepriseStore);
+  _service = inject(WenService);
+  _auth_service = inject(AuthenService);
+  loginForm: FormGroup;
+  message =signal('vous êtes déconnecté');
   constructor(
     private router: Router,
     private authservice: AuthenService,
@@ -30,42 +31,44 @@ export class LoginComponent {
         password: new FormControl('', Validators.required),
       }
     )
-
-  }
+    effect(() => {
+      console.log(this._auth_service.currentUserSignal())  
+  })
+}
   ngOnInit() {
     this.entreprise_store.loadEntreprises();
-    }
+   
+  }
   setMessage() {
     if (this.authservice.isloggedIn) {
-      this.message = 'vous êtes connecté.'
+      this.message.set('vous êtes connecté.')
     } else {
-      this.message = 'identifiant ou mot de passe incorrecte.'
+      this.message.set('identifiant ou mot de passe incorrecte.')
     }
   }
   sumitlogin() {
-    this.message = 'tentative de connection en cours...'
+    this.message.set('tentative de connection en cours...');
     let value = this.loginForm.getRawValue();
-    this._service.login(value.email,value.password).subscribe({
-      next:()=>
-      {this.router.navigateByUrl('/accueil')},
-      error:error=>{console.log(error)}
+    this._auth_service.loginFirebase(value.email, value.password).subscribe({
+      next: () => { this.router.navigateByUrl('/accueil') },
+      error: error => { console.log(error) }
     })
-  /*   this.authservice.login(value.identifiant, value.mot_de_passe).subscribe(response => {
-      this.setMessage();
-      if (response) {
-       
-        let niveau=this.authservice.is_connected()?.niveau;
-        let url =this.users_store.getUrl()
-        this.router.navigateByUrl(url)
-        this.authservice.is_connected.set({id:'',identifiant:value.identifiant,mot_de_passe:value.mot_de_passe,niveau:niveau?niveau:0})
-      }
-      else {
-        this.loginForm.get('mot_de_passe')?.setValue('')
-        this.router.navigateByUrl('/login')
-      }
-    }) */
+    /*   this.authservice.login(value.identifiant, value.mot_de_passe).subscribe(response => {
+        this.setMessage();
+        if (response) {
+         
+          let niveau=this.authservice.is_connected()?.niveau;
+          let url =this.users_store.getUrl()
+          this.router.navigateByUrl(url)
+          this.authservice.is_connected.set({id:'',identifiant:value.identifiant,mot_de_passe:value.mot_de_passe,niveau:niveau?niveau:0})
+        }
+        else {
+          this.loginForm.get('mot_de_passe')?.setValue('')
+          this.router.navigateByUrl('/login')
+        }
+      }) */
   }
-  choiceEntreprise(data:any){
+  choiceEntreprise(data: any) {
 
   }
 }

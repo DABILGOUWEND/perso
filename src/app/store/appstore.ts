@@ -1709,7 +1709,7 @@ export const ApproGasoilStore = signalStore(
         }
     ))
 )
-/* export const UserStore = signalStore(
+ export const UserStore = signalStore(
     { providedIn: 'root' },
     withState(initialUserState),
     withComputed((store) => (
@@ -1741,23 +1741,7 @@ export const ApproGasoilStore = signalStore(
                 )
             }
             ))),
-            addUser: rxMethod<Users>(pipe(
-                switchMap((projet) => {
-                    return monservice.addUser(projet).pipe(
-                        tap({
-                            next: () => {
-                                const updatedonnes = [...store.users_data(), projet]
-                                patchState(store, { users_data: updatedonnes })
-                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
-                            }, error: () => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            )),
+           
             removeUser: rxMethod<string>(pipe(
                 switchMap((id) => {
                     return monservice.deleteUser(id).pipe(tap(
@@ -1778,7 +1762,7 @@ export const ApproGasoilStore = signalStore(
 
         }
     ))
-) */
+) 
 export const TravauxStore = signalStore(
     { providedIn: 'root' },
     withState(initialTravauxStore),

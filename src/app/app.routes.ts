@@ -16,6 +16,7 @@ import { PrestationComponent } from './components/prestation/prestation.componen
 import { DecomptesComponent } from './components/decomptes/decomptes.component';
 import { PointageTrvxEnginsComponent } from './components/pointage-trvx-engins/pointage-trvx-engins.component';
 import { TableauBordComponent } from './components/tableau-bord/tableau-bord.component';
+import { RegisterComponent } from './components/register/register.component';
 
 export const routes: Routes = [{ 
     path: "", component: LoginComponent },
@@ -79,5 +80,9 @@ export const routes: Routes = [{
 ,
 {
     path: 'taches_projets', component:TableauBordComponent
+}
+,
+{
+    path: 'register', component:RegisterComponent
 }
 ];

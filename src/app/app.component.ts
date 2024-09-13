@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, effect, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { ImportedModule } from './modules/imported/imported.module';
 import { AuthenService } from './authen.service';
+import { UserStore } from './store/appstore';
 
 @Component({
   selector: 'app-root',
@@ -11,19 +12,45 @@ import { AuthenService } from './authen.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
+  constructor() {
+    effect(() => {
+     
+    })
+  }
+
   title = 'wenbtp';
   router = inject(Router)
   _auth_service = inject(AuthenService)
+  _user_store=inject(UserStore)
 
   ngOnInit() {
-    
+    this._user_store.loadUsers();
+    this._auth_service.user$.subscribe({
+      next: (user: any) => {
+        if (user) {
+          let mysuser=this._user_store.users_data().find(x=>x.id==user.uid)
+          this._auth_service.currentUserSignal.set({
+            id: user.uid,
+            email: user.email,
+            role: mysuser?.role
+          })
+        }
+      }
+    })
   }
   click_login() {
     this.router.navigateByUrl('/login')
 
   }
+
+  click_register() {
+    this.router.navigateByUrl('/register')
+
+  }
   logout() {
-    this._auth_service.logout()
+    this._auth_service.logout().subscribe({
+      next: () => { this.router.navigateByUrl('/login') }
+    })
   }
   click_gasoil() {
     this.router.navigateByUrl('/gasoil')
@@ -36,20 +63,20 @@ export class AppComponent implements OnInit {
   click_pannes() {
     this.router.navigateByUrl('/pannes')
 
-    
+
   }
   click_travaux() {
     this.router.navigateByUrl('/travaux')
 
-  
+
   }
   click_accueil() {
     this.router.navigateByUrl('/accueil')
 
- 
+
   }
   prestation() {
     this.router.navigateByUrl('/prestation')
-    
+
   }
 }

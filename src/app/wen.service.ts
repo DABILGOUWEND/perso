@@ -14,8 +14,6 @@ export class WenService {
 
   _http = inject(HttpClient);
   firestore = inject(Firestore);
-  _auth = inject(Auth);
-  user$=user(this._auth);
 
   addevis(data: Devis): Observable<string> {
     const DevisCollection = collection(this.firestore, 'Devis')
@@ -24,20 +22,6 @@ export class WenService {
         response.id
       )
     return from(docRef)
-  }
-  register(email: string, password: string, usernamme: string): Observable<any> {
-    let promise = createUserWithEmailAndPassword(
-      this._auth,
-      email,
-      password).then(response =>
-        updateProfile(response.user, { displayName: usernamme }));
-    return from(promise);
-  };
-  login(email: string, password: string): Observable<any> {
-    let promise = signInWithEmailAndPassword(this._auth,
-      email,
-      password).then(() => { })
-    return from(promise);
   }
   addLdevis(data: Ligne_devis): Observable<string> {
     const DevisCollection = collection(this.firestore, 'Lignedevis')
@@ -428,7 +412,7 @@ export class WenService {
   }
   //users
   getallUsers(): Observable<Users[]> {
-    const UsersCollection = collection(this.db, 'users')
+    const UsersCollection = collection(this.db, 'myusers')
     return collectionData(UsersCollection, { idField: 'id' }) as Observable<Users[]>
   }
 /*   addUser(data: Users): Observable<string> {

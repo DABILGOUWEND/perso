@@ -1,1 +1,39 @@
-<p>register works!</p>
+<div class="login-page">
+    <div class="login-form-container">
+        <form [formGroup]="registerForm" (ngSubmit)="submitRegister()" class="login-form ">
+            <fieldset>
+                <legend>
+                    Register
+                </legend>
+                <div class="login-page__banner">
+                    <p><em>{{message()}}</em></p>
+                </div>
+                <div class="login_saisi">
+                    <mat-form-field>
+                      <mat-select formControlName="role" placeholder="Role">
+                        <mat-option value="admin">Admin</mat-option>
+                        <mat-option value="user">User</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            
+                <div class="login_saisi">
+                    <mat-form-field>
+                        <input matInput formControlName="email" placeholder="email" type="email">
+                    </mat-form-field>
+                </div>
+                <div class="login_saisi">
+                    <mat-form-field>
+                        <input matInput formControlName="password" placeholder="mot de passe" type="password">
+                    </mat-form-field>
+                </div>
+                <div class="login-form__footer">
+                    <button mat-flat-button color="primary" type="submit" [disabled]="!registerForm.valid">
+                        Connexion
+                    </button>
+                </div>
+            </fieldset>
+
+        </form>
+    </div>
+</div>
