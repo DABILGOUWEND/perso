@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, setDoc, updateDoc } from '@angular/fire/firestore';
-import { Observable, from, switchMap, of, concatMap, forkJoin, map } from 'rxjs';
+import { Observable, from, switchMap, of, concatMap, forkJoin, map, tap, BehaviorSubject } from 'rxjs';
 import { Engins, classe_engins, Gasoil, appro_gasoil, tab_personnel, Pannes, travaux, nature_travaux, Users, pointage, tab_ressources, tab_familles, tab_categories, datesPointages, tab_composites, Contrats, Projet, sous_traitant, tab_Essais, Statuts, Devis, Ligne_devis, Constats, ModelAttachement, ModelDecompte, unites, taches, pointage_machine, taches_engins, taches_projet, Entreprise, pointage_travaux } from './models/modeles';
 import jsPDF from 'jspdf'
 import autoTable, { Styles } from 'jspdf-autotable';
@@ -14,7 +14,9 @@ export class WenService {
 
   _http = inject(HttpClient);
   firestore = inject(Firestore);
-
+  user$: BehaviorSubject<Users|undefined> = new BehaviorSubject<Users|undefined>({} as Users);
+  _auth = inject(Auth);
+  myuser$ = user(this._auth);
   addevis(data: Devis): Observable<string> {
     const DevisCollection = collection(this.firestore, 'Devis')
     const docRef = addDoc(DevisCollection, data).then
@@ -412,23 +414,32 @@ export class WenService {
   }
   //users
   getallUsers(): Observable<Users[]> {
-    const UsersCollection = collection(this.db, 'myusers')
-    return collectionData(UsersCollection, { idField: 'id' }) as Observable<Users[]>
-  }
-/*   addUser(data: Users): Observable<string> {
-    let mydata =
-
-    {
-      identifiant: data.identifiant,
-      mot_de_passe: data.mot_de_passe,
-    }
-    const UsersCollection = collection(this.db, 'users')
-    const docRef = addDoc(UsersCollection, mydata).then
-      (response =>
-        response.id
+    const UsersCollection = collection(this.db, 'myusers');
+    let collect = collectionData(UsersCollection, { idField: 'id' }) as Observable<Users[]>
+    return collect.pipe(tap(x => {
+      this.myuser$.subscribe((resp: any) => {
+        if (resp) {
+          let filtre=x.find(x => x.uid == resp.uid);
+          this.user$.next(filtre);
+        }
+      }
       )
-    return from(docRef)
-  } */
+    }))
+  }
+  /*   addUser(data: Users): Observable<string> {
+      let mydata =
+  
+      {
+        identifiant: data.identifiant,
+        mot_de_passe: data.mot_de_passe,
+      }
+      const UsersCollection = collection(this.db, 'users')
+      const docRef = addDoc(UsersCollection, mydata).then
+        (response =>
+          response.id
+        )
+      return from(docRef)
+    } */
   deleteUser(id: string): Observable<void> {
     const docRef = doc(this.db, 'users/' + id)
     const promise = deleteDoc(docRef)

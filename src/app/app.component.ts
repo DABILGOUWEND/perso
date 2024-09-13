@@ -3,6 +3,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { ImportedModule } from './modules/imported/imported.module';
 import { AuthenService } from './authen.service';
 import { UserStore } from './store/appstore';
+import { WenService } from './wen.service';
 
 @Component({
   selector: 'app-root',
@@ -14,23 +15,26 @@ import { UserStore } from './store/appstore';
 export class AppComponent implements OnInit {
   constructor() {
     effect(() => {
-     
+     this._service.user$.subscribe(
+      resp=>console.log(resp)
+     )
     })
   }
 
   title = 'wenbtp';
   router = inject(Router)
   _auth_service = inject(AuthenService)
-  _user_store=inject(UserStore)
+  _user_store=inject(UserStore);
+  _service = inject(WenService);
 
   ngOnInit() {
     this._user_store.loadUsers();
     this._auth_service.user$.subscribe({
       next: (user: any) => {
         if (user) {
-          let mysuser=this._user_store.users_data().find(x=>x.id==user.uid)
+          let mysuser=this._user_store.users_data().find(x=>x.uid==user.uid)
           this._auth_service.currentUserSignal.set({
-            id: user.uid,
+            uid: user.uid,
             email: user.email,
             role: mysuser?.role
           })

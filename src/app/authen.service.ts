@@ -31,7 +31,7 @@ export class AuthenService {
       email,
       password).then(response => {
         let user = {
-          id: response.user.uid,
+          uid: response.user.uid,
           email: response.user.email,
           role:role
 

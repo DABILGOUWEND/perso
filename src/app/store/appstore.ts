@@ -1747,7 +1747,7 @@ export const ApproGasoilStore = signalStore(
                     return monservice.deleteUser(id).pipe(tap(
                         {
                             next: () => {
-                                const updatedonnes = store.users_data().filter(x => x.id != id)
+                                const updatedonnes = store.users_data().filter(x => x.uid != id)
                                 patchState(store, { users_data: updatedonnes })
                                 Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                             },
