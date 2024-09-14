@@ -29,18 +29,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this._user_store.loadUsers();
-    this._auth_service.user$.subscribe({
-      next: (user: any) => {
-        if (user) {
-          let mysuser=this._user_store.users_data().find(x=>x.uid==user.uid)
-          this._auth_service.currentUserSignal.set({
-            uid: user.uid,
-            email: user.email,
-            role: mysuser?.role
-          })
-        }
-      }
-    })
   }
   click_login() {
     this.router.navigateByUrl('/login')
