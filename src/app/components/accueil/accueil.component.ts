@@ -1,7 +1,8 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, effect, inject } from '@angular/core';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { ApproGasoilStore, EnginsStore, GasoilStore, TravauxStore } from '../../store/appstore';
 import { WenService } from '../../wen.service';
+import { AuthenService } from '../../authen.service';
 
 
 @Component({
@@ -12,16 +13,22 @@ import { WenService } from '../../wen.service';
   styleUrl: './accueil.component.scss',
 })
 export class AccueilComponent implements OnInit {
-  readonly gasoil_store=inject(GasoilStore)
-  readonly travaux_store=inject(TravauxStore)
+  readonly gasoil_store = inject(GasoilStore);
+  readonly travaux_store = inject(TravauxStore);
   readonly approgo_store = inject(ApproGasoilStore);
-  ngOnInit() {
-    this.gasoil_store.loadconso()
-    this.approgo_store.loadappro()
-    this.travaux_store.loadtravaux()
-    this.travaux_store.filterbyDate('')
+  _aut_service = inject(AuthenService)
+  constructor() {
+    effect(() => {
+      console.log(this._aut_service.currentUserSignal());
+    }
+    )
   }
-
+  ngOnInit() {
+    this.gasoil_store.loadconso();
+    this.approgo_store.loadappro();
+    this.travaux_store.loadtravaux();
+    this.travaux_store.filterbyDate('');
+  }
   chartOptions1 = computed(() => {
     var mydata = this.gasoil_store.historique_consogo()[0]
     return {
@@ -30,7 +37,6 @@ export class AccueilComponent implements OnInit {
       },
       theme: "light2",
       animationEnabled: true,
-
       axisX: {
         title: "Date",
         gridThickness: 1,
@@ -53,7 +59,7 @@ export class AccueilComponent implements OnInit {
   }
   )
   chartOptions2 = computed(() => {
-    var mydata = this.travaux_store.historique_appro()
+    var mydata = this.travaux_store.historique_appro();
     return {
       title: {
         text: "Appro de latérite"
@@ -82,6 +88,4 @@ export class AccueilComponent implements OnInit {
     }
   }
   )
-
-   
 }
