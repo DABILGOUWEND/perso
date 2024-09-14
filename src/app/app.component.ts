@@ -15,7 +15,6 @@ import { WenService } from './wen.service';
 export class AppComponent implements OnInit {
   constructor() {
     effect(() => {
-      this._service.user$.subscribe(console.log)
   })}
 
   title = 'wenbtp';

@@ -33,23 +33,10 @@ export class LoginComponent {
       }
     )
     effect(() => {
-      console.log(this._auth_service.currentUserSignal())
     })
   }
   ngOnInit() {
     this.entreprise_store.loadEntreprises();
-    this._auth_service.user$.subscribe((user: any) => {
-      if (user) {
-        let filtre = this._user_store.users().find(x => x.uid == user.uid);
-        this._auth_service.currentUserSignal.set({
-          uid: user.uid,
-          email: user.email,
-          role: filtre?.role
-        });
-      } else {
-        this._auth_service.currentUserSignal.set(undefined);
-      }
-    })
   }
   setMessage() {
     if (this.authservice.isloggedIn) {
