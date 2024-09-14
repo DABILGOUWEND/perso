@@ -18,71 +18,73 @@ import { PointageTrvxEnginsComponent } from './components/pointage-trvx-engins/p
 import { TableauBordComponent } from './components/tableau-bord/tableau-bord.component';
 import { RegisterComponent } from './components/register/register.component';
 
-export const routes: Routes = [{ 
-    path: "", component: LoginComponent },
-{
-    path: 'accueil', component: AccueilComponent
-},
-{
-    path: 'login', component: LoginComponent
-},
-{
-    path: 'travaux', component: TravauxComponent
-},
+export const routes: Routes = [
+    {
+        path: "", component: LoginComponent
+    },
+    {
+        path: 'accueil', component: AccueilComponent
+    },
+    {
+        path: 'login', component: LoginComponent
+    },
+    {
+        path: 'travaux', component: TravauxComponent
+    },
 
-{
-    path: 'pannes', component: PannesComponent
-},
-{
-    path: 'pointage', component: PointageComponent
-},
-{
-    path: 'materiel', component: EnginsComponent
-},
-{
-    path: 'personnel', component: PersonnelComponent
-}
-,
-{
-    path: 'gasoil', component: GasoilComponent
-}
-,
-{
-    path: 'rapportpannes', component: RapportPanneComponent
-}
-,
-{
-    path: 'essai', component: Essai2Component
-} 
-,
-{
-    path: 'sstrce', component: SousTraitanceComponent
-}
-,
-{
-    path: 'constats', component: ConstatsComponent
-}
-,
-{
-    path: 'attachements', component: AttachementsComponent
-}
-,
-{
-    path: 'prestation', component: PrestationComponent
-}
-,
-{
-    path: 'decomptes', component: DecomptesComponent
-},
-{
-    path: 'pointagestrvx', component:PointageTrvxEnginsComponent
-}
-,
-{
-    path: 'taches_projets', component:TableauBordComponent
-}
-,
-{
-    path: 'register', component:RegisterComponent
-}
+    {
+        path: 'pannes', component: PannesComponent
+    },
+    {
+        path: 'pointage', component: PointageComponent
+    },
+    {
+        path: 'materiel', component: EnginsComponent
+    },
+    {
+        path: 'personnel', component: PersonnelComponent
+    }
+    ,
+    {
+        path: 'gasoil', component: GasoilComponent
+    }
+    ,
+    {
+        path: 'rapportpannes', component: RapportPanneComponent
+    }
+    ,
+    {
+        path: 'essai', component: Essai2Component
+    }
+    ,
+    {
+        path: 'sstrce', component: SousTraitanceComponent
+    }
+    ,
+    {
+        path: 'constats', component: ConstatsComponent
+    }
+    ,
+    {
+        path: 'attachements', component: AttachementsComponent
+    }
+    ,
+    {
+        path: 'prestation', component: PrestationComponent
+    }
+    ,
+    {
+        path: 'decomptes', component: DecomptesComponent
+    },
+    {
+        path: 'pointagestrvx', component: PointageTrvxEnginsComponent
+    }
+    ,
+    {
+        path: 'taches_projets', component: TableauBordComponent
+    }
+    ,
+    {
+        path: 'register', component: RegisterComponent
+    }
 ];

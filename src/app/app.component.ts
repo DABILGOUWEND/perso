@@ -27,13 +27,11 @@ export class AppComponent implements OnInit {
     this._user_store.loadUsers();
   }
   click_login() {
-    this.router.navigateByUrl('/login')
-
+    this.router.navigateByUrl('/login');
   }
 
   click_register() {
-    this.router.navigateByUrl('/register')
-
+    this.router.navigateByUrl('/register');
   }
   logout() {
     this._auth_service.logout().subscribe({
@@ -41,21 +39,21 @@ export class AppComponent implements OnInit {
     })
   }
   click_gasoil() {
-    this.router.navigateByUrl('/gasoil')
+    this.router.navigateByUrl('/gasoil');
   }
   click_pointage() {
-    this.router.navigateByUrl('/pointage')
+    this.router.navigateByUrl('/pointage');
   }
   click_pannes() {
-    this.router.navigateByUrl('/pannes')
+    this.router.navigateByUrl('/pannes');
   }
   click_travaux() {
-    this.router.navigateByUrl('/travaux')
+    this.router.navigateByUrl('/travaux');
   }
   click_accueil() {
-    this.router.navigateByUrl('/accueil')
+    this.router.navigateByUrl('/accueil');
   }
   prestation() {
-    this.router.navigateByUrl('/prestation')
+    this.router.navigateByUrl('/prestation');
   }
 }

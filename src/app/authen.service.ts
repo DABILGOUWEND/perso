@@ -9,6 +9,7 @@ import { collection, addDoc, Firestore } from '@angular/fire/firestore';
   providedIn: 'root'
 })
 export class AuthenService {
+  
   isloggedIn: boolean = false
   router = inject(Router);
   _auth = inject(Auth);
