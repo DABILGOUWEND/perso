@@ -20,7 +20,7 @@ export class LoginComponent {
   _auth_service = inject(AuthenService);
   _user_store = inject(UserStore);
   loginForm: FormGroup;
-  message =signal('vous êtes déconnecté');
+  message = signal('vous êtes déconnecté');
   constructor(
     private router: Router,
     private authservice: AuthenService,
@@ -34,11 +34,22 @@ export class LoginComponent {
     )
     effect(() => {
       console.log(this._user_store.users())
-  })
-}
+    })
+  }
   ngOnInit() {
     this.entreprise_store.loadEntreprises();
-   
+    this._auth_service.user$.subscribe((user: any) => {
+      if (user) {
+        let filtre = this._user_store.users().find(x => x.uid == user.uid);
+        this._auth_service.currentUserSignal.set({
+          uid: user.uid,
+          email: user.email,
+          role: filtre?.role
+        });
+      } else {
+        this._auth_service.currentUserSignal.set(undefined);
+      }
+    })
   }
   setMessage() {
     if (this.authservice.isloggedIn) {
