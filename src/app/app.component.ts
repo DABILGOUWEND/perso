@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   router = inject(Router)
   _auth_service = inject(AuthenService)
   _user_store=inject(UserStore);
-  
+
   _service = inject(WenService);
   ngOnInit() {
     this._user_store.loadUsers();

@@ -1,6 +1,6 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { EntrepriseStore } from '../../store/appstore';
+import { EntrepriseStore, UserStore } from '../../store/appstore';
 import { AuthenService } from '../../authen.service';
 import { Router } from '@angular/router';
 import { ImportedModule } from '../../modules/imported/imported.module';
@@ -18,6 +18,7 @@ export class LoginComponent {
   entreprise_store = inject(EntrepriseStore);
   _service = inject(WenService);
   _auth_service = inject(AuthenService);
+  _user_store = inject(UserStore);
   loginForm: FormGroup;
   message =signal('vous êtes déconnecté');
   constructor(
@@ -32,6 +33,7 @@ export class LoginComponent {
       }
     )
     effect(() => {
+      console.log(this._user_store.users())
   })
 }
   ngOnInit() {
