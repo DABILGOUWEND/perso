@@ -422,6 +422,7 @@ export class WenService {
         if (resp) {
           let filtre=x.find(x => x.uid == resp.uid);
           this.currentUserSignal.set(filtre);
+          this.user$.next(filtre);
         }
       }
       )

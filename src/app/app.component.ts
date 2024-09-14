@@ -15,9 +15,14 @@ import { WenService } from './wen.service';
 export class AppComponent implements OnInit {
   constructor() {
     effect(() => {
-     console.log(this._service.currentUserSignal());
+     this._service.myuser$.subscribe({
+        next: (user:any) => {
+          if (user) {
+           console.log(user)
+          }
+        }
     })
-  }
+  })}
 
   title = 'wenbtp';
   router = inject(Router)
