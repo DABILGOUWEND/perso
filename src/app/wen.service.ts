@@ -421,8 +421,11 @@ export class WenService {
       this.myuser$.subscribe((resp: any) => {
         if (resp) {
           let filtre=x.find(x => x.uid == resp.uid);
-          this.currentUserSignal.set(filtre);
           this.user$.next(filtre);
+        }
+        else
+        {
+          this.user$.next(undefined);
         }
       }
       )

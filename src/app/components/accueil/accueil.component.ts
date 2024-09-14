@@ -19,7 +19,6 @@ export class AccueilComponent implements OnInit {
   _aut_service = inject(AuthenService)
   constructor() {
     effect(() => {
-      console.log(this._aut_service.currentUserSignal());
     }
     )
   }
