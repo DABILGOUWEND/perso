@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, inject } from '@angular/core';
+import { Component, OnInit, computed, effect, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { ImportedModule } from './modules/imported/imported.module';
 import { AuthenService } from './authen.service';
@@ -15,21 +15,14 @@ import { WenService } from './wen.service';
 export class AppComponent implements OnInit {
   constructor() {
     effect(() => {
-     this._service.myuser$.subscribe({
-        next: (user:any) => {
-          if (user) {
-           console.log(user)
-          }
-        }
-    })
   })}
 
   title = 'wenbtp';
   router = inject(Router)
   _auth_service = inject(AuthenService)
   _user_store=inject(UserStore);
+  
   _service = inject(WenService);
-
   ngOnInit() {
     this._user_store.loadUsers();
   }
@@ -49,11 +42,9 @@ export class AppComponent implements OnInit {
   }
   click_gasoil() {
     this.router.navigateByUrl('/gasoil')
-
   }
   click_pointage() {
     this.router.navigateByUrl('/pointage')
-
   }
   click_pannes() {
     this.router.navigateByUrl('/pannes')
@@ -63,11 +54,8 @@ export class AppComponent implements OnInit {
   }
   click_accueil() {
     this.router.navigateByUrl('/accueil')
-
-
   }
   prestation() {
     this.router.navigateByUrl('/prestation')
-
   }
 }
