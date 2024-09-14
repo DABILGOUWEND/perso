@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { Observable, from, switchMap, of, concatMap, forkJoin, map, tap, BehaviorSubject } from 'rxjs';
 import { Engins, classe_engins, Gasoil, appro_gasoil, tab_personnel, Pannes, travaux, nature_travaux, Users, pointage, tab_ressources, tab_familles, tab_categories, datesPointages, tab_composites, Contrats, Projet, sous_traitant, tab_Essais, Statuts, Devis, Ligne_devis, Constats, ModelAttachement, ModelDecompte, unites, taches, pointage_machine, taches_engins, taches_projet, Entreprise, pointage_travaux } from './models/modeles';
@@ -15,6 +15,7 @@ export class WenService {
   _http = inject(HttpClient);
   firestore = inject(Firestore);
   user$: BehaviorSubject<Users|undefined> = new BehaviorSubject<Users|undefined>({} as Users);
+  currentUserSignal = signal<Users | undefined | null>(undefined);
   _auth = inject(Auth);
   myuser$ = user(this._auth);
   addevis(data: Devis): Observable<string> {
@@ -420,7 +421,7 @@ export class WenService {
       this.myuser$.subscribe((resp: any) => {
         if (resp) {
           let filtre=x.find(x => x.uid == resp.uid);
-          this.user$.next(filtre);
+          this.currentUserSignal.set(filtre);
         }
       }
       )

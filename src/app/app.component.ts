@@ -15,9 +15,7 @@ import { WenService } from './wen.service';
 export class AppComponent implements OnInit {
   constructor() {
     effect(() => {
-     this._service.user$.subscribe(
-      resp=>console.log(resp)
-     )
+     console.log(this._service.currentUserSignal());
     })
   }
 
@@ -54,13 +52,9 @@ export class AppComponent implements OnInit {
   }
   click_pannes() {
     this.router.navigateByUrl('/pannes')
-
-
   }
   click_travaux() {
     this.router.navigateByUrl('/travaux')
-
-
   }
   click_accueil() {
     this.router.navigateByUrl('/accueil')
