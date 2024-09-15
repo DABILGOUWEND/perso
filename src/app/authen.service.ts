@@ -4,29 +4,30 @@ import { Users } from './models/modeles';
 import { Router } from '@angular/router';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, user } from '@angular/fire/auth';
 import { collection, addDoc, Firestore } from '@angular/fire/firestore';
+import { WendComponent } from './wend/wend.component';
+import { WenService } from './wen.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenService {
   
-  isloggedIn: boolean = false
+  isloggedIn: boolean = false;
   router = inject(Router);
   _auth = inject(Auth);
   user$ = user(this._auth);
   firestore = inject(Firestore);
-  userStatus=''
+  _service=inject(WenService);
+  userStatus='';
   userstatusChanges=signal<string>('');
-
   currentUserSignal = signal<Users | undefined | null>(undefined);
   is_connected = signal<Users | undefined | null>(undefined);
-
   setUserStatus(status:string)
   {
     this.userStatus=status;
     this.userstatusChanges.set(status);
   }
-  register(email: string, password: string,role:string): Observable<any> {
+  register(email: string, password: string,role:string,nom:string): Observable<any> {
     let promise = createUserWithEmailAndPassword(
       this._auth,
       email,
@@ -34,11 +35,9 @@ export class AuthenService {
         let user = {
           uid: response.user.uid,
           email: response.user.email,
-          role:role
-
+          role:role,
+          nom: nom
         };
-        this.setUserStatus(role)
-        this.currentUserSignal.set(user);
         const this_collection = collection(this.firestore, 'myusers')
         const docRef = addDoc(this_collection, user).then
           (response =>
@@ -47,7 +46,6 @@ export class AuthenService {
         from(docRef).subscribe();
         updateProfile(response.user, {
           displayName: email,
-
         })
       }
       );
@@ -58,9 +56,7 @@ export class AuthenService {
     let promise = signInWithEmailAndPassword(this._auth,
       email,
       password).then(() => {
-
       })
-
     return from(promise);
   }
 

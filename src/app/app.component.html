@@ -67,7 +67,7 @@
       </button>
 
       <span class="example-spacer2"> </span>
-      @if((_auth_service.user$ | async)!=null )
+      @if(this._service.currentUserSignal())
       {
       <div class="logoutBtn">
         <ng-container >
@@ -90,8 +90,8 @@
       </ng-container>
       }
       <span class="example-spacer2"> </span>
-      <ng-container *ngIf="_auth_service.isloggedIn">
-        <h1>{{'d'}}</h1>
+      <ng-container *ngIf="_service.currentUserSignal()">
+        <h1>{{_service.currentUserSignal()?.nom}}</h1>
       </ng-container>
       <span class="example-spacer2"> </span>
       <div class="logo">

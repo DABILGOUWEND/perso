@@ -24,14 +24,15 @@ export class RegisterComponent {
       {
         email: new FormControl('', Validators.required),
         password: new FormControl('', Validators.required),
-        role: new FormControl('', Validators.required)
+        role: new FormControl('', Validators.required),
+        nom: new FormControl('', Validators.required)
       }
     )
   }
   submitRegister()
   {
     let value = this.registerForm.getRawValue();
-    this._auth_service.register(value.email, value.password,value.role).subscribe({
+    this._auth_service.register(value.email, value.password,value.role,value.nom).subscribe({
       next: () => {
         this.router.navigateByUrl('/accueil');
       },

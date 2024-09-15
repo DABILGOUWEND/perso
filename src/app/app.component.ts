@@ -15,11 +15,12 @@ import { WenService } from './wen.service';
 export class AppComponent implements OnInit {
   constructor() {
     effect(() => {
+      console.log(this._service.currentUserSignal())
   })}
 
   title = 'wenbtp';
-  router = inject(Router)
-  _auth_service = inject(AuthenService)
+  router = inject(Router);
+  _auth_service = inject(AuthenService);
   _user_store=inject(UserStore);
 
   _service = inject(WenService);
