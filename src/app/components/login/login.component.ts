@@ -48,10 +48,17 @@ export class LoginComponent {
   sumitlogin() {
     this.message.set('tentative de connection en cours...');
     let value = this.loginForm.getRawValue();
-    this._auth_service.loginFirebase(value.email, value.password).subscribe({
-      next: () => { this.router.navigateByUrl('/accueil') },
-      error: error => { console.log(error) }
-    })
+    this._auth_service.loginFirebase(value.email, value.password).subscribe(
+      {
+        next: () => {
+          this.router.navigateByUrl('/accueil');
+        },
+        error: error => {
+         console.log(error)
+        }
+      }
+    )
+
     /*   this.authservice.login(value.identifiant, value.mot_de_passe).subscribe(response => {
         this.setMessage();
         if (response) {

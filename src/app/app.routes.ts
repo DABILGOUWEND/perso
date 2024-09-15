@@ -17,13 +17,15 @@ import { DecomptesComponent } from './components/decomptes/decomptes.component';
 import { PointageTrvxEnginsComponent } from './components/pointage-trvx-engins/pointage-trvx-engins.component';
 import { TableauBordComponent } from './components/tableau-bord/tableau-bord.component';
 import { RegisterComponent } from './components/register/register.component';
+import { authGuard } from './auth.guard';
+import { administraGuard } from './administra.guard';
 
 export const routes: Routes = [
     {
         path: "", component: LoginComponent
     },
     {
-        path: 'accueil', component: AccueilComponent
+        path: 'accueil', component: AccueilComponent,canActivate: [administraGuard]   
     },
     {
         path: 'login', component: LoginComponent
@@ -46,7 +48,7 @@ export const routes: Routes = [
     }
     ,
     {
-        path: 'gasoil', component: GasoilComponent
+        path: 'gasoil', component: GasoilComponent,canActivate  : [administraGuard]
     }
     ,
     {

@@ -2,27 +2,15 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthenService } from './authen.service';
 import { UserStore } from './store/appstore';
+import { WenService } from './wen.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const auth = inject(AuthenService);
   const router = inject(Router);
   const user_store = inject(UserStore)
-  let nivo = auth.is_connected()?.niveau
-
-  if (nivo != undefined) {
-    if (user_store.getNivo() == 0) {
-      return true
-    }
-    else {
-      if (nivo == user_store.getNivo() || nivo == 3) {
-        return true
-      }
-      else {
-        alert("Vos droits sont limités!! adressez vous à l'Administrateur")
-        return false
-      }
-    }
-
+  const _service = inject(WenService);
+  if (_service.currentUserSignal() != undefined) {
+    return true
   }
   else {
     router.navigateByUrl('/login')
