@@ -19,32 +19,33 @@ import { TableauBordComponent } from './components/tableau-bord/tableau-bord.com
 import { RegisterComponent } from './components/register/register.component';
 import { authGuard } from './auth.guard';
 import { administraGuard } from './administra.guard';
+import { travauxGuard } from './travaux.guard';
 
 export const routes: Routes = [
     {
         path: "", component: LoginComponent
     },
     {
-        path: 'accueil', component: AccueilComponent,canActivate: [administraGuard]   
+        path: 'accueil', component: AccueilComponent  
     },
     {
         path: 'login', component: LoginComponent
     },
     {
-        path: 'travaux', component: TravauxComponent
+        path: 'travaux', component: TravauxComponent,canActivate: [travauxGuard] 
     },
 
     {
-        path: 'pannes', component: PannesComponent
+        path: 'pannes', component: PannesComponent,canActivate: [administraGuard]   
     },
     {
-        path: 'pointage', component: PointageComponent
+        path: 'pointage', component: PointageComponent,canActivate: [administraGuard]   
     },
     {
-        path: 'materiel', component: EnginsComponent
+        path: 'materiel', component: EnginsComponent,canActivate: [administraGuard]   
     },
     {
-        path: 'personnel', component: PersonnelComponent
+        path: 'personnel', component: PersonnelComponent,canActivate: [administraGuard]   
     }
     ,
     {
@@ -52,7 +53,7 @@ export const routes: Routes = [
     }
     ,
     {
-        path: 'rapportpannes', component: RapportPanneComponent
+        path: 'rapportpannes', component: RapportPanneComponent,canActivate: [administraGuard]   
     }
     ,
     {
@@ -60,30 +61,30 @@ export const routes: Routes = [
     }
     ,
     {
-        path: 'sstrce', component: SousTraitanceComponent
+        path: 'sstrce', component: SousTraitanceComponent,canActivate: [travauxGuard] 
     }
     ,
     {
-        path: 'constats', component: ConstatsComponent
+        path: 'constats', component: ConstatsComponent,canActivate: [travauxGuard] 
     }
     ,
     {
-        path: 'attachements', component: AttachementsComponent
+        path: 'attachements', component: AttachementsComponent,canActivate: [travauxGuard] 
     }
     ,
     {
-        path: 'prestation', component: PrestationComponent
+        path: 'prestation', component: PrestationComponent,canActivate: [travauxGuard] 
     }
     ,
     {
         path: 'decomptes', component: DecomptesComponent
     },
     {
-        path: 'pointagestrvx', component: PointageTrvxEnginsComponent
+        path: 'pointagestrvx', component: PointageTrvxEnginsComponent,canActivate: [travauxGuard] 
     }
     ,
     {
-        path: 'taches_projets', component: TableauBordComponent
+        path: 'taches_projets', component: TableauBordComponent,canActivate: [travauxGuard] 
     }
     ,
     {

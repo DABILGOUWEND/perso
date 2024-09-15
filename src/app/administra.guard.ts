@@ -6,12 +6,14 @@ export const administraGuard: CanActivateFn = (route, state) => {
   const _service = inject(WenService);
   const router = inject(Router);
   const role = _service.currentUserSignal()?.role;
+  console.log(role)
   if (_service.currentUserSignal()) {
     if (role != 'admin') {
       if (role == 'user1') {
         return true;
       }
       else {
+        router.navigateByUrl('/login')
         return false;
       }
     } else {
@@ -21,5 +23,4 @@ export const administraGuard: CanActivateFn = (route, state) => {
     router.navigateByUrl('/login')
     return false
   }
-
 }

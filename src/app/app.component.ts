@@ -15,7 +15,6 @@ import { WenService } from './wen.service';
 export class AppComponent implements OnInit {
   constructor() {
     effect(() => {
-      console.log(this._service.currentUserSignal())
   })}
 
   title = 'wenbtp';
