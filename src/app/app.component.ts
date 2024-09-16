@@ -4,6 +4,7 @@ import { ImportedModule } from './modules/imported/imported.module';
 import { AuthenService } from './authen.service';
 import { UserStore } from './store/appstore';
 import { WenService } from './wen.service';
+import { map, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,13 +16,25 @@ import { WenService } from './wen.service';
 export class AppComponent implements OnInit {
   constructor() {
     effect(() => {
-  })}
-
+      this._service.myuser$.pipe(switchMap((user: any) => {
+        if (user) {
+          let users = this._service.getallUsers().pipe(
+            map(resp => {
+              let filtre = resp.filter(u => u.uid == user.uid);
+              return filtre;
+            }));
+          return users
+        } else {
+          return []
+        }
+      })).subscribe(console.log
+      )
+    })
+  }
   title = 'wenbtp';
   router = inject(Router);
   _auth_service = inject(AuthenService);
-  _user_store=inject(UserStore);
-
+  _user_store = inject(UserStore);
   _service = inject(WenService);
   ngOnInit() {
     this._user_store.loadUsers();
@@ -29,7 +42,6 @@ export class AppComponent implements OnInit {
   click_login() {
     this.router.navigateByUrl('/login');
   }
-
   click_register() {
     this.router.navigateByUrl('/register');
   }

@@ -20,13 +20,15 @@ import { RegisterComponent } from './components/register/register.component';
 import { authGuard } from './auth.guard';
 import { administraGuard } from './administra.guard';
 import { travauxGuard } from './travaux.guard';
+import { HomeComponent } from './components/home/home.component';
+import { homeGuard } from './home.guard';
 
 export const routes: Routes = [
     {
-        path: "", component: LoginComponent
+        path: "", redirectTo: "/home", pathMatch: "full"
     },
     {
-        path: 'accueil', component: AccueilComponent  
+        path: 'accueil', component: AccueilComponent,canActivate  : [homeGuard]
     },
     {
         path: 'login', component: LoginComponent
@@ -89,5 +91,9 @@ export const routes: Routes = [
     ,
     {
         path: 'register', component: RegisterComponent
+    }
+    ,
+    {
+        path: 'home', component: HomeComponent,canActivate  : [homeGuard]
     }
 ];

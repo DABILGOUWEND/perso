@@ -1,4 +1,50 @@
-<div class="login-page">
+<div class="container">
+    <div class="backbox">
+        <div class="loginMsg">
+            <div class="logo">
+                SOLUBTP
+            </div>
+            <div class="textcontent">
+                <p class="sstitle">Solutions Informatiques pour BTP.</p>
+            </div>
+        </div>
+        <div class="signupMsg visibility">
+            <div class="textcontent">
+                <p class="title">Have an account?</p>
+                <p>Log in to see all your collection.</p>
+                <button id="switch2">LOG IN</button>
+            </div>
+        </div>
+    </div>
+    <!-- backbox -->
+
+    <div class="frontbox">
+        <div class="login">
+            <h2>LOG IN</h2>
+            <form [formGroup]="loginForm" (ngSubmit)="sumitlogin()" class="login-form ">
+                <div class="inputbox">
+                    <mat-form-field>
+                        <input matInput placeholder="email" formControlName="email">
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input matInput type="password" placeholder="password" formControlName="password">
+                    </mat-form-field>
+                </div>
+                <button mat-flat-button extended [disabled]="!loginForm.valid">Connexion</button>
+            </form>
+        </div>
+        <div>
+            <p>
+                {{message()}}
+            </p>
+        
+        </div>
+
+    </div>
+</div>
+
+<!-- <div class="login-page">
+
     <div class="login-form-container">
         <form [formGroup]="loginForm" (ngSubmit)="sumitlogin()" class="login-form ">
             <fieldset>
@@ -27,4 +73,4 @@
 
         </form>
     </div>
-</div>
+</div> -->

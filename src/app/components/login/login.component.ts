@@ -33,10 +33,12 @@ export class LoginComponent {
       }
     )
     effect(() => {
+      console.log(this._service.currentUserSignal())
     })
   }
   ngOnInit() {
     this.entreprise_store.loadEntreprises();
+    this._user_store.loadUsers();
   }
   setMessage() {
     if (this.authservice.isloggedIn) {
@@ -51,10 +53,10 @@ export class LoginComponent {
     this._auth_service.loginFirebase(value.email, value.password).subscribe(
       {
         next: () => {
-          this.router.navigateByUrl('/accueil');
+          this.router.navigateByUrl('/home');
         },
         error: error => {
-         console.log(error)
+          this.message.set('erreur lors de la connexion:' + error);
         }
       }
     )
