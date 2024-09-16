@@ -4,7 +4,7 @@ import { ImportedModule } from './modules/imported/imported.module';
 import { AuthenService } from './authen.service';
 import { UserStore } from './store/appstore';
 import { WenService } from './wen.service';
-import { map, switchMap, tap } from 'rxjs';
+import { map, of, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -16,19 +16,7 @@ import { map, switchMap, tap } from 'rxjs';
 export class AppComponent implements OnInit {
   constructor() {
     effect(() => {
-      this._service.myuser$.pipe(switchMap((user: any) => {
-        if (user) {
-          let users = this._service.getallUsers().pipe(
-            map(resp => {
-              let filtre = resp.filter(u => u.uid == user.uid);
-              return filtre;
-            }));
-          return users
-        } else {
-          return []
-        }
-      })).subscribe(console.log
-      )
+      
     })
   }
   title = 'wenbtp';

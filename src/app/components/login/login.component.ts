@@ -33,7 +33,7 @@ export class LoginComponent {
       }
     )
     effect(() => {
-      console.log(this._service.currentUserSignal())
+     
     })
   }
   ngOnInit() {

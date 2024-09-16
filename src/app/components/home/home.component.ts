@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
+import { UserStore } from '../../store/appstore';
 
 @Component({
   selector: 'app-home',
@@ -7,6 +8,16 @@ import { Component } from '@angular/core';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
+export class HomeComponent  implements OnInit {
+  constructor() {
+    effect(() => {    
+console.log(this._user_store.users())
+  } )
+}
+  ngOnInit() {
+    this._user_store.loadUsers();
+  }
+  _user_store = inject(UserStore);
+
 
 }
