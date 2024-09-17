@@ -24,18 +24,18 @@ export class AuthenService {
   userstatusChanges=signal<string>('');
   currentUserSignal = signal<Users | undefined | null>(undefined);
   is_connected = signal<Users | undefined | null>(undefined);
+  Isconnected=signal<boolean>(false);
 
   constructor() { 
     this.user$.subscribe((x:any) => { 
       let users=this._user_store.users();
       if(x)
       {
-        let filtrer=users.find(y=>y.uid==x.uid);
-        this.currentUserSignal.set(filtrer);
+        this.Isconnected.set(true)
       }
       else
       {
-        this.currentUserSignal.set(undefined);
+        this.Isconnected.set(false)
       }
     })
   }
