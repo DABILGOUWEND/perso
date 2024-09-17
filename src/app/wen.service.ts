@@ -14,6 +14,7 @@ export class WenService {
 
   _http = inject(HttpClient);
   firestore = inject(Firestore);
+
   user$: BehaviorSubject<Users|undefined> = new BehaviorSubject<Users|undefined>({} as Users);
   currentUserSignal = signal<Users | undefined | null>(undefined);
   _auth = inject(Auth);

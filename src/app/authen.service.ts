@@ -6,6 +6,7 @@ import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signO
 import { collection, addDoc, Firestore } from '@angular/fire/firestore';
 import { WendComponent } from './wend/wend.component';
 import { WenService } from './wen.service';
+import { UserStore } from './store/appstore';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +19,27 @@ export class AuthenService {
   user$ = user(this._auth);
   firestore = inject(Firestore);
   _service=inject(WenService);
+  _user_store=inject(UserStore);
   userStatus='';
   userstatusChanges=signal<string>('');
   currentUserSignal = signal<Users | undefined | null>(undefined);
   is_connected = signal<Users | undefined | null>(undefined);
+
+  constructor() { 
+    this.user$.subscribe((x:any) => { 
+      let users=this._user_store.users();
+      if(x)
+      {
+        let filtrer=users.find(y=>y.uid==x.uid);
+        this.currentUserSignal.set(filtrer);
+      }
+      else
+      {
+        this.currentUserSignal.set(undefined);
+      }
+    })
+  }
+
   setUserStatus(status:string)
   {
     this.userStatus=status;

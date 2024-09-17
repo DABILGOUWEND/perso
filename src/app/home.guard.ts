@@ -7,7 +7,6 @@ export const homeGuard: CanActivateFn = (route, state) => {
   const _service = inject(WenService);
   const router = inject(Router);
   const _user_store = inject(UserStore);
-  console.log(_user_store.users())
   const role = _service.currentUserSignal()?.role;
 
   let response = _service.currentUserSignal() != undefined

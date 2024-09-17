@@ -16,7 +16,7 @@ import { map, of, switchMap, tap } from 'rxjs';
 export class AppComponent implements OnInit {
   constructor() {
     effect(() => {
-      
+      console.log(this._user_store.users()) 
     })
   }
   title = 'wenbtp';
