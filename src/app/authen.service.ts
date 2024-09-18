@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { Users } from './models/modeles';
 import { Router } from '@angular/router';
@@ -7,6 +7,7 @@ import { collection, addDoc, Firestore } from '@angular/fire/firestore';
 import { WendComponent } from './wend/wend.component';
 import { WenService } from './wen.service';
 import { UserStore } from './store/appstore';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root'
@@ -25,19 +26,21 @@ export class AuthenService {
   currentUserSignal = signal<Users | undefined | null>(undefined);
   is_connected = signal<Users | undefined | null>(undefined);
   Isconnected=signal<boolean>(false);
+  user=computed(() => {
+    console.log(this.state())
+    return this.state().user})
+  state=signal<any>({
+    user:undefined
+  })
 
   constructor() { 
-    this.user$.subscribe((x:any) => { 
-      let users=this._user_store.users();
-      if(x)
-      {
-        this.Isconnected.set(true)
-      }
-      else
-      {
-        this.Isconnected.set(false)
-      }
-    })
+   
+    this.user$.pipe(takeUntilDestroyed()).subscribe((x:any) => {
+      console.log(x)
+      this.state.update((state)=>({...state,x}))
+    }
+      
+    )
   }
 
   setUserStatus(status:string)
@@ -73,7 +76,7 @@ export class AuthenService {
   loginFirebase(email: string, password: string): Observable<any> {
     let promise = signInWithEmailAndPassword(this._auth,
       email,
-      password).then(() => {
+      password).then(() => { this.Isconnected.set(true)
       })
     return from(promise);
   }

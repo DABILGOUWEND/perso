@@ -27,6 +27,7 @@ import { patchState, signalStore, withComputed, withMethods, withState } from "@
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { WenService } from "../wen.service";
 import { v4 as uuidv4 } from 'uuid';
+import { Auth, user } from "@angular/fire/auth";
 const initialGasoilState: gasoilStore = {
     conso_data: [],
     err: null,
@@ -173,7 +174,8 @@ const initialUserState: tab_userStore =
     users_data: [],
     url: '/accueil',
     nivo_requis: 0,
-    message: ''
+    message: '',
+    user:''
 }
 
 const initialStatutState: tab_satatutStore =
@@ -1724,7 +1726,7 @@ export const ApproGasoilStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar), _auth = inject(Auth)) =>
     (
         {
             setUrl(url: string) {
@@ -1733,10 +1735,21 @@ export const ApproGasoilStore = signalStore(
             setNivo(nivo: number) {
                 patchState(store, { nivo_requis: nivo })
             },
+
             loadUsers: rxMethod<void>(pipe(switchMap(() => {
                 return monservice.getallUsers().pipe(
                     tap((data) => {
                         patchState(store, { users_data: data })
+                    })
+                )
+            }
+            ))),
+            loadUser: rxMethod<void>(pipe(switchMap(() => {
+                let myuser$ = user(_auth);
+                return myuser$.pipe(
+                    tap((data:any) => {
+                        let filtre=store.users_data().find(x => x.uid == data.uid)
+                        patchState(store, {user: data})
                     })
                 )
             }

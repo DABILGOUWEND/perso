@@ -351,6 +351,7 @@ export interface tab_userStore {
     url: string,
     nivo_requis: number,
     message: string,
+    user:any
 }
 
 export interface Statuts {

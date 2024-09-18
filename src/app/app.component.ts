@@ -16,10 +16,9 @@ import { map, of, switchMap, tap } from 'rxjs';
 export class AppComponent implements OnInit {
   constructor() {
     effect(() => {
-      console.log(this._auth_service.Isconnected() )
-
     })
   }
+
   title = 'wenbtp';
   router = inject(Router);
   _auth_service = inject(AuthenService);
@@ -27,6 +26,7 @@ export class AppComponent implements OnInit {
   _service = inject(WenService);
   ngOnInit() {
     this._user_store.loadUsers();
+    this._user_store.loadUser();
   }
   click_login() {
     this.router.navigateByUrl('/login');

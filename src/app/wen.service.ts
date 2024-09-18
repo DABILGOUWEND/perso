@@ -7,14 +7,29 @@ import autoTable, { Styles } from 'jspdf-autotable';
 import { HttpClient } from '@angular/common/http';
 import { formatNumber } from '@angular/common';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, user } from '@angular/fire/auth';
+import { sign } from 'crypto';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Injectable({
   providedIn: 'root'
 })
 export class WenService {
+  constructor()
+  {
+    this.user$.pipe(takeUntilDestroyed()).subscribe((x:any) => { 
+      if(x)
+      {
+        this.Isconnected.set(true)
+      }
+      else
+      {
+        this.Isconnected.set(false)
+      }
+    })
+  }
 
   _http = inject(HttpClient);
   firestore = inject(Firestore);
-
+  Isconnected=signal<boolean>(false);
   user$: BehaviorSubject<Users|undefined> = new BehaviorSubject<Users|undefined>({} as Users);
   currentUserSignal = signal<Users | undefined | null>(undefined);
   _auth = inject(Auth);
