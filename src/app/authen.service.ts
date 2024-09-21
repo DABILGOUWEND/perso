@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { Users } from './models/modeles';
 import { Router } from '@angular/router';
@@ -8,11 +8,15 @@ import { WendComponent } from './wend/wend.component';
 import { WenService } from './wen.service';
 import { UserStore } from './store/appstore';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { get } from 'node:http';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { on } from 'node:events';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenService {
+
   
   isloggedIn: boolean = false;
   router = inject(Router);
@@ -21,11 +25,14 @@ export class AuthenService {
   firestore = inject(Firestore);
   _service=inject(WenService);
   _user_store=inject(UserStore);
+
   userStatus='';
   userstatusChanges=signal<string>('');
   currentUserSignal = signal<Users | undefined | null>(undefined);
   is_connected = signal<Users | undefined | null>(undefined);
   Isconnected=signal<boolean>(false);
+  myuser:BehaviorSubject<Users|undefined> = new BehaviorSubject<Users|undefined>({} as Users);
+
   user=computed(() => {
     console.log(this.state())
     return this.state().user})
@@ -33,14 +40,10 @@ export class AuthenService {
     user:undefined
   })
 
-  constructor() { 
-   
-    this.user$.pipe(takeUntilDestroyed()).subscribe((x:any) => {
-      console.log(x)
-      this.state.update((state)=>({...state,x}))
-    }
-      
-    )
+  constructor() {
+    this.user$.subscribe((user:any) => {
+      this.state.set({user: user})
+    })
   }
 
   setUserStatus(status:string)
@@ -73,10 +76,14 @@ export class AuthenService {
     return from(promise);
   };
 
+
   loginFirebase(email: string, password: string): Observable<any> {
-    let promise = signInWithEmailAndPassword(this._auth,
+    const auth=getAuth();
+    let promise = signInWithEmailAndPassword(auth,
       email,
-      password).then(() => { this.Isconnected.set(true)
+      password).then((user) => {
+        console.log(user.user)
+         this.Isconnected.set(true)
       })
     return from(promise);
   }

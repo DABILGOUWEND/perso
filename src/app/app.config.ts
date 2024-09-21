@@ -4,13 +4,14 @@ import localeFr from '@angular/common/locales/fr';
 registerLocaleData(localeFr);
 
 import { routes } from './app.routes';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
 import { registerLocaleData } from '@angular/common';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import{provideAnimationsAsync} from '@angular/platform-browser/animations/async'
+import { functionalInterceptor } from './functional.interceptor';
 
 export const appConfig: ApplicationConfig = {
   
@@ -24,8 +25,19 @@ export const appConfig: ApplicationConfig = {
     useValue: ''
   },
   provideRouter(routes), 
-  provideHttpClient(withFetch()),
+  provideHttpClient(withInterceptors([functionalInterceptor])),
   provideClientHydration(),
   provideAnimationsAsync(),
-  provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideFirebaseApp(() => initializeApp({"projectId":"mon-projet-35c49","appId":"1:126234609649:web:43dee76fe88462b4be2650","storageBucket":"mon-projet-35c49.appspot.com","apiKey":"AIzaSyBsK6a4cgI9g94bdY050vnuI3BP3ejiiXE","authDomain":"mon-projet-35c49.firebaseapp.com","messagingSenderId":"126234609649"})), provideAuth(() => getAuth()), provideFirestore(() => getFirestore()), provideAnimationsAsync(), provideClientHydration(), provideClientHydration()]
+  provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), 
+  provideFirebaseApp(() => 
+    initializeApp({"projectId":"mon-projet-35c49",
+      "appId":"1:126234609649:web:43dee76fe88462b4be2650",
+      "storageBucket":"mon-projet-35c49.appspot.com",
+      "apiKey":"AIzaSyBsK6a4cgI9g94bdY050vnuI3BP3ejiiXE",
+      "authDomain":"mon-projet-35c49.firebaseapp.com",
+      "messagingSenderId":"126234609649"})), 
+      provideAuth(() => getAuth()),
+       provideFirestore(() => getFirestore()), 
+       provideAnimationsAsync(), provideClientHydration(),
+        provideClientHydration()]
 };

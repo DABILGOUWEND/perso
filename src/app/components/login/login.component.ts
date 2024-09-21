@@ -33,12 +33,9 @@ export class LoginComponent {
       }
     )
     effect(() => {
-     
     })
   }
   ngOnInit() {
-    this.entreprise_store.loadEntreprises();
-    this._user_store.loadUsers();
   }
   setMessage() {
     if (this.authservice.isloggedIn) {

@@ -1,16 +1,16 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { WenService } from './wen.service';
-import { UserStore } from './store/appstore';
 import { AuthenService } from './authen.service';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { AsyncPipe } from '@angular/common';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { UserStore } from './store/appstore';
 export const homeGuard: CanActivateFn = (route, state) => {
-  const _service = inject(WenService);
   const _autservice = inject(AuthenService);
   const router = inject(Router);
-  if (_autservice.user()) {
+
+_autservice.user$.subscribe((resp:any)=>
+  _autservice.state.set({user:resp})
+);
+console.log(_autservice.state());
+  if (_autservice.Isconnected()) {
     return true
   }
   router.navigateByUrl('/login');

@@ -1748,7 +1748,7 @@ export const ApproGasoilStore = signalStore(
                 let myuser$ = user(_auth);
                 return myuser$.pipe(
                     tap((data:any) => {
-                        let filtre=store.users_data().find(x => x.uid == data.uid)
+                        let filtre=store.users_data().find(x => x.uid == data.uid);
                         patchState(store, {user: data})
                     })
                 )
