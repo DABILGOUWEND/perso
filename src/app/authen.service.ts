@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { BehaviorSubject, Observable, from } from 'rxjs';
+import { BehaviorSubject, Observable, from, tap } from 'rxjs';
 import { Users } from './models/modeles';
 import { Router } from '@angular/router';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, user } from '@angular/fire/auth';
@@ -21,7 +21,11 @@ export class AuthenService {
   isloggedIn: boolean = false;
   router = inject(Router);
   _auth = inject(Auth);
-  user$ = user(this._auth);
+  user$ = user(this._auth).pipe(tap((user:any) => {
+    this.myuser.next(user);
+    this.state.set({ user: user })
+  }
+  ));
   firestore = inject(Firestore);
   _service=inject(WenService);
   _user_store=inject(UserStore);
@@ -31,19 +35,17 @@ export class AuthenService {
   currentUserSignal = signal<Users | undefined | null>(undefined);
   is_connected = signal<Users | undefined | null>(undefined);
   Isconnected=signal<boolean>(false);
-  myuser:BehaviorSubject<Users|undefined> = new BehaviorSubject<Users|undefined>({} as Users);
+  myuser:BehaviorSubject<any|undefined> = new BehaviorSubject<any|undefined>({} as Users);
 
   user=computed(() => {
-    console.log(this.state())
     return this.state().user})
   state=signal<any>({
     user:undefined
   })
 
   constructor() {
-    this.user$.subscribe((user:any) => {
-      this.state.set({user: user})
-    })
+    this.user$.subscribe();
+
   }
 
   setUserStatus(status:string)
@@ -82,8 +84,11 @@ export class AuthenService {
     let promise = signInWithEmailAndPassword(auth,
       email,
       password).then((user) => {
-        console.log(user.user)
-         this.Isconnected.set(true)
+        let filtre=this._user_store.users().find(x=>x.uid==user.user.uid);
+        let role=filtre==undefined?'':filtre.role;
+        localStorage.setItem('user_uid', JSON.stringify(user.user.uid));
+        localStorage.setItem('role', JSON.stringify(role));
+         this.Isconnected.set(true);
       })
     return from(promise);
   }

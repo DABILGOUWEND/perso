@@ -14,8 +14,11 @@ import { map, of, switchMap, tap } from 'rxjs';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
+
   constructor() {
+   
     effect(() => {
+      console.log(this._user_store.user())
     })
   }
 
@@ -26,8 +29,8 @@ export class AppComponent implements OnInit {
   _service = inject(WenService);
 
   ngOnInit() {
-    this._user_store.loadUsers();
     this._user_store.loadUser();
+    this._auth_service.logout().subscribe();
   }
   click_login() {
     this.router.navigateByUrl('/login');

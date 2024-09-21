@@ -4,13 +4,11 @@ import { AuthenService } from './authen.service';
 import { UserStore } from './store/appstore';
 export const homeGuard: CanActivateFn = (route, state) => {
   const _autservice = inject(AuthenService);
+  const _userstore = inject(UserStore);
+  let role = localStorage.getItem('role');
+  let uid = localStorage.getItem('uid');
   const router = inject(Router);
-
-_autservice.user$.subscribe((resp:any)=>
-  _autservice.state.set({user:resp})
-);
-console.log(_autservice.state());
-  if (_autservice.Isconnected()) {
+  if (uid!=null) {
     return true
   }
   router.navigateByUrl('/login');
