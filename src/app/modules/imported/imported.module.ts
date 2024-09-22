@@ -5,7 +5,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -34,6 +33,7 @@ import { CanvasJSAngularChartsModule } from '@canvasjs/angular-charts';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { QRCodeModule } from 'angularx-qrcode';
 import { QrCodeModule } from 'ng-qrcode';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 const MATERIAL_COMPONENTS = [

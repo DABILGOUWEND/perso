@@ -4,6 +4,7 @@ import { AuthenService } from '../../authen.service';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { Router } from '@angular/router';
 import { onAuthStateChanged } from '@angular/fire/auth';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -24,6 +25,8 @@ export class HomeComponent  implements OnInit {
   }
   logout()
   {
-    this._auth_service.logout().subscribe()
+    this._auth_service.logout().subscribe(tap(() => {
+      this.router.navigateByUrl('/login');
+    }));
   }
 }

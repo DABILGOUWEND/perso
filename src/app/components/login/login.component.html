@@ -37,9 +37,11 @@
             <p>
                 {{message()}}
             </p>
-        
+           
         </div>
-
+        <div class="spinner">
+            <mat-spinner *ngIf="_auth_service.loadings()"></mat-spinner>
+        </div>
     </div>
 </div>
 

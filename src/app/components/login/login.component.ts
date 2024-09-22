@@ -38,7 +38,7 @@ export class LoginComponent {
   ngOnInit() {
   }
   setMessage() {
-    if (this.authservice.isloggedIn) {
+    if (this.authservice.isloggedIn()) {
       this.message.set('vous êtes connecté.')
     } else {
       this.message.set('identifiant ou mot de passe incorrecte.')
@@ -50,28 +50,20 @@ export class LoginComponent {
     this._auth_service.loginFirebase(value.email, value.password).subscribe(
       {
         next: () => {
-          this.router.navigateByUrl('/home');
+          setTimeout(() => {
+           this.message.set('connexion réussie');
+            this.authservice.loadings.set(false);
+            this.router.navigateByUrl('/home');
+            
+          }, 2000);
+         
         },
         error: error => {
           this.message.set('erreur lors de la connexion:' + error);
+          this.authservice.loadings.set(false);
         }
       }
     )
-
-    /*   this.authservice.login(value.identifiant, value.mot_de_passe).subscribe(response => {
-        this.setMessage();
-        if (response) {
-         
-          let niveau=this.authservice.is_connected()?.niveau;
-          let url =this.users_store.getUrl()
-          this.router.navigateByUrl(url)
-          this.authservice.is_connected.set({id:'',identifiant:value.identifiant,mot_de_passe:value.mot_de_passe,niveau:niveau?niveau:0})
-        }
-        else {
-          this.loginForm.get('mot_de_passe')?.setValue('')
-          this.router.navigateByUrl('/login')
-        }
-      }) */
   }
   choiceEntreprise(data: any) {
 

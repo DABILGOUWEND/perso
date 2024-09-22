@@ -25,7 +25,7 @@ export const appConfig: ApplicationConfig = {
     useValue: ''
   },
   provideRouter(routes), 
-  provideHttpClient(withInterceptors([functionalInterceptor])),
+  provideHttpClient(withFetch()),
   provideClientHydration(),
   provideAnimationsAsync(),
   provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), 

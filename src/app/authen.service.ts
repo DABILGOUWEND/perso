@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { BehaviorSubject, Observable, from, tap } from 'rxjs';
+import { BehaviorSubject, Observable, from, map, switchMap, tap, timeout } from 'rxjs';
 import { Users } from './models/modeles';
 import { Router } from '@angular/router';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, user } from '@angular/fire/auth';
@@ -11,49 +11,34 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { get } from 'node:http';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { on } from 'node:events';
+import { time } from 'node:console';
+import { sign } from 'node:crypto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenService {
 
-  
-  isloggedIn: boolean = false;
+  constructor() {
+  }
+
+
+
   router = inject(Router);
   _auth = inject(Auth);
-  user$ = user(this._auth).pipe(tap((user:any) => {
-    this.myuser.next(user);
-    this.state.set({ user: user })
-  }
-  ));
+
   firestore = inject(Firestore);
-  _service=inject(WenService);
-  _user_store=inject(UserStore);
-
-  userStatus='';
-  userstatusChanges=signal<string>('');
-  currentUserSignal = signal<Users | undefined | null>(undefined);
-  is_connected = signal<Users | undefined | null>(undefined);
-  Isconnected=signal<boolean>(false);
-  myuser:BehaviorSubject<any|undefined> = new BehaviorSubject<any|undefined>({} as Users);
-
-  user=computed(() => {
-    return this.state().user})
-  state=signal<any>({
-    user:undefined
-  })
-
-  constructor() {
-    this.user$.subscribe();
-
+  _service = inject(WenService);
+  _user_store = inject(UserStore);
+  user_uid = signal<string | null>(null);
+  isloggedIn = computed(() => {
+    let uid=localStorage.getItem('user_uid');
+    return  uid!= null;
   }
+  );
+  loadings = signal(false);
 
-  setUserStatus(status:string)
-  {
-    this.userStatus=status;
-    this.userstatusChanges.set(status);
-  }
-  register(email: string, password: string,role:string,nom:string): Observable<any> {
+  register(email: string, password: string, role: string, nom: string): Observable<any> {
     let promise = createUserWithEmailAndPassword(
       this._auth,
       email,
@@ -61,7 +46,7 @@ export class AuthenService {
         let user = {
           uid: response.user.uid,
           email: response.user.email,
-          role:role,
+          role: role,
           nom: nom
         };
         const this_collection = collection(this.firestore, 'myusers')
@@ -77,77 +62,33 @@ export class AuthenService {
       );
     return from(promise);
   };
-
-
   loginFirebase(email: string, password: string): Observable<any> {
-    const auth=getAuth();
+    const auth = getAuth();
+    this.loadings.set(true);
     let promise = signInWithEmailAndPassword(auth,
       email,
       password).then((user) => {
-        let filtre=this._user_store.users().find(x=>x.uid==user.user.uid);
-        let role=filtre==undefined?'':filtre.role;
+        let filtre = this._user_store.users().find(x => x.uid == user.user.uid);
+        let role = filtre == undefined ? '' : filtre.role;
         localStorage.setItem('user_uid', JSON.stringify(user.user.uid));
         localStorage.setItem('role', JSON.stringify(role));
-         this.Isconnected.set(true);
+        this.user_uid.set(user.user.uid);
+
       })
+      .catch((error) => {
+      });
     return from(promise);
   }
-
-  /*  login(name: string, password: string): Observable<boolean> {
-     let users = this.user_store.users()
-     let identifiants = users.map(x => x.identifiant)
-     let motdepasses = users.map(x => x.mot_de_passe)
-     let niveau = users.map(x => x.niveau)
-     let ind = identifiants.indexOf(name, 0)
-     let isloggedIn = false
-     let is_connect = undefined
-     if (ind == -1) {
-       isloggedIn = false
-     }
-     else {
-       if (motdepasses[ind] == password) {
-         if(niveau[ind]==this.user_store.getNivo() || niveau[ind]==3)
-         {
-           isloggedIn = true
-           is_connect = {
-             id: '',
-             identifiant: name,
-             mot_de_passe: password,
-             niveau: niveau[ind]
-           }
-         }
-         else
-         {
-           this.user_store.setNivo(niveau[ind])
-           this.user_store.setUrl('/accueil')
-           isloggedIn = true
-           is_connect = {
-             id: '',
-             identifiant: name,
-             mot_de_passe: password,
-             niveau: niveau[ind]
-           }
-         }
-           
- 
-       }
-       else {
-         isloggedIn = false
-       }
-     }
-     return of(isloggedIn).pipe(
-       delay(1000),
-       tap(isloggedIn => {
-         this.isloggedIn = isloggedIn;
-         this.is_connected.set(is_connect)
-       }
-       )
-     )
-   } */
-
   logout(): Observable<any> {
-    let promise = signOut(this._auth);
+    let promise = signOut(this._auth).then(() => {
+      setTimeout(() => {
+        this.router.navigateByUrl('/login');
+      }, 2000);
+    }
+    );
+    localStorage.removeItem('user_uid');
+    localStorage.removeItem('role');
+    this.loadings.set(false);
     return from(promise);
   }
-
 }

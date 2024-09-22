@@ -18,7 +18,6 @@ export class AppComponent implements OnInit {
   constructor() {
    
     effect(() => {
-      console.log(this._user_store.user())
     })
   }
 
@@ -30,7 +29,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this._user_store.loadUser();
-    this._auth_service.logout().subscribe();
   }
   click_login() {
     this.router.navigateByUrl('/login');
