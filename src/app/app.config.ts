@@ -12,10 +12,12 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import{provideAnimationsAsync} from '@angular/platform-browser/animations/async'
 import { functionalInterceptor } from './functional.interceptor';
+import { getDatabase, provideDatabase } from '@angular/fire/database';
 
 export const appConfig: ApplicationConfig = {
   
   providers: [
+    
   {
     provide: LOCALE_ID,
     useValue: 'fr-FR' // 'de' for Germany, 'fr' for France ...
@@ -25,8 +27,7 @@ export const appConfig: ApplicationConfig = {
     useValue: ''
   },
   provideRouter(routes), 
-  provideHttpClient(withFetch()),
-  provideClientHydration(),
+  provideHttpClient(withInterceptors([functionalInterceptor])),
   provideAnimationsAsync(),
   provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), 
   provideFirebaseApp(() => 
@@ -37,7 +38,14 @@ export const appConfig: ApplicationConfig = {
       "authDomain":"mon-projet-35c49.firebaseapp.com",
       "messagingSenderId":"126234609649"})), 
       provideAuth(() => getAuth()),
+      provideFirebaseApp(() => initializeApp({ 
+        projectId: 'mon-projet-35c49', 
+        appId: '1:126234609649:web:43dee76fe88462b4be2650', 
+        storageBucket: 'mon-projet-35c49.appspot.com', 
+        apiKey: 'AIzaSyBsK6a4cgI9g94bdY050vnuI3BP3ejiiXE',
+         authDomain: 'mon-projet-35c49.firebaseapp.com', 
+         messagingSenderId: '126234609649' })),  
        provideFirestore(() => getFirestore()), 
-       provideAnimationsAsync(), provideClientHydration(),
-        provideClientHydration()]
+       provideDatabase(() => getDatabase()),
+       provideAnimationsAsync()]
 };

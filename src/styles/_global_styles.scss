@@ -3612,8 +3612,10 @@ body{
   display: none;
 }
 .spinner{
-  background-color: #152857;
-  width: 90%;
-  padding-left: 5%;
-  padding-right: 5%;
+padding-top: 0px;
 }
+.spinner mat-spinner{
+  width: 50%!important;
+  margin-left: 25%;
+ }
+ 

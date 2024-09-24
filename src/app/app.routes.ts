@@ -94,6 +94,6 @@ export const routes: Routes = [
     }
     ,
     {
-        path: 'home', component: HomeComponent,canActivate  : [homeGuard]
+        path: 'home', component: HomeComponent,canActivate: [homeGuard]
     }
 ];

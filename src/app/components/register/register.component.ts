@@ -34,7 +34,7 @@ export class RegisterComponent {
     let value = this.registerForm.getRawValue();
     this._auth_service.register(value.email, value.password,value.role,value.nom).subscribe({
       next: () => {
-        this.router.navigateByUrl('/accueil');
+        this.router.navigateByUrl('/login');
       },
       error: error => { 
         this.message.set('erreur lors de l\'inscription:'+error);

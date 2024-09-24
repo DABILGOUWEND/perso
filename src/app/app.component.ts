@@ -5,6 +5,9 @@ import { AuthenService } from './authen.service';
 import { UserStore } from './store/appstore';
 import { WenService } from './wen.service';
 import { map, of, switchMap, tap } from 'rxjs';
+import { getAuth } from 'firebase/auth';
+import { getDatabase, onValue, ref } from 'firebase/database';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -26,9 +29,9 @@ export class AppComponent implements OnInit {
   _auth_service = inject(AuthenService);
   _user_store = inject(UserStore);
   _service = inject(WenService);
-
+_http = inject(HttpClient);
   ngOnInit() {
-    this._user_store.loadUser();
+  this._auth_service.autoLogin();
   }
   click_login() {
     this.router.navigateByUrl('/login');

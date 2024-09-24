@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { BehaviorSubject, Observable, from, map, switchMap, tap, timeout } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, from, map, switchMap, tap, timeout } from 'rxjs';
 import { Users } from './models/modeles';
 import { Router } from '@angular/router';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, user } from '@angular/fire/auth';
@@ -7,54 +7,52 @@ import { collection, addDoc, Firestore } from '@angular/fire/firestore';
 import { WendComponent } from './wend/wend.component';
 import { WenService } from './wen.service';
 import { UserStore } from './store/appstore';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { get } from 'node:http';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { on } from 'node:events';
-import { time } from 'node:console';
-import { sign } from 'node:crypto';
-
+import { getAuth, onAuthStateChanged, signInWithCredential } from 'firebase/auth';
+import { Database, ref, set } from '@angular/fire/database';
+import { child, getDatabase, onValue } from "firebase/database";
+import { initializeApp } from 'firebase/app';
+import { HttpClient } from '@angular/common/http';
+import { response } from 'express';
+import { JsonPipe } from '@angular/common';
+import { environment } from '../environments/environment';
+const apiKey=environment.firebaseConfig.apiKey;
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenService {
-
   constructor() {
+
   }
-
-
 
   router = inject(Router);
   _auth = inject(Auth);
-
-  firestore = inject(Firestore);
+  _http = inject(HttpClient);
+  database = inject(Database);
+  _firestore = inject(Firestore);
   _service = inject(WenService);
   _user_store = inject(UserStore);
-  user_uid = signal<string | null>(null);
-  isloggedIn = computed(() => {
-    let uid=localStorage.getItem('user_uid');
-    return  uid!= null;
-  }
-  );
-  loadings = signal(false);
+  user$ = user(this._auth)
 
+  loadings = signal(false);
+  userSignal = signal<Users | undefined>(undefined);
+
+
+  get_rt_database(): Observable<any> {
+    return this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/users.json')
+  }
   register(email: string, password: string, role: string, nom: string): Observable<any> {
     let promise = createUserWithEmailAndPassword(
       this._auth,
       email,
       password).then(response => {
-        let user = {
-          uid: response.user.uid,
-          email: response.user.email,
-          role: role,
-          nom: nom
-        };
-        const this_collection = collection(this.firestore, 'myusers')
-        const docRef = addDoc(this_collection, user).then
-          (response =>
-            response.id
-          )
-        from(docRef).subscribe();
+        let userId = response.user.uid;
+        const db = getDatabase();
+        set(ref(db, 'users/' + userId), {
+          username: nom,
+          email: email,
+          role: role
+        });
         updateProfile(response.user, {
           displayName: email,
         })
@@ -63,32 +61,62 @@ export class AuthenService {
     return from(promise);
   };
   loginFirebase(email: string, password: string): Observable<any> {
+    localStorage.removeItem('token');
     const auth = getAuth();
     this.loadings.set(true);
-    let promise = signInWithEmailAndPassword(auth,
-      email,
-      password).then((user) => {
-        let filtre = this._user_store.users().find(x => x.uid == user.user.uid);
-        let role = filtre == undefined ? '' : filtre.role;
-        localStorage.setItem('user_uid', JSON.stringify(user.user.uid));
-        localStorage.setItem('role', JSON.stringify(role));
-        this.user_uid.set(user.user.uid);
-
-      })
-      .catch((error) => {
-      });
-    return from(promise);
+    return this._http.post('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+apiKey,
+      {
+        email:email,
+        password:password,
+        returnSecureToken:true
+      }
+    ).pipe(
+      tap(resp=>
+        this.handleCreateUser(resp)
+      )
+    )
   }
   logout(): Observable<any> {
     let promise = signOut(this._auth).then(() => {
       setTimeout(() => {
+        localStorage.removeItem('token');
         this.router.navigateByUrl('/login');
       }, 2000);
     }
     );
-    localStorage.removeItem('user_uid');
-    localStorage.removeItem('role');
-    this.loadings.set(false);
+    localStorage.removeItem('user');
+    this.userSignal.set(undefined)
     return from(promise);
   }
+
+  isloggedIn() {
+    let uid = localStorage.getItem('token');
+    return uid != null;
+  }
+  autoLogin()
+  {
+    let data=localStorage.getItem('user')
+    if(data)
+    {
+      
+      const dataparse=JSON.parse(data);
+      if (dataparse.expiretime && new Date(dataparse.expiretime)>=new Date())
+      {
+        this.userSignal.set(dataparse);
+      }
+    }
+  }
+  handleCreateUser(user: any) {
+    const expiresInTs = new Date().getTime() + user.expiresIn * 1000;
+    const expireIn = expiresInTs;
+    let new_user:Users={
+      uid:user.localId,
+      email:user.email,
+      token:user.idToken,
+      expiretime:expireIn
+    }
+    this.userSignal.set(new_user);
+    localStorage.setItem('user',JSON.stringify(new_user));
+  }
+
 }

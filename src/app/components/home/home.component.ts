@@ -29,4 +29,27 @@ export class HomeComponent  implements OnInit {
       this.router.navigateByUrl('/login');
     }));
   }
+
+ 
+  click_register() {
+    this.router.navigateByUrl('/register');
+  }
+  click_gasoil() {
+    this.router.navigateByUrl('/gasoil');
+  }
+  click_pointage() {
+    this.router.navigateByUrl('/pointage');
+  }
+  click_pannes() {
+    this.router.navigateByUrl('/pannes');
+  }
+  click_travaux() {
+    this.router.navigateByUrl('/travaux');
+  }
+  click_accueil() {
+    this.router.navigateByUrl('/accueil');
+  }
+  prestation() {
+    this.router.navigateByUrl('/prestation');
+  }
 }
