@@ -32,6 +32,7 @@ export class AppComponent implements OnInit {
 _http = inject(HttpClient);
   ngOnInit() {
   this._auth_service.autoLogin();
+  console.log(this._auth_service.userSignal())
   }
   click_login() {
     this.router.navigateByUrl('/login');

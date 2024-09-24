@@ -16,7 +16,7 @@ import { HttpClient } from '@angular/common/http';
 import { response } from 'express';
 import { JsonPipe } from '@angular/common';
 import { environment } from '../environments/environment';
-const apiKey=environment.firebaseConfig.apiKey;
+const apiKey = environment.firebaseConfig.apiKey;
 @Injectable({
   providedIn: 'root'
 })
@@ -42,36 +42,34 @@ export class AuthenService {
     return this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/users.json')
   }
   register(email: string, password: string, role: string, nom: string): Observable<any> {
-    let promise = createUserWithEmailAndPassword(
-      this._auth,
-      email,
-      password).then(response => {
-        let userId = response.user.uid;
-        const db = getDatabase();
-        set(ref(db, 'users/' + userId), {
-          username: nom,
-          email: email,
-          role: role
-        });
-        updateProfile(response.user, {
-          displayName: email,
-        })
+    return this._http.post('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + apiKey,
+      {
+        email: email,
+        password: password
       }
-      );
-    return from(promise);
+    ).pipe(tap((resp: any) => {
+      let userId = resp.localId;
+      this._http.put('https://mon-projet-35c49-default-rtdb.firebaseio.com/users/' + userId + '.json',
+        {
+          email: resp.email,
+          username: nom,
+          role: role
+        }
+      ).subscribe()
+    }))
   };
   loginFirebase(email: string, password: string): Observable<any> {
     localStorage.removeItem('token');
     const auth = getAuth();
     this.loadings.set(true);
-    return this._http.post('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+apiKey,
+    return this._http.post('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + apiKey,
       {
-        email:email,
-        password:password,
-        returnSecureToken:true
+        email: email,
+        password: password,
+        returnSecureToken: true
       }
     ).pipe(
-      tap(resp=>
+      tap(resp =>
         this.handleCreateUser(resp)
       )
     )
@@ -93,30 +91,35 @@ export class AuthenService {
     let uid = localStorage.getItem('token');
     return uid != null;
   }
-  autoLogin()
-  {
-    let data=localStorage.getItem('user')
-    if(data)
-    {
-      
-      const dataparse=JSON.parse(data);
-      if (dataparse.expiretime && new Date(dataparse.expiretime)>=new Date())
-      {
+  autoLogin() {
+    let data = localStorage.getItem('user')
+    if (data) {
+
+      const dataparse = JSON.parse(data);
+      if (dataparse.expiretime && new Date(dataparse.expiretime) >= new Date()) {
         this.userSignal.set(dataparse);
       }
     }
   }
   handleCreateUser(user: any) {
-    const expiresInTs = new Date().getTime() + user.expiresIn * 1000;
-    const expireIn = expiresInTs;
-    let new_user:Users={
-      uid:user.localId,
-      email:user.email,
-      token:user.idToken,
-      expiretime:expireIn
-    }
-    this.userSignal.set(new_user);
-    localStorage.setItem('user',JSON.stringify(new_user));
+    this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/users/'+user.localId+'.json').subscribe(
+      (resp:any)=>{
+        console.log(resp);
+        const expiresInTs = new Date().getTime() + user.expiresIn * 1000;
+        const expireIn = expiresInTs;
+        let new_user: Users = {
+          uid: user.localId,
+          email: user.email,
+          token: user.idToken,
+          expiretime: expireIn,
+          role:resp.role
+        }
+        this.userSignal.set(new_user);
+        localStorage.setItem('user', JSON.stringify(new_user));
+      }
+    
+    )
+   
   }
 
 }
