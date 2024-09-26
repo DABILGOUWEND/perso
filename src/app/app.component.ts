@@ -2,13 +2,14 @@ import { Component, OnInit, computed, effect, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { ImportedModule } from './modules/imported/imported.module';
 import { AuthenService } from './authen.service';
-import { UserStore } from './store/appstore';
+import { EnginsStore, UserStore } from './store/appstore';
 import { WenService } from './wen.service';
 import { map, of, switchMap, tap } from 'rxjs';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, onValue, ref } from 'firebase/database';
 import { HttpClient } from '@angular/common/http';
-
+import { Task } from './components/contrat-sstraitant/contrat-sstraitant.component';
+import { v4 as uuid } from 'uuid';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -21,6 +22,8 @@ export class AppComponent implements OnInit {
   constructor() {
 
     effect(() => {
+      console.log(
+      )
     })
   }
 
@@ -29,9 +32,11 @@ export class AppComponent implements OnInit {
   _auth_service = inject(AuthenService);
   _user_store = inject(UserStore);
   _service = inject(WenService);
+  _engins_store = inject(EnginsStore);
   _http = inject(HttpClient);
   ngOnInit() {
     this._auth_service.autoLogin();
+    this._engins_store.loadengins();
   }
   click_login() {
     this.router.navigateByUrl('/login');
@@ -62,4 +67,5 @@ export class AppComponent implements OnInit {
   prestation() {
     this.router.navigateByUrl('/prestation');
   }
+
 }

@@ -19,6 +19,7 @@ export class LoginComponent {
   _service = inject(WenService);
   _auth_service = inject(AuthenService);
   _user_store = inject(UserStore);
+  _entreprise=inject(EntrepriseStore);
   loginForm: FormGroup;
   message = signal('vous êtes déconnecté');
   constructor(
@@ -36,6 +37,7 @@ export class LoginComponent {
     })
   }
   ngOnInit() {
+    this.entreprise_store.loadEntreprises()
   }
   setMessage() {
     if (this.authservice.isloggedIn()) {

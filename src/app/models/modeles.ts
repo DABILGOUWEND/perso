@@ -345,7 +345,8 @@ export interface Users {
     email: string,
     token: string,
     expiretime:number,
-    role:string
+    role:string,
+    entreprise_id:string
 }
 export interface tab_userStore {
     users_data: Users[],

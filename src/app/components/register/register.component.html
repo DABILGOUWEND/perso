@@ -9,15 +9,26 @@
                     <p><em>{{message()}}</em></p>
                 </div>
                 <div class="login_saisi">
+
                     <mat-form-field>
-                      <mat-select formControlName="role" placeholder="Role">
-                        <mat-option value="admin">Admin</mat-option>
-                        <mat-option value="user1">User niveau 1</mat-option>
-                        <mat-option value="user2">User niveau 2</mat-option>
+                        <mat-select formControlName="entreprise_id" placeholder="entreprise">
+                            <mat-option *ngFor="let row of _entreprise_store.donnees_entreprise()" value="{{row.id}}">
+                                {{row.enseigne}}
+                            </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-            
+
+                <div class="login_saisi">
+                    <mat-form-field>
+                        <mat-select formControlName="role" placeholder="Role">
+                            <mat-option value="admin">Admin</mat-option>
+                            <mat-option value="user1">User niveau 1</mat-option>
+                            <mat-option value="user2">User niveau 2</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
                 <div class="login_saisi">
                     <mat-form-field>
                         <input matInput formControlName="email" placeholder="email" type="email">
@@ -30,7 +41,7 @@
                 </div>
                 <div class="login_saisi">
                     <mat-form-field>
-                        <input matInput formControlName="nom" placeholder="pseudo" >
+                        <input matInput formControlName="nom" placeholder="pseudo">
                     </mat-form-field>
                 </div>
                 <div class="login-form__footer">
