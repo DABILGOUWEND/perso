@@ -59,7 +59,7 @@ export class AuthenService {
     }))
   };
   loginFirebase(email: string, password: string): Observable<any> {
-    localStorage.removeItem('token');
+   // localStorage.removeItem('user');
     const auth = getAuth();
     this.loadings.set(true);
     return this._http.post('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + apiKey,

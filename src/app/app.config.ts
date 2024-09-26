@@ -27,7 +27,7 @@ export const appConfig: ApplicationConfig = {
     useValue: ''
   },
   provideRouter(routes), 
-  provideHttpClient(withInterceptors([functionalInterceptor])),
+  provideHttpClient(),
   provideAnimationsAsync(),
   provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), 
   provideFirebaseApp(() => 

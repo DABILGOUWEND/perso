@@ -32,7 +32,14 @@ export class AppComponent implements OnInit {
 _http = inject(HttpClient);
   ngOnInit() {
   this._auth_service.autoLogin();
-  console.log(this._auth_service.userSignal())
+  let data = localStorage.getItem('user')
+ if(data)
+ {
+  let myuser=JSON.parse(data)
+  this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/users.json?auth='+myuser.token).subscribe()
+ }
+
+  
   }
   click_login() {
     this.router.navigateByUrl('/login');
