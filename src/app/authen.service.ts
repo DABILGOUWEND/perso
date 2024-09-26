@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, from, map, switchMap, tap, timeout } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, from, map, switchMap, tap, throwError, timeout } from 'rxjs';
 import { Users } from './models/modeles';
 import { Router } from '@angular/router';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, user } from '@angular/fire/auth';
@@ -59,7 +59,7 @@ export class AuthenService {
     }))
   };
   loginFirebase(email: string, password: string): Observable<any> {
-   // localStorage.removeItem('user');
+    // localStorage.removeItem('user');
     const auth = getAuth();
     this.loadings.set(true);
     return this._http.post('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + apiKey,
@@ -77,13 +77,12 @@ export class AuthenService {
   logout(): Observable<any> {
     let promise = signOut(this._auth).then(() => {
       setTimeout(() => {
-        localStorage.removeItem('token');
         this.router.navigateByUrl('/login');
       }, 2000);
     }
     );
     localStorage.removeItem('user');
-    this.userSignal.set(undefined)
+    this.userSignal.set(undefined);
     return from(promise);
   }
 
@@ -92,9 +91,8 @@ export class AuthenService {
     return uid != null;
   }
   autoLogin() {
-    let data = localStorage.getItem('user')
+    let data = localStorage.getItem('user');
     if (data) {
-
       const dataparse = JSON.parse(data);
       if (dataparse.expiretime && new Date(dataparse.expiretime) >= new Date()) {
         this.userSignal.set(dataparse);
@@ -102,24 +100,28 @@ export class AuthenService {
     }
   }
   handleCreateUser(user: any) {
-    this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/users/'+user.localId+'.json').subscribe(
-      (resp:any)=>{
-        console.log(resp);
-        const expiresInTs = new Date().getTime() + user.expiresIn * 1000;
-        const expireIn = expiresInTs;
-        let new_user: Users = {
-          uid: user.localId,
-          email: user.email,
-          token: user.idToken,
-          expiretime: expireIn,
-          role:resp.role
+    const expiresInTs = new Date().getTime() + user.expiresIn * 1000;
+    const expireIn = expiresInTs;
+    let new_user: Users = {
+      uid: user.localId,
+      email: user.email,
+      token: user.idToken,
+      expiretime: expireIn,
+      role: ''
+    }
+    this.userSignal.set(new_user);
+    this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/users/' + user.localId + '.json').pipe(
+      tap(
+        (resp: any) => {
+          this.userSignal.update(
+            (user: any) => (
+              { ...user, role: resp.role }
+            )
+          )
+          localStorage.setItem('user', JSON.stringify(this.userSignal()));
         }
-        this.userSignal.set(new_user);
-        localStorage.setItem('user', JSON.stringify(new_user));
-      }
-    
-    )
-   
+      )
+    ).subscribe()
   }
 
 }

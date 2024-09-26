@@ -19,7 +19,7 @@ import { HttpClient } from '@angular/common/http';
 export class AppComponent implements OnInit {
 
   constructor() {
-   
+
     effect(() => {
     })
   }
@@ -29,17 +29,9 @@ export class AppComponent implements OnInit {
   _auth_service = inject(AuthenService);
   _user_store = inject(UserStore);
   _service = inject(WenService);
-_http = inject(HttpClient);
+  _http = inject(HttpClient);
   ngOnInit() {
-  this._auth_service.autoLogin();
-  let data = localStorage.getItem('user')
- if(data)
- {
-  let myuser=JSON.parse(data)
-  this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/users.json?auth='+myuser.token).subscribe()
- }
-
-  
+    this._auth_service.autoLogin();
   }
   click_login() {
     this.router.navigateByUrl('/login');
