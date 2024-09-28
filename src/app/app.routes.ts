@@ -5,7 +5,6 @@ import { GasoilComponent } from './components/gasoil/gasoil.component';
 import { LoginComponent } from './components/login/login.component';
 import { PannesComponent } from './components/pannes/pannes.component';
 import { PersonnelComponent } from './components/personnel/personnel.component';
-import { PointageComponent } from './components/pointage/pointage.component';
 import { RapportPanneComponent } from './components/rapport-panne/rapport-panne.component';
 import { TravauxComponent } from './components/travaux/travaux.component';
 import { Essai2Component } from './components/essai2/essai2.component';
@@ -39,9 +38,6 @@ export const routes: Routes = [
 
     {
         path: 'pannes', component: PannesComponent,canActivate: [administraGuard]   
-    },
-    {
-        path: 'pointage', component: PointageComponent,canActivate: [administraGuard]   
     },
     {
         path: 'materiel', component: EnginsComponent,canActivate: [administraGuard]   

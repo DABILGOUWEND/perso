@@ -2,13 +2,12 @@ import { Component, OnInit, computed, effect, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { ImportedModule } from './modules/imported/imported.module';
 import { AuthenService } from './authen.service';
-import { EnginsStore, UserStore } from './store/appstore';
+import { EnginsStore, EntrepriseStore, UserStore } from './store/appstore';
 import { WenService } from './wen.service';
 import { map, of, switchMap, tap } from 'rxjs';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, onValue, ref } from 'firebase/database';
 import { HttpClient } from '@angular/common/http';
-import { Task } from './components/contrat-sstraitant/contrat-sstraitant.component';
 import { v4 as uuid } from 'uuid';
 @Component({
   selector: 'app-root',
@@ -22,8 +21,8 @@ export class AppComponent implements OnInit {
   constructor() {
 
     effect(() => {
-      console.log(
-      )
+      //console.log(this._auth_service.url_entreprise()
+
     })
   }
 
@@ -33,10 +32,13 @@ export class AppComponent implements OnInit {
   _user_store = inject(UserStore);
   _service = inject(WenService);
   _engins_store = inject(EnginsStore);
+  _entreprise_store = inject(EntrepriseStore)
   _http = inject(HttpClient);
   ngOnInit() {
     this._auth_service.autoLogin();
-    this._engins_store.loadengins();
+    if (this._auth_service.userSignal())
+      this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/COMPTES/' + this._auth_service.userSignal()?.projet_id + '.json').subscribe()
+
   }
   click_login() {
     this.router.navigateByUrl('/login');

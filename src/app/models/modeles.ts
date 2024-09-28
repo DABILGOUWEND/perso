@@ -5,33 +5,33 @@ export interface Engins {
     immatriculation: string,
     utilisateur_id: string,
     classe_id: string,
-    gasoil:tab_gasoil[],
-    panne:tab_Pannes[]
-    
+    gasoil: tab_gasoil[],
+    panne: tab_Pannes[]
+
 }
 
 export interface classe_engins {
     id: string,
     designation: string,
-    taches:string[]
+    taches: string[]
 }
 export interface tab_gasoil {
     date: string,
     quantite_go: string,
     compteur: string
 }
-export interface tab_Pannes{
-    debut_panne:string,
-    fin_panne:string,
-    heure_debut:string,
-    heure_fin:string,
-    motif_panne:string,
-    situation:string
+export interface tab_Pannes {
+    debut_panne: string,
+    fin_panne: string,
+    heure_debut: string,
+    heure_fin: string,
+    motif_panne: string,
+    situation: string
 }
-export interface tab_travaux{
-    date:string,
-    tacheId:string,
-    duree:string,
+export interface tab_travaux {
+    date: string,
+    tacheId: string,
+    duree: string,
 }
 export interface Pannes {
     id: string,
@@ -117,13 +117,16 @@ export interface Entreprise {
     num_cnib: string
 }
 export interface Projet {
-    id: string,
-    code: string,
-    intitule: string,
-    descrip_travaux: string,
-    maitre_ouvrage: string,
-    maitre_oeuvre: string,
-    financement: string
+    id: string
+    code:string,
+    intitule: string
+    maitre_ouvrage_id: string,
+    maitre_oeuvre_id: string,
+    entreprise_id:string,
+    bailleur_id: string,
+    date_debut:string,
+    duree:number
+
 }
 export interface Devis {
     id: string,
@@ -179,8 +182,8 @@ export interface gasoilStore {
     selectedDate: string[],
     message: string,
     date_jour: string,
-    selectedEngin:string,
-    selectedClass:string,
+    selectedEngin: string,
+    selectedClass: string,
 }
 
 export interface Tab_personnelStore {
@@ -344,16 +347,17 @@ export interface Users {
     uid: string,
     email: string,
     token: string,
-    expiretime:number,
-    role:string,
-    entreprise_id:string
+    expiretime: number,
+    role: string,
+    entreprise_id: string,
+    projet_id: string
 }
 export interface tab_userStore {
     users_data: Users[],
     url: string,
     nivo_requis: number,
     message: string,
-    user:any
+    user: any
 }
 
 export interface Statuts {
@@ -421,16 +425,16 @@ export interface tab_DecompteStore {
     selected_num: number,
 }
 export interface taches {
-    'id':string,
+    'id': string,
     'designation': string,
     'uniteid': string,
     'type': string,
-    'classe':string
+    'classe': string
 }
 export interface tab_tachesStore {
     taches_data: taches[],
     selected_type: string,
-     message:string
+    message: string
 }
 export interface pointage_machine {
     'id': string,
@@ -446,62 +450,66 @@ export interface unites {
 }
 
 export interface tab_unitesStore {
-    unites_data:unites[],
-    message:string
+    unites_data: unites[],
+    message: string
 }
-export interface taches_engins
-{
-    'id':string,
-    'taches':string,
-    'uniteId':string
+export interface taches_engins {
+    'id': string,
+    'taches': string,
+    'uniteId': string
 }
 export interface tab_tachesEnginsStore {
     taches_data: taches_engins[],
-    message:string,
+    message: string,
     selectedId: string,
 }
-export interface taches_projet{
-    'id':string,
-    'projetId':string,
-    'tacheId':string,
-    'quantiteDqe':number
+export interface taches_projet {
+    'id': string,
+    'projetId': string,
+    'tacheId': string,
+    'quantiteDqe': number
 
 }
-export interface taches_projet_exec{
-    'tache_projet_id':string,
-    'quantite_exec':number
+export interface taches_projet_exec {
+    'tache_projet_id': string,
+    'quantite_exec': number
 }
 export interface tab_tachesProjetStore {
     taches_data: taches_projet[],
-    message:string,
+    message: string,
     selectedId: string,
-    selectedProjetId:string,
-    selectedTacheId:string
+    selectedProjetId: string,
+    selectedTacheId: string
 }
-export interface Entreprise{
-    'id':string,
-    'enseigne':string,
-    'ifu':string,
-    'rccm':string,
-    'signataire':string
+export interface Entreprise {
+    'id': string,
+    'code':string,
+    'enseigne': string,
+    'adresse': string,
+    'telephone': string,
+    'email': string,
+    "site_web":string,
+    'ifu': string,
+    'rccm': string,
+    'signataire': string,
 }
-export interface tab_EntrepriseStore{
-    liste_entreprise:Entreprise[],
-    message:string,
-    selectedId:string
+export interface tab_EntrepriseStore {
+    liste_entreprise: Entreprise[],
+    message: string,
+    selectedId: string
 }
-export interface pointage_travaux{
-    'id':string,
-    'projetId':string,
-    'date':string,
-    'pointage_mach':pointage_machine[],
-    'metre_travaux':taches_projet_exec[]
+export interface pointage_travaux {
+    'id': string,
+    'projetId': string,
+    'date': string,
+    'pointage_mach': pointage_machine[],
+    'metre_travaux': taches_projet_exec[]
 }
-export interface tab_pointage_travauxStore{
-    pointage_data:pointage_travaux[],
-    message:string,
-    selectedId:string,
-    selectedDate:string,
-    selectedProjetId:string,
-    pointage_mach:pointage_machine[]
+export interface tab_pointage_travauxStore {
+    pointage_data: pointage_travaux[],
+    message: string,
+    selectedId: string,
+    selectedDate: string,
+    selectedProjetId: string,
+    pointage_mach: pointage_machine[]
 }

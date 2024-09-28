@@ -9,28 +9,30 @@ import { formatNumber } from '@angular/common';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, user } from '@angular/fire/auth';
 import { sign } from 'crypto';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TaskService } from './task.service';
 @Injectable({
   providedIn: 'root'
 })
 export class WenService {
-  constructor()
-  {
-    this.user$.pipe(takeUntilDestroyed()).subscribe((x:any) => { 
-      if(x)
-      {
+  constructor() {
+    this.user$.pipe(takeUntilDestroyed()).subscribe((x: any) => {
+      if (x) {
         this.Isconnected.set(true)
       }
-      else
-      {
+      else {
         this.Isconnected.set(false)
       }
     })
   }
-
+  //
+  url_entreprises = 'https://mon-projet-35c49-default-rtdb.firebaseio.com/ENTREPRISES.json';
+  url_projets = 'https://mon-projet-35c49-default-rtdb.firebaseio.com/PROJETS.json';
+  url_financements = 'https://mon-projet-35c49-default-rtdb.firebaseio.com/FINANCEMENTS.json'
+  //
   _http = inject(HttpClient);
   firestore = inject(Firestore);
-  Isconnected=signal<boolean>(false);
-  user$: BehaviorSubject<Users|undefined> = new BehaviorSubject<Users|undefined>({} as Users);
+  Isconnected = signal<boolean>(false);
+  user$: BehaviorSubject<Users | undefined> = new BehaviorSubject<Users | undefined>({} as Users);
   currentUserSignal = signal<Users | undefined | null>(undefined);
   _auth = inject(Auth);
   myuser$ = user(this._auth);
@@ -436,12 +438,11 @@ export class WenService {
     return collect.pipe(tap(x => {
       this.myuser$.subscribe((resp: any) => {
         if (resp) {
-          let filtre=x.find(x => x.uid == resp.uid);
+          let filtre = x.find(x => x.uid == resp.uid);
           this.user$.next(filtre);
           this.currentUserSignal.set(filtre);
         }
-        else
-        {
+        else {
           this.user$.next(undefined);
           this.currentUserSignal.set(undefined);
         }
@@ -923,16 +924,26 @@ export class WenService {
   //
   //entreprises
   getAllEntreprises(): Observable<Entreprise[]> {
-    const Collection = collection(this.db, 'entreprises')
-    return collectionData(Collection, { idField: 'id' }) as Observable<Entreprise[]>
+    return this._http.get(this.url_entreprises).pipe(map(
+      (resp: any) => {
+        let task = []
+        for (let key in resp) {
+          task.push({
+            ...resp[key]
+
+          })
+        }
+        return task
+      }
+    ))
   }
   addEntreprise(data: any): Observable<string> {
-    const Collection = collection(this.db, 'entreprises')
+    const Collection = collection(this.db, 'entreprises');
     const docRef = addDoc(Collection, data).then
       (response =>
         response.id
       )
-    return from(docRef)
+    return from(docRef);
   }
   deleteEntreprise(id: string): Observable<void> {
     const docRef = doc(this.db, 'entreprises/' + id)
@@ -1132,18 +1143,23 @@ export class WenService {
     return (dates.filter(x => x == numero)).length
   }
   getallProjet(): Observable<Projet[]> {
-    const ClassesCollection = collection(this.db, 'projet')
-    return collectionData(ClassesCollection, { idField: 'id' }) as Observable<Projet[]>
+    return this._http.get(this.url_projets).pipe(
+      map((resp: any) => {
+        let task = []
+        for (let key in resp) {
+          task.push({
+            ...resp[key]
+          })
+        }
+        return task
+      }
+      )
+    )
   }
   addProjet(data: Projet): Observable<string> {
     let mydata =
     {
-      intitule: data.intitule,
-      descrip_travaux: data.descrip_travaux,
-      maitre_ouvrage: data.maitre_ouvrage,
-      maitre_oeuvre: data.maitre_oeuvre,
-      finacement: data.financement
-
+      
     }
     const EnginsCollection = collection(this.db, 'projet')
     const docRef = addDoc(EnginsCollection, mydata).then
