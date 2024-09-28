@@ -2716,9 +2716,16 @@ wen-table:make-gold {
       font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
     }
 
+    mat-form-field {
+      margin-top: 20px;
+      margin-left: 10px;
+      font-size: 14px;
+      text-align: center;
+      background-color: rgb(216, 214, 197)!important;
+    }
 
     button {
-      font-size: 22px;
+      font-size: 20px;
     }
 
     .loginBtn {
@@ -3319,10 +3326,9 @@ tr.example-element-row:not(.example-expanded-row):active {
 
 
 
-.mat-mdc-tab
-{
+.mat-mdc-tab {
   font-weight: bold;
-  font-size: 20px!important;
+  font-size: 20px !important;
 }
 
 .mat-mdc-row {
@@ -3454,53 +3460,57 @@ th {
   }
 }
 
-body{
+body {
   background-color: #A8A8A8;
   font-family: 'Roboto', sans-serif;
 }
 
-.container{
+.container {
   /*border:1px solid white;*/
   width: 800px;
   height: 500px;
   position: absolute;
-  top:50%;
-  left:50%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  display: inline-flex; 
+  display: inline-flex;
 }
-.backbox{  
+
+.backbox {
   background-color: #464543c3;
   width: 100%;
   height: 80%;
   position: absolute;
-  transform: translate(0,-50%);
-  top:50%;
+  transform: translate(0, -50%);
+  top: 50%;
   display: inline-flex;
 }
 
-.frontbox{
+.frontbox {
   background-color: rgb(74, 152, 169);
   border-radius: 20px;
   height: 100%;
   width: 50%;
   z-index: 10;
   position: absolute;
-  right:0;
+  right: 0;
   margin-right: 3%;
   margin-left: 3%;
   transition: right .8s ease-in-out;
 }
-.frontbox p{
+
+.frontbox p {
   text-align: center;
   font-size: 18px;
   color: red;
 }
-.moving{
-  right:45%;
+
+.moving {
+  right: 45%;
 }
 
-.loginMsg, .signupMsg{
+.loginMsg,
+.signupMsg {
   width: 50%;
   height: 100%;
   font-size: 15px;
@@ -3508,11 +3518,12 @@ body{
 }
 
 .loginMsg .title,
-.signupMsg .title{
+.signupMsg .title {
   font-weight: bold;
   font-size: 28px;
 }
-.loginMsg .logo{
+
+.loginMsg .logo {
   font-weight: bold;
   background-color: rgb(68, 158, 222);
   margin-left: 10%;
@@ -3522,20 +3533,22 @@ body{
   height: 50px;
   font-size: 28px;
   text-align: center;
-  color:white  ;
+  color: white;
   padding-top: 20px;
 }
-.loginMsg .sstitle{
+
+.loginMsg .sstitle {
   font-size: 22px;
 }
+
 .loginMsg p,
 .signupMsg p {
   font-weight: 100;
 }
 
-.textcontent{
-  color:white;
-  margin-top:20px;
+.textcontent {
+  color: white;
+  margin-top: 20px;
   text-align: center;
 }
 
@@ -3544,16 +3557,17 @@ body{
   background-color: #567fd1;
   border: 2px solid white;
   border-radius: 10px;
-  color:white;
+  color: white;
   font-size: 12px;
   box-sizing: content-box;
   font-weight: 300;
-  padding:10px;
+  padding: 10px;
   margin-top: 20px;
 }
 
 /* front box content*/
-.login, .signup{
+.login,
+.signup {
   padding: 20px;
   text-align: center;
 }
@@ -3561,28 +3575,32 @@ body{
 .login h2,
 .signup h2 {
   color: white;
-  font-size:28px;
+  font-size: 28px;
 }
 
-.inputbox{
-  margin-top:30px; 
+.inputbox {
+  margin-top: 30px;
 }
-.login mat-form-field, mat-label,
-.signup mat-form-field,mat-label {
+
+.login mat-form-field,
+mat-label,
+.signup mat-form-field,
+mat-label {
   display: block;
   width: 100%;
   height: 40px;
-  background-color: #567fd1;;
+  background-color: #567fd1;
+  ;
   border: none;
-  margin-bottom:20px;
+  margin-bottom: 20px;
   font-size: 22px;
   margin-top: 40px;
 }
 
 .login button,
-.signup button{
+.signup button {
   border: none;
-  color:white!important;
+  color: white !important;
   font-size: 22px;
   border-radius: 10px;
   width: 80%;
@@ -3593,27 +3611,29 @@ body{
 /* Fade In & Out*/
 .login p {
   cursor: pointer;
-  color:#807575;
-  font-size:15px;
+  color: #807575;
+  font-size: 15px;
 }
 
-.loginMsg, .signupMsg{
+.loginMsg,
+.signupMsg {
   /*opacity: 1;*/
   transition: opacity .8s ease-in-out;
 }
 
-.visibility{
+.visibility {
   opacity: 1;
 }
 
-.hide{
+.hide {
   display: none;
 }
-.spinner{
-padding-top: 0px;
+
+.spinner {
+  padding-top: 0px;
 }
-.spinner mat-spinner{
-  width: 50%!important;
+
+.spinner mat-spinner {
+  width: 50% !important;
   margin-left: 25%;
- }
- 
+}

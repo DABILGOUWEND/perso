@@ -47,8 +47,8 @@ export class RegisterComponent implements OnInit {
   }
   ngOnInit() {
     
-    //this._entreprise_store.loadEntreprises();
-    //this._projet_store.loadProjets()
+    this._entreprise_store.loadEntreprises();
+    this._projet_store.loadProjets()
   }
   submitRegister() {
     let value = this.registerForm.getRawValue();

@@ -1,11 +1,12 @@
-import { Component, effect, inject, OnInit } from '@angular/core';
-import { ClasseEnginsStore, EnginsStore, EntrepriseStore, PersonnelStore, UserStore } from '../../store/appstore';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { ClasseEnginsStore, CompteStore, EnginsStore, EntrepriseStore, PersonnelStore, ProjetStore, UserStore } from '../../store/appstore';
 import { AuthenService } from '../../authen.service';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { Router } from '@angular/router';
 import { forkJoin, Observable, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { v4 as uuid } from 'uuid';
+import { TaskService } from '../../task.service';
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -21,23 +22,38 @@ export class HomeComponent implements OnInit {
   _engins_store = inject(EnginsStore);
   _classe_store = inject(ClasseEnginsStore);
   _personnel_store = inject(PersonnelStore);
-
-
-
-  constructor() {
-    effect(() => {
+  _projet_store = inject(ProjetStore);
+  _compte_store=inject(CompteStore)
+  _task_service=inject(TaskService)
+  selectedOption = signal<string|undefined>('');
+  constructor()
+  {
+    effect(()=>{
+      console.log(this._compte_store.personnel())
     })
   }
+
+  projet_compte = computed(() => {
+    let filtre = this._projet_store.donnees_projet().filter(
+      x => {
+        return this._auth_service.userSignal()?.projet_id.includes(x.id)
+      }
+    )
+    return filtre.map(x => ({ 'intitule': x.intitule, 'id': x.id }))
+  })
+
   ngOnInit() {
     this._engins_store.loadengins();
     this._classe_store.loadclasses();
     this._personnel_store.loadPersonnel();
+    this._projet_store.loadProjets();
+    this._compte_store.loadCompte();
+    this.selectedOption.set(this._auth_service.userSignal()?.current_projet_id);
+    
   }
   logout() {
     this._auth_service.logout().subscribe();
   }
-
-
   click_register() {
     this.router.navigateByUrl('/register');
   }
@@ -75,30 +91,44 @@ export class HomeComponent implements OnInit {
         num_matricule: element.num_matricule,
         statut_id: element.statut_id
       };
-      let stringif = JSON.stringify(mydata);
-      console.log(this._auth_service.url_entreprise())
-      observ.push(this._http.put(this._auth_service.url_entreprise() + 'personnel/' + myId + '.json',
-        stringif
-      ))
+     
+      observ.push(
+        this._task_service.addComptePersonnelData(mydata)
+      )
     });
     forkJoin(observ).subscribe()
   }
   upload_engins() {
-    const myId = uuid()
-    let mydata ={
-      "id": myId,
-      "intitule": "CONSTRUCTION VILLAS",
-      "date_debut": "ras",
-      "duree": 0,
-      "bailleur_id":"732e2cbd-11ef-4c10-80e4-f66fddd0cd39",
-      "entreprise_id": "09819b65-40d1-4163-a505-6139c05d366b",
-      "maitre_oeuvre_id": "834dcbe7-ffa8-4535-a1a3-1e523dabfe46",
-      "maitre_ouvrage_id": "bbf8688e-5013-43c2-a317-32474c09f884",
-      "code":'PRJ004'
-     }
-    let stringif = JSON.stringify(mydata);
-    this._http.put('https://mon-projet-35c49-default-rtdb.firebaseio.com/PROJETS/' + myId + '.json',
-      stringif
-    ).subscribe()
+  let obsrv:Observable<any>[]=[]
+  this._engins_store.donnees_engins().forEach(element => {
+    
+  });
+    this._engins_store.donnees_engins().forEach((element)=>
+    {
+      let myId = uuid();
+      let mydata = {
+        "id": myId,
+        "designation": element.designation,
+        "code_parc": element.code_parc,
+        "classe_id": element.code_parc,
+        "utilisateur_id": element.classe_id,
+        "immatriculation": element.immatriculation,
+      }
+      
+      obsrv.push(
+        this._task_service.addCompteEnginsData(mydata)
+      )
+    })
+    forkJoin(obsrv).subscribe()
+  }
+  choice_projet(data: any) {
+    this._auth_service.userSignal.update((user: any) => (
+      {
+        ...user, current_projet_id: data.value
+      }
+    )
+    )
+    localStorage.setItem('user',JSON.stringify(this._auth_service.userSignal()));
+    this._compte_store.loadCompte()
   }
 }

@@ -1,6 +1,6 @@
 import { computed, inject } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { Observable, forkJoin, of, pipe, switchMap, tap } from "rxjs";
+import { Observable, forkJoin, map, of, pipe, switchMap, tap } from "rxjs";
 import {
     gasoilStore, tab_ProjetStore, ApprogoStore, Tab_EnginsStore,
     Tab_classeEnginsStore, Tab_personnelStore, tab_SoustraitantStore, tab_PannesStore,
@@ -21,13 +21,15 @@ import {
     tab_EntrepriseStore,
     tab_Pannes,
     tab_pointage_travauxStore,
-    pointage_travaux
+    pointage_travaux,
+    comptes
 } from "../models/modeles"
 import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { WenService } from "../wen.service";
 import { v4 as uuidv4 } from 'uuid';
 import { Auth, authState, user } from "@angular/fire/auth";
+import { TaskService } from "../task.service";
 const initialGasoilState: gasoilStore = {
     conso_data: [],
     err: null,
@@ -175,7 +177,7 @@ const initialUserState: tab_userStore =
     url: '/accueil',
     nivo_requis: 0,
     message: '',
-    user:'ff'
+    user: 'ff'
 }
 
 const initialStatutState: tab_satatutStore =
@@ -246,6 +248,12 @@ const initialPointageTrvxState: tab_pointage_travauxStore =
     selectedDate: '',
     selectedProjetId: '',
     pointage_mach: []
+}
+const initialCompte: comptes =
+{
+    engins: [],
+    personnel: [],
+    current_user: undefined,
 }
 export const ProjetStore = signalStore(
     { providedIn: 'root' },
@@ -1378,8 +1386,6 @@ export const EnginsStore = signalStore(
                                                 situation: x.situation
                                             }
                                         })
-                                        element.gasoil = tab_gasoil;
-                                        element.panne = tab_pannes
                                     });
 
                                     patchState(store, { engins: classeEngins(engins) })
@@ -1711,7 +1717,7 @@ export const ApproGasoilStore = signalStore(
         }
     ))
 )
- export const UserStore = signalStore(
+export const UserStore = signalStore(
     { providedIn: 'root' },
     withState(initialUserState),
     withComputed((store) => (
@@ -1747,14 +1753,14 @@ export const ApproGasoilStore = signalStore(
             loadUser: rxMethod<void>(pipe(switchMap(() => {
                 let myuser$ = user(_auth);
                 return myuser$.pipe(
-                    tap((data:any) => {
-                        let filtre=store.users_data().find(x => x.uid == data.uid);
-                        patchState(store, {user: data})
+                    tap((data: any) => {
+                        let filtre = store.users_data().find(x => x.uid == data.uid);
+                        patchState(store, { user: data })
                     })
                 )
             }
             ))),
-           
+
             removeUser: rxMethod<string>(pipe(
                 switchMap((id) => {
                     return monservice.deleteUser(id).pipe(tap(
@@ -1775,7 +1781,7 @@ export const ApproGasoilStore = signalStore(
 
         }
     ))
-) 
+)
 export const TravauxStore = signalStore(
     { providedIn: 'root' },
     withState(initialTravauxStore),
@@ -3327,6 +3333,41 @@ export const PointageTrvxStore = signalStore(
                     )
                 })
             ))
+
+        }
+    ))
+)
+export const CompteStore = signalStore(
+    { providedIn: 'root' },
+    withState(initialCompte),
+    withComputed((store) => (
+        {
+            donnees_engins: computed(() => {
+                return store.engins();
+            })
+        }
+    )
+    ),
+    withMethods((store, monservice = inject(TaskService), snackbar = inject(MatSnackBar)) =>
+    (
+        {
+            loadCompte: rxMethod<void>(pipe(switchMap(() => {
+                return monservice.getCompteData().pipe(tap(resp => {
+                    let task = [];
+                    for (let key in resp) {
+                        task.push({
+                            ...resp[key],
+                            key
+
+                        })
+                    }
+                    let engins = task.filter(x => x.key == 'engins')
+                    let personnel = task.filter(x => x.key == 'personnel')
+                    patchState(store, { engins: engins[0], personnel: personnel[0] })
+                })
+                )
+            }
+            )))
 
         }
     ))

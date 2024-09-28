@@ -9,9 +9,9 @@
                     <p><em>{{message()}}</em></p>
                 </div>
                 <div class="login_saisi">
-
                     <mat-form-field>
-                        <mat-select formControlName="entreprise_id" placeholder="entreprises" (selectionChange)="choice_entrep($event)"> 
+                        <mat-select formControlName="entreprise_id" placeholder="entreprises"
+                            (selectionChange)="choice_entrep($event)">
                             <mat-option *ngFor="let row of _entreprise_store.donnees_entreprise()" value="{{row.id}}">
                                 {{row.enseigne}}
                             </mat-option>
@@ -19,9 +19,8 @@
                     </mat-form-field>
                 </div>
                 <div class="login_saisi">
-
                     <mat-form-field>
-                        <mat-select formControlName="projet_id" placeholder="projets">
+                        <mat-select formControlName="projet_id" placeholder="projets" multiple>
                             <mat-option *ngFor="let row of projet_id()" value="{{row.id}}">
                                 {{row.intitule}}
                             </mat-option>

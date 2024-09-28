@@ -4,9 +4,7 @@ export interface Engins {
     code_parc: string,
     immatriculation: string,
     utilisateur_id: string,
-    classe_id: string,
-    gasoil: tab_gasoil[],
-    panne: tab_Pannes[]
+    classe_id: string
 
 }
 
@@ -350,7 +348,8 @@ export interface Users {
     expiretime: number,
     role: string,
     entreprise_id: string,
-    projet_id: string
+    projet_id: string[],
+    current_projet_id:string
 }
 export interface tab_userStore {
     users_data: Users[],
@@ -512,4 +511,9 @@ export interface tab_pointage_travauxStore {
     selectedDate: string,
     selectedProjetId: string,
     pointage_mach: pointage_machine[]
+}
+export interface comptes{
+    'engins':Engins[],
+    'personnel':tab_personnel[],
+    'current_user':Users|undefined
 }

@@ -18,8 +18,14 @@
             </a>
             -----------------------
             <a mat-list-item (click)="logout()">
-                <mat-icon>logout </mat-icon>
+                <mat-icon fontIcon="logout">logout </mat-icon>
                 <span>déconnection</span>
+            </a>
+
+            -----------------------
+            <a mat-list-item (click)="click_register()">
+                <mat-icon fontIcon="Register"></mat-icon>
+                <span>Register</span>
             </a>
         </mat-nav-list>
     </mat-sidenav>
@@ -66,26 +72,22 @@
             <button mat-fab extended color="Accent" (click)="prestation()" type="button">
                 PRESTATION TRAVAUX
             </button>
-
-            <span class="example-spacer2"> </span>
-
-            <div class="logoutBtn">
-                <ng-container>
-                    <button mat-fab extended (click)="logout()" color="primary">
-                        <mat-icon> logout</mat-icon> <span>déconnecter</span>
-                    </button>
-                </ng-container>
-            </div>
             <span class="example-spacer2"> </span>
             <ng-container>
-                <button mat-fab extended (click)="click_register()">
-                    REGISTER
-                </button>
+                <h1>{{ _auth_service.userSignal()?.email}}</h1>
             </ng-container>
-
-            <span class="example-spacer2"> </span>
             <ng-container>
-                <h1></h1>
+                <mat-form-field>
+                    <mat-label>
+                        Choix projet
+                    </mat-label>
+                    <mat-select [(ngModel)]="selectedOption" (selectionChange)="choice_projet($event)">
+                        @for(item of projet_compte(); track item)
+                        {
+                            <mat-option    value={{item.id}}>{{item.intitule}} </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
             </ng-container>
             <span class="example-spacer2"> </span>
             <div class="logo">
@@ -95,9 +97,9 @@
 
         </mat-toolbar>
 
-        <button mat-raised-button (click)="upload_engins()">
+        <button mat-raised-button (click)="upload_personnel()">
             Uploader
-           </button>
+        </button>
     </mat-sidenav-content>
 
 </mat-sidenav-container>

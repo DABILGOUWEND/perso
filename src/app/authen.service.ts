@@ -32,10 +32,9 @@ export class AuthenService {
   loadings = signal(false);
   userSignal = signal<Users | undefined>(undefined);
   get_rt_database(): Observable<any> {
-  
     return this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/users.json')
   }
-  register(email: string, password: string, role: string, nom: string, entreprise_id: string, projet_id: string): Observable<any> {
+  register(email: string, password: string, role: string, nom: string, entreprise_id: string, projet_id: string[]): Observable<any> {
     return this._http.post('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + apiKey,
       {
         email: email,
@@ -49,7 +48,7 @@ export class AuthenService {
           username: nom,
           role: role,
           entreprise_id: entreprise_id,
-          projet_id:projet_id
+          projet_id:{...projet_id}
         }
       ).subscribe()
     }))
@@ -97,7 +96,6 @@ export class AuthenService {
     }
   }
   handleCreateUser(user: any) {
-
     const expiresInTs = new Date().getTime() + user.expiresIn * 1000;
     const expireIn = expiresInTs;
     let new_user: Users = {
@@ -107,7 +105,8 @@ export class AuthenService {
       expiretime: expireIn,
       role: '',
       entreprise_id: '',
-      projet_id: ''
+      projet_id: [''],
+      current_projet_id:''
     }
     this.userSignal.set(new_user);
     this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/users/' + user.localId + '.json').pipe(
@@ -119,7 +118,8 @@ export class AuthenService {
                 ...user,
                 role: resp.role,
                 entreprise_id: resp.entreprise_id,
-                projet_id: resp.projet_id
+                projet_id: resp.projet_id,
+                current_projet_id:resp.projet_id[0]
               }
             )
           )
