@@ -1,0 +1,7 @@
+{
+    "editor.fontSize": 16,
+    "editor.fontVariations": true,
+    "editor.fontWeight": "normal",
+    "editor.fontLigatures": true,
+    "editor.fontFamily": "monaco"
+}

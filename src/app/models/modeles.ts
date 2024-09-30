@@ -515,5 +515,6 @@ export interface tab_pointage_travauxStore {
 export interface comptes{
     'engins':Engins[],
     'personnel':tab_personnel[],
+    'classes_engins':classe_engins[],
     'current_user':Users|undefined
 }

@@ -19,7 +19,7 @@ export class TaskService {
   addCompteEnginsData(data: any): Observable<any> {
     let data_stringif = JSON.stringify(data);
     let url = 'https://mon-projet-35c49-default-rtdb.firebaseio.com/COMPTES/' +
-      this._auth_service.userSignal()?.current_projet_id + '/engins/' + data.id + '.json'
+      this._auth_service.userSignal()?.current_projet_id + '/engins/' + data.id + '.json';
     return this._http.put(url, data_stringif)
   }
   addComptePersonnelData(data: any): Observable<any> {
@@ -27,6 +27,35 @@ export class TaskService {
     let url = 'https://mon-projet-35c49-default-rtdb.firebaseio.com/COMPTES/' +
       this._auth_service.userSignal()?.current_projet_id + '/personnel/' + data.id + '.json';
     return this._http.put(url, data_stringif)
+  }
+  addCompteClasseEnginsData(data: any): Observable<any> {
+    let data_stringif = JSON.stringify(data);
+    let url = 'https://mon-projet-35c49-default-rtdb.firebaseio.com/COMPTES/' +
+      this._auth_service.userSignal()?.current_projet_id + '/classes_engins/' + data.id + '.json';
+    return this._http.put(url, data_stringif)
+  }
+  updateEnginsData(data: any): Observable<any> {
+    let data_stringif = JSON.stringify(data);
+    let url = 'https://mon-projet-35c49-default-rtdb.firebaseio.com/COMPTES/' +
+      this._auth_service.userSignal()?.current_projet_id + '/engins/' + data.id + '.json';
+    return this._http.patch(url, data_stringif)
+  }
+  updatePersonnelData(data: any): Observable<any> {
+    let data_stringif = JSON.stringify(data);
+    let url = 'https://mon-projet-35c49-default-rtdb.firebaseio.com/COMPTES/' +
+      this._auth_service.userSignal()?.current_projet_id + '/personnel/' + data.id + '.json';
+    return this._http.patch(url, data_stringif)
+  }
+
+  deleteEnginsData(id: string): Observable<any> {
+    let url = 'https://mon-projet-35c49-default-rtdb.firebaseio.com/COMPTES/' +
+      this._auth_service.userSignal()?.current_projet_id + '/engins/' + id + '.json';
+    return this._http.delete(url)
+  }
+  deletePersonnelData(id: string): Observable<any> {
+    let url = 'https://mon-projet-35c49-default-rtdb.firebaseio.com/COMPTES/' +
+      this._auth_service.userSignal()?.current_projet_id + '/personnel/' + id + '.json';
+    return this._http.delete(url)
   }
 
 }

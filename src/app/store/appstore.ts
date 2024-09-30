@@ -30,6 +30,7 @@ import { WenService } from "../wen.service";
 import { v4 as uuidv4 } from 'uuid';
 import { Auth, authState, user } from "@angular/fire/auth";
 import { TaskService } from "../task.service";
+import { DateAdapter } from "@angular/material/core";
 const initialGasoilState: gasoilStore = {
     conso_data: [],
     err: null,
@@ -253,6 +254,7 @@ const initialCompte: comptes =
 {
     engins: [],
     personnel: [],
+    classes_engins: [],
     current_user: undefined,
 }
 export const ProjetStore = signalStore(
@@ -3342,33 +3344,167 @@ export const CompteStore = signalStore(
     withState(initialCompte),
     withComputed((store) => (
         {
-            donnees_engins: computed(() => {
-                return store.engins();
-            })
+            donnees_engins: computed(
+                () => {
+                    return store.engins();
+                }
+            ),
+            donnees_personnel: computed(
+                () => {
+                    return store.personnel();
+                }
+            )
+            ,
+            donnees_classesEngins: computed(
+                () => {
+                    return store.classes_engins();
+                }
+            )
         }
     )
     ),
     withMethods((store, monservice = inject(TaskService), snackbar = inject(MatSnackBar)) =>
     (
         {
-            loadCompte: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getCompteData().pipe(tap(resp => {
-                    let task = [];
-                    for (let key in resp) {
-                        task.push({
-                            ...resp[key],
-                            key
+            loadCompte: rxMethod<void>(
+                pipe(
+                    switchMap(
+                        () => {
+                            return monservice.getCompteData().pipe(
+                                tap(resp => {
+                                    let task = [];
+                                    let engins_parser = [];
+                                    let personnel_parser = [];
+                                    let classesE_parser = [];
+                                    for (let key in resp) {
+                                        task.push(
+                                            {
+                                                ...resp[key],
+                                                key
+                                            }
+                                        )
+                                    }
 
-                        })
-                    }
-                    let engins = task.filter(x => x.key == 'engins')
-                    let personnel = task.filter(x => x.key == 'personnel')
-                    patchState(store, { engins: engins[0], personnel: personnel[0] })
-                })
+                                    let engins = task.filter(x => x.key == 'engins');
+                                    let personnel = task.filter(x => x.key == 'personnel');
+                                    let classes_engins = task.filter(x => x.key == 'classes_engins');
+                                    for (let key in engins[0]) {
+                                        engins_parser.push(
+                                            {
+                                                ...engins[0][key]
+                                            }
+                                        )
+                                    }
+                                    for (let key in personnel[0]) {
+                                        personnel_parser.push(
+                                            {
+                                                ...personnel[0][key]
+                                            }
+                                        )
+                                    }
+                                    for (let key in classes_engins[0]) {
+                                        classesE_parser.push(
+                                            {
+                                                ...classes_engins[0][key]
+                                            }
+                                        )
+                                    }
+                                    patchState(store,
+                                        {
+                                            engins: engins_parser,
+                                            personnel: personnel_parser,
+                                            classes_engins: classesE_parser
+                                        }
+                                    )
+                                }
+                                )
+                            )
+                        }
+                    )
+                )),
+            addEngins: rxMethod<any>(
+                pipe(
+                    switchMap(
+                        data => {
+                            return monservice.addCompteEnginsData(data).pipe(
+                                tap(
+                                    {
+                                        next: () => {
+                                            const updatedonnes = [...store.engins(), data]
+                                            patchState(store, { engins: updatedonnes })
+                                            Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
+                                        }
+                                    }
+                                )
+                            )
+                        }
+                    )
                 )
-            }
-            )))
+            ),
+            addPersonnel: rxMethod<any>(
+                pipe(
+                    switchMap(
+                        data => {
+                            return monservice.addCompteEnginsData(data).pipe()
+                        }
+                    )
+                )
+            ),
+            updateEnginsCompte: rxMethod<any>(
+                pipe(switchMap(engin => {
+                    return monservice.updateEnginsData(engin).pipe(
+                        tap(() => {
+                            var mydata = store.engins();
+                            var index = mydata.findIndex(x => x.id == engin.id);
+                            mydata[index] = engin;
+                            patchState(store, { engins: mydata })
+                        })
+                    )
+                }))
 
+            ),
+            updatePersonnelCompte: rxMethod<any>(
+                pipe(switchMap(personnel => {
+                    return monservice.updatePersonnelData(personnel).pipe(
+                        tap(() => {
+                            var mydata = store.personnel();
+                            var index = mydata.findIndex(x => x.id == personnel.id);
+                            mydata[index] = personnel;
+                            patchState(store, { personnel: mydata })
+                        })
+                    )
+                }))
+
+            ),
+            deletePersonnelCompte: rxMethod<string>(
+                pipe(switchMap(id => {
+                    return monservice.deletePersonnelData(id).pipe(
+                        tap(() => {
+                            var mydata = store.personnel();
+                            var data_reste = mydata.filter(x => x.id != id);
+                            patchState(store, { personnel: data_reste })
+                        })
+                    )
+                }))
+
+            ),
+            deleteEnginCompte: rxMethod<string>(
+                pipe(
+                    switchMap(id => {
+                        return monservice.deleteEnginsData(id).pipe(
+                            tap(
+                                () => {
+                                    var mydata = store.engins();
+                                    var data_reste = mydata.filter(x => x.id != id);
+                                    patchState(store, { engins: data_reste })
+                                }
+                            )
+                        )
+                    }
+                    )
+                )
+
+            )
         }
     ))
 )

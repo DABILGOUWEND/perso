@@ -30,7 +30,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this._auth_service.autoLogin();
-    this._projet_store.loadProjets();
     }
   click_login() {
     this.router.navigateByUrl('/login');

@@ -2,7 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, Validators, NonNullableFormBuilder } from '@angular/forms';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
-import { ClasseEnginsStore, EnginsStore, PersonnelStore, StatutStore } from '../../store/appstore';
+import { ClasseEnginsStore, CompteStore, EnginsStore, PersonnelStore, StatutStore } from '../../store/appstore';
 import { EssaiComponent } from '../essai/essai.component';
 
 
@@ -14,10 +14,11 @@ import { EssaiComponent } from '../essai/essai.component';
   styleUrl: './engins.component.scss'
 })
 export class EnginsComponent implements OnInit {
-  readonly EnginsStore = inject(EnginsStore)
-  readonly personnel_store = inject(PersonnelStore)
-  readonly classeEngins_store = inject(ClasseEnginsStore)
-  readonly statut_store = inject(StatutStore)
+  EnginsStore = inject(EnginsStore);
+  personnel_store = inject(PersonnelStore);
+  classeEngins_store = inject(ClasseEnginsStore);
+  statut_store = inject(StatutStore);
+  _compte_store = inject(CompteStore);
   fb = inject(NonNullableFormBuilder)
   table_update_form = this.fb.group({
     id: new FormControl(''),
@@ -81,7 +82,7 @@ export class EnginsComponent implements OnInit {
 
   classe_select = computed(() => {
     let donnees: any = []
-    this.classeEngins_store.classes_engins()
+    this._compte_store.classes_engins()
       .forEach(element => {
         donnees.push(
           {
@@ -95,7 +96,7 @@ export class EnginsComponent implements OnInit {
   })
   utilisateur_select = computed(() => {
     let donnees: any = []
-    this.personnel_store.donnees_personnel()
+    this._compte_store.donnees_personnel()
       .forEach(element => {
         donnees.push(
           {
@@ -109,11 +110,12 @@ export class EnginsComponent implements OnInit {
   })
   dataSource = computed(
     () => {
+      
       let donnees: any = []
-      this.EnginsStore.donnees_engins().forEach(element => {
-        let classe = this.classeEngins_store.classes_engins().find(x => x.id == element.classe_id)
-        let utilisat = this.personnel_store.donnees_personnel().find(x => x.id == element.utilisateur_id)
-
+      this._compte_store.donnees_engins().forEach(element => {
+        let classe = this._compte_store.donnees_classesEngins().find(x => x.id == element.classe_id)
+        let utilisat = this._compte_store.donnees_personnel().find(x => x.id == element.utilisateur_id)
+         
         donnees.push(
           {
             'id': element.id,
@@ -131,9 +133,7 @@ export class EnginsComponent implements OnInit {
     }
   );
   ngOnInit() {
-    this.EnginsStore.loadengins()
-    this.classeEngins_store.loadclasses()
-    this.personnel_store.loadPersonnel()
+    this._compte_store.loadCompte();
   }
   updateData(data: any) {
     let valeur = data[0]
@@ -150,7 +150,7 @@ export class EnginsComponent implements OnInit {
         classe_id: valeur.classe_id,
         utilisateur_id: valeur.utilisateur_id,
       }
-      this.EnginsStore.updateengins(mydata)
+      this._compte_store.updateEnginsCompte(mydata)
 
     }
     else {
@@ -162,12 +162,12 @@ export class EnginsComponent implements OnInit {
         classe_id: valeur.classe_id,
         utilisateur_id: valeur.utilisateur_id,
       }
-      this.EnginsStore.addengins(mydata)
+      this._compte_store.addEngins(mydata)
     }
   }
   deleteData(id: any) {
     if (confirm('voulez-vous supprimer cet élement?'))
-      this.EnginsStore.removeengin(id)
+      this._compte_store.deleteEnginCompte(id)
   }
   recherche(word: any) {
     this.EnginsStore.filterbyDesignation(word)
@@ -175,14 +175,12 @@ export class EnginsComponent implements OnInit {
   afficheTout() {
     this.EnginsStore.filterbyDesignation('')
   }
-  PatchEventFct(row:any)
-  {
+  PatchEventFct(row: any) {
     this.table_update_form.patchValue(
       row
-    ) 
+    )
   }
-  addEventFct()
-  {
+  addEventFct() {
     this.table_update_form.reset()
   }
 }

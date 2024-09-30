@@ -23,13 +23,12 @@ export class HomeComponent implements OnInit {
   _classe_store = inject(ClasseEnginsStore);
   _personnel_store = inject(PersonnelStore);
   _projet_store = inject(ProjetStore);
-  _compte_store=inject(CompteStore)
-  _task_service=inject(TaskService)
-  selectedOption = signal<string|undefined>('');
-  constructor()
-  {
-    effect(()=>{
-      console.log(this._compte_store.personnel())
+  _compte_store = inject(CompteStore)
+  _task_service = inject(TaskService)
+  selectedOption = signal<string | undefined>('');
+  constructor() {
+    effect(() => {
+    // console.log(this._compte_store.donnees_classesEngins())
     })
   }
 
@@ -49,7 +48,6 @@ export class HomeComponent implements OnInit {
     this._projet_store.loadProjets();
     this._compte_store.loadCompte();
     this.selectedOption.set(this._auth_service.userSignal()?.current_projet_id);
-    
   }
   logout() {
     this._auth_service.logout().subscribe();
@@ -91,7 +89,7 @@ export class HomeComponent implements OnInit {
         num_matricule: element.num_matricule,
         statut_id: element.statut_id
       };
-     
+
       observ.push(
         this._task_service.addComptePersonnelData(mydata)
       )
@@ -99,24 +97,36 @@ export class HomeComponent implements OnInit {
     forkJoin(observ).subscribe()
   }
   upload_engins() {
-  let obsrv:Observable<any>[]=[]
-  this._engins_store.donnees_engins().forEach(element => {
-    
-  });
-    this._engins_store.donnees_engins().forEach((element)=>
-    {
+    let obsrv: Observable<any>[] = []
+    this._engins_store.donnees_engins().forEach((element) => {
       let myId = uuid();
       let mydata = {
         "id": myId,
         "designation": element.designation,
         "code_parc": element.code_parc,
-        "classe_id": element.code_parc,
-        "utilisateur_id": element.classe_id,
+        "classe_id": element.classe_id,
+        "utilisateur_id": element.utilisateur_id,
         "immatriculation": element.immatriculation,
       }
-      
+
       obsrv.push(
         this._task_service.addCompteEnginsData(mydata)
+      )
+    })
+    forkJoin(obsrv).subscribe()
+  }
+  upload_classe_engins() {
+    let obsrv: Observable<any>[] = []
+    this._classe_store.classes().forEach((element) => {
+      let myId = uuid();
+      let mydata = {
+        "id": element.id,
+        "designation": element.designation,
+        "taches": element.taches
+      }
+
+      obsrv.push(
+        this._task_service.addCompteClasseEnginsData(mydata)
       )
     })
     forkJoin(obsrv).subscribe()
@@ -128,7 +138,18 @@ export class HomeComponent implements OnInit {
       }
     )
     )
-    localStorage.setItem('user',JSON.stringify(this._auth_service.userSignal()));
+    localStorage.setItem('user', JSON.stringify(this._auth_service.userSignal()));
     this._compte_store.loadCompte()
+  }
+  update_engins() {
+    let mydata = {
+      "id": uuid(),
+      "designation": 'element.designation',
+      "code_parc": 'element.code_parc',
+      "classe_id": 'element.code_parc',
+      "utilisateur_id": 'element.classe_id',
+      "immatriculation": 'element.immatriculation',
+    }
+    this._task_service.updateEnginsData(mydata).subscribe();
   }
 }

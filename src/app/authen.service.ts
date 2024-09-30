@@ -44,7 +44,7 @@ export class AuthenService {
       let userId = resp.localId;
       this._http.put('https://mon-projet-35c49-default-rtdb.firebaseio.com/users/' + userId + '.json',
         {
-          email: resp.email,
+          email: resp.email, 
           username: nom,
           role: role,
           entreprise_id: entreprise_id,
