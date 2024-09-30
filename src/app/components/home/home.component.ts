@@ -28,7 +28,7 @@ export class HomeComponent implements OnInit {
   selectedOption = signal<string | undefined>('');
   constructor() {
     effect(() => {
-    // console.log(this._compte_store.donnees_classesEngins())
+      // console.log(this._compte_store.donnees_classesEngins())
     })
   }
 
@@ -77,7 +77,23 @@ export class HomeComponent implements OnInit {
   upload_personnel() {
     let observ: any = [];
     this._personnel_store.donnees_personnel().forEach(element => {
-      const myId = element.id
+      let dates = element.dates;
+      let presence = element.Presence;
+      let heureSup = element.heureSup;
+      let heuresNorm = element.heuresN;
+      let Presence = [];
+      for (let key in dates) {
+        Presence.push(
+          {
+            'date': dates[key],
+            'presence': presence[key],
+            'heure_normale': heuresNorm[key],
+            'heure_sup': heureSup[key]
+          }
+        )
+      }
+
+      const myId = element.id;
       let mydata = {
         id: myId,
         nom: element.nom,
@@ -87,7 +103,9 @@ export class HomeComponent implements OnInit {
         email: element.email,
         fonction: element.fonction,
         num_matricule: element.num_matricule,
-        statut_id: element.statut_id
+        statut_id: element.statut_id,
+        presence:Presence
+
       };
 
       observ.push(
@@ -99,6 +117,7 @@ export class HomeComponent implements OnInit {
   upload_engins() {
     let obsrv: Observable<any>[] = []
     this._engins_store.donnees_engins().forEach((element) => {
+
       let myId = uuid();
       let mydata = {
         "id": myId,
