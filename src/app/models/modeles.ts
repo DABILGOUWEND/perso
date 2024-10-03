@@ -345,7 +345,6 @@ export interface Users {
     uid: string,
     email: string,
     token: string,
-    expiretime: number,
     role: string,
     entreprise_id: string,
     projet_id: string[],

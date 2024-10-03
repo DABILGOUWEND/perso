@@ -24,7 +24,7 @@ import { homeGuard } from './home.guard';
 
 export const routes: Routes = [
     {
-        path: "", redirectTo: "/materiel", pathMatch: "full"
+        path: "", redirectTo: "/home", pathMatch: "full"
     },
     {
         path: 'accueil', component: AccueilComponent,canActivate  : [homeGuard]
@@ -90,6 +90,6 @@ export const routes: Routes = [
     }
     ,
     {
-        path: 'home', component: HomeComponent,canActivate: [homeGuard]
+        path: 'home', component: HomeComponent,canActivate:[homeGuard]
     }
 ];

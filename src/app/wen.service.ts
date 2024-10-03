@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, setDoc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { Observable, from, switchMap, of, concatMap, forkJoin, map, tap, BehaviorSubject } from 'rxjs';
 import { Engins, classe_engins, Gasoil, appro_gasoil, tab_personnel, Pannes, travaux, nature_travaux, Users, pointage, tab_ressources, tab_familles, tab_categories, datesPointages, tab_composites, Contrats, Projet, sous_traitant, tab_Essais, Statuts, Devis, Ligne_devis, Constats, ModelAttachement, ModelDecompte, unites, taches, pointage_machine, taches_engins, taches_projet, Entreprise, pointage_travaux } from './models/modeles';
 import jsPDF from 'jspdf'
@@ -432,38 +432,20 @@ export class WenService {
     return from(docRef)
   }
   //users
-  getallUsers(): Observable<Users[]> {
+  getallUsers(): Observable<any[]> {
     const UsersCollection = collection(this.db, 'myusers');
-    let collect = collectionData(UsersCollection, { idField: 'id' }) as Observable<Users[]>
-    return collect.pipe(tap(x => {
-      this.myuser$.subscribe((resp: any) => {
-        if (resp) {
-          let filtre = x.find(x => x.uid == resp.uid);
-          this.user$.next(filtre);
-          this.currentUserSignal.set(filtre);
-        }
-        else {
-          this.user$.next(undefined);
-          this.currentUserSignal.set(undefined);
-        }
-      }
-      )
-    }))
+    let collect = collectionData(UsersCollection, { idField: 'id' }) as Observable<any[]>
+    return collect
   }
-  /*   addUser(data: Users): Observable<string> {
-      let mydata =
-  
-      {
-        identifiant: data.identifiant,
-        mot_de_passe: data.mot_de_passe,
-      }
-      const UsersCollection = collection(this.db, 'users')
-      const docRef = addDoc(UsersCollection, mydata).then
-        (response =>
-          response.id
-        )
-      return from(docRef)
-    } */
+   getallUsersByUid(uid:string): Observable<any> {
+    const docRef = doc(this.db, "myusers", uid);
+    const docSnap = getDoc(docRef);
+    return from(docSnap)
+  }
+  addUser(data: any): Observable<any> {
+    const docRef = setDoc(doc(this.db, 'myusers/'+data.id), data)
+    return from(docRef)
+  }
   deleteUser(id: string): Observable<void> {
     const docRef = doc(this.db, 'users/' + id)
     const promise = deleteDoc(docRef)
@@ -922,20 +904,42 @@ export class WenService {
     return from(promise)
   }
   //
+  //projets
+  getallProjet(): Observable<Projet[]> {
+    const ClassesCollection = collection(this.db, 'projet')
+    return collectionData(ClassesCollection, { idField: 'id' }) as Observable<Projet[]>
+  }
+  async getallProjetId(): Promise<any> {
+    const docRef = doc(this.db, "projet", "7mn80ei1Tryv5M92bJGw");
+    const docSnap = await getDoc(docRef);
+    return docSnap.data() 
+
+    //return collectionData(ClassesCollection, { idField: 'id' }) as Observable<Projet[]>
+  }
+  addProjet(data: Projet): Observable<string> {
+    const EnginsCollection = collection(this.db, 'projet')
+    const docRef = addDoc(EnginsCollection, data).then
+      (response =>
+        response.id
+      )
+    return from(docRef)
+  }
+  deleteProjet(id: string): Observable<void> {
+    const docRef = doc(this.db, 'projet/' + id)
+    const promise = deleteDoc(docRef)
+    return from(promise)
+  }
+  updateProjet(data: any): Observable<void> {
+    let id = data.id
+    const docRef = doc(this.db, 'projet/' + id)
+    const promise = setDoc(docRef, data)
+    return from(promise)
+  }
+
   //entreprises
   getAllEntreprises(): Observable<Entreprise[]> {
-    return this._http.get(this.url_entreprises).pipe(map(
-      (resp: any) => {
-        let task = []
-        for (let key in resp) {
-          task.push({
-            ...resp[key]
-
-          })
-        }
-        return task
-      }
-    ))
+    const ClassesCollection = collection(this.db, 'entreprises')
+    return collectionData(ClassesCollection, { idField: 'id' }) as Observable<Entreprise[]>
   }
   addEntreprise(data: any): Observable<string> {
     const Collection = collection(this.db, 'entreprises');
@@ -956,8 +960,22 @@ export class WenService {
     const promise = setDoc(docRef, data)
     return from(promise)
   }
-  //
 
+  getAllProjets(): Observable<Entreprise[]> {
+    return this._http.get(this.url_entreprises).pipe(map(
+      (resp: any) => {
+        let task = []
+        for (let key in resp) {
+          task.push({
+            ...resp[key]
+
+          })
+        }
+        return task
+      }
+    ))
+  }
+  //
   getallTachesEngins(): Observable<taches_engins[]> {
     const Collection = collection(this.db, 'tachesmachines')
     return collectionData(Collection, { idField: 'id' }) as Observable<taches_engins[]>
@@ -1142,43 +1160,9 @@ export class WenService {
     }
     return (dates.filter(x => x == numero)).length
   }
-  getallProjet(): Observable<Projet[]> {
-    return this._http.get(this.url_projets).pipe(
-      map((resp: any) => {
-        let task = []
-        for (let key in resp) {
-          task.push({
-            ...resp[key]
-          })
-        }
-        return task
-      }
-      )
-    )
-  }
-  addProjet(data: Projet): Observable<string> {
-    let mydata =
-    {
-      
-    }
-    const EnginsCollection = collection(this.db, 'projet')
-    const docRef = addDoc(EnginsCollection, mydata).then
-      (response =>
-        response.id
-      )
-    return from(docRef)
-  }
-  deleteProjet(id: string): Observable<void> {
-    const docRef = doc(this.db, 'projet/' + id)
-    const promise = deleteDoc(docRef)
-    return from(promise)
-  }
-  updateProjet(data: any): Observable<void> {
-    let id = data.id
-    const docRef = doc(this.db, 'projet/' + id)
-    const promise = setDoc(docRef, data)
-    return from(promise)
-  }
+
+
+  //contrats
   getallContrat(): Observable<Contrats[]> {
     const ClassesCollection = collection(this.db, 'contrats')
     return collectionData(ClassesCollection, { idField: 'id' }) as Observable<Contrats[]>
@@ -1211,7 +1195,7 @@ export class WenService {
     const promise = setDoc(docRef, data)
     return from(promise)
   }
-  getallSousTraitants(): Observable<sous_traitant[]> {
+  getallSsouTraitants(): Observable<sous_traitant[]> {
     const ClassesCollection = collection(this.db, 'sstraitants')
     return collectionData(ClassesCollection, { idField: 'id' }) as Observable<sous_traitant[]>
   }

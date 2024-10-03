@@ -274,7 +274,7 @@ export const ProjetStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store, monservice = inject(TaskService), snackbar = inject(MatSnackBar)) =>
     (
         {
 
@@ -282,7 +282,7 @@ export const ProjetStore = signalStore(
                 patchState(store, { selectedId: id })
             },
             loadProjets: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallProjet().pipe(
+                return monservice.getallProjets().pipe(
                     tap((data) => {
                         patchState(store, { projets_data: classeProjet(data) })
                     })
@@ -291,7 +291,7 @@ export const ProjetStore = signalStore(
             ))),
             addProjet: rxMethod<Projet>(pipe(
                 switchMap((projet) => {
-                    return monservice.addProjet(projet).pipe(
+                    return monservice.addProjets(projet).pipe(
                         tap({
                             next: () => {
                                 const updatedonnes = [...store.projets_data(), projet]
@@ -308,7 +308,7 @@ export const ProjetStore = signalStore(
             )),
             removeProjet: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteProjet(id).pipe(tap({
+                    return monservice.deleteProjets(id).pipe(tap({
                         next: () => {
                             const updatedonnes = store.projets_data().filter(x => x.id != id)
                             patchState(store, { projets_data: updatedonnes })
@@ -324,7 +324,7 @@ export const ProjetStore = signalStore(
                 }))),
             updateProjet: rxMethod<Projet>(pipe(
                 switchMap((projet) => {
-                    return monservice.updateProjet(projet).pipe(
+                    return monservice.updateProjets(projet).pipe(
                         tap({
                             next: () => {
                                 var data = store.projets_data()
@@ -503,7 +503,7 @@ export const SstraitantStore = signalStore(
                 patchState(store, { selectedId: id })
             },
             loadSstraitants: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallSousTraitants().pipe(
+                return monservice.getallSsouTraitants().pipe(
                     tap((data) => {
                         patchState(store, { sstraitant_data: classeSstraitant(data) })
                     })
@@ -3366,54 +3366,48 @@ export const CompteStore = signalStore(
     withMethods((store, monservice = inject(TaskService), snackbar = inject(MatSnackBar)) =>
     (
         {
-            loadCompte: rxMethod<void>(
+            loadData: rxMethod<void>(
                 pipe(
                     switchMap(
                         () => {
-                            return monservice.getCompteData().pipe(
+                            let observ_engins = monservice.getallEngins().pipe(
                                 tap(resp => {
-                                    let task = [];
-                                    let engins_parser = [];
-                                    let personnel_parser = [];
-                                    let classesE_parser = [];
-                                    for (let key in resp) {
-                                        task.push(
-                                            {
-                                                ...resp[key],
-                                                key
-                                            }
-                                        )
-                                    }
-
-                                    let engins = task.filter(x => x.key == 'engins');
-                                    let personnel = task.filter(x => x.key == 'personnel');
-                                    let classes_engins = task.filter(x => x.key == 'classes_engins');
-                                    for (let key in engins[0]) {
-                                        engins_parser.push(
-                                            {
-                                                ...engins[0][key]
-                                            }
-                                        )
-                                    }
-                                    for (let key in personnel[0]) {
-                                        personnel_parser.push(
-                                            {
-                                                ...personnel[0][key]
-                                            }
-                                        )
-                                    }
-                                    for (let key in classes_engins[0]) {
-                                        classesE_parser.push(
-                                            {
-                                                ...classes_engins[0][key]
-                                            }
-                                        )
-                                    }
                                     patchState(store,
                                         {
-                                            engins: engins_parser,
-                                            personnel: personnel_parser,
-                                            classes_engins: classesE_parser
+                                            engins: resp
+                                        }
+                                    )
+                                }
+                                )
+                            )
+                            let observ_personnel = monservice.getallPersonnel().pipe(
+                                tap(resp => {
+                                    patchState(store,
+                                        {
+                                            personnel: resp
+                                        }
+                                    )
+                                }
+                                )
+                            )
+                            return forkJoin(
+                                [
+                                    observ_engins,
+                                    observ_personnel
+                                ]
+                            )
+                        }
+                    )
+                )),
+            loadPersonnel: rxMethod<void>(
+                pipe(
+                    switchMap(
+                        () => {
+                            return monservice.getallPersonnel().pipe(
+                                tap(resp => {
+                                    patchState(store,
+                                        {
+                                            personnel: resp
                                         }
                                     )
                                 }
@@ -3426,7 +3420,7 @@ export const CompteStore = signalStore(
                 pipe(
                     switchMap(
                         data => {
-                            return monservice.addCompteEnginsData(data).pipe(
+                            return monservice.addEngins(data).pipe(
                                 tap(
                                     {
                                         next: () => {
@@ -3445,14 +3439,24 @@ export const CompteStore = signalStore(
                 pipe(
                     switchMap(
                         data => {
-                            return monservice.addCompteEnginsData(data).pipe()
+                            return monservice.addPersonnel(data).pipe(
+                                tap(
+                                    {
+                                        next: () => {
+                                            const updatedonnes = [...store.personnel(), data]
+                                            patchState(store, { personnel: updatedonnes })
+                                            Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
+                                        }
+                                    }
+                                )
+                            )
                         }
                     )
                 )
             ),
             updateEnginsCompte: rxMethod<any>(
                 pipe(switchMap(engin => {
-                    return monservice.updateEnginsData(engin).pipe(
+                    return monservice.updateEngins(engin).pipe(
                         tap(() => {
                             var mydata = store.engins();
                             var index = mydata.findIndex(x => x.id == engin.id);
@@ -3465,7 +3469,7 @@ export const CompteStore = signalStore(
             ),
             updatePersonnelCompte: rxMethod<any>(
                 pipe(switchMap(personnel => {
-                    return monservice.updatePersonnelData(personnel).pipe(
+                    return monservice.updatePersonnel(personnel).pipe(
                         tap(() => {
                             var mydata = store.personnel();
                             var index = mydata.findIndex(x => x.id == personnel.id);
@@ -3478,7 +3482,7 @@ export const CompteStore = signalStore(
             ),
             deletePersonnelCompte: rxMethod<string>(
                 pipe(switchMap(id => {
-                    return monservice.deletePersonnelData(id).pipe(
+                    return monservice.deletePersonnel(id).pipe(
                         tap(() => {
                             var mydata = store.personnel();
                             var data_reste = mydata.filter(x => x.id != id);
@@ -3491,7 +3495,7 @@ export const CompteStore = signalStore(
             deleteEnginCompte: rxMethod<string>(
                 pipe(
                     switchMap(id => {
-                        return monservice.deleteEnginsData(id).pipe(
+                        return monservice.deleteEngins(id).pipe(
                             tap(
                                 () => {
                                     var mydata = store.engins();

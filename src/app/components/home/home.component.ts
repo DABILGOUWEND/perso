@@ -1,5 +1,5 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
-import { ClasseEnginsStore, CompteStore, EnginsStore, EntrepriseStore, PersonnelStore, ProjetStore, UserStore } from '../../store/appstore';
+import { APP_ID, Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { ClasseEnginsStore, CompteStore, EnginsStore, EntrepriseStore, PannesStore, PersonnelStore, ProjetStore, UserStore } from '../../store/appstore';
 import { AuthenService } from '../../authen.service';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { Router } from '@angular/router';
@@ -7,6 +7,8 @@ import { forkJoin, Observable, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { v4 as uuid } from 'uuid';
 import { TaskService } from '../../task.service';
+import { WenService } from '../../wen.service';
+export const APP_Is = 'AIzaSyBsK6a4cgI9g94bdY050vnuI3BP3ejiiXE';
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -23,12 +25,14 @@ export class HomeComponent implements OnInit {
   _classe_store = inject(ClasseEnginsStore);
   _personnel_store = inject(PersonnelStore);
   _projet_store = inject(ProjetStore);
-  _compte_store = inject(CompteStore)
-  _task_service = inject(TaskService)
+  _compte_store = inject(CompteStore);
+  _task_service = inject(TaskService);
+  _pannes_store = inject(PannesStore);
+  _service=inject(WenService)
   selectedOption = signal<string | undefined>('');
   constructor() {
     effect(() => {
-      // console.log(this._compte_store.donnees_classesEngins())
+    console.log(this._compte_store.donnees_engins())
     })
   }
 
@@ -42,12 +46,13 @@ export class HomeComponent implements OnInit {
   })
 
   ngOnInit() {
-    this._engins_store.loadengins();
-    this._classe_store.loadclasses();
-    this._personnel_store.loadPersonnel();
+    //this._engins_store.loadengins();
+    //this._classe_store.loadclasses();
+    //this._personnel_store.loadPersonnel();
     this._projet_store.loadProjets();
-    this._compte_store.loadCompte();
-    this.selectedOption.set(this._auth_service.userSignal()?.current_projet_id);
+    //this._pannes_store.loadPannes();
+    this.selectedOption.set(this._auth_service.userSignal()?.current_projet_id); 
+    this._compte_store.loadData()
   }
   logout() {
     this._auth_service.logout().subscribe();
@@ -95,7 +100,6 @@ export class HomeComponent implements OnInit {
 
       const myId = element.id;
       let mydata = {
-        id: myId,
         nom: element.nom,
         prenom: element.prenom,
         phone1: element.num_phone1,
@@ -104,12 +108,12 @@ export class HomeComponent implements OnInit {
         fonction: element.fonction,
         num_matricule: element.num_matricule,
         statut_id: element.statut_id,
-        presence:Presence
+        presence: Presence
 
       };
 
       observ.push(
-        this._task_service.addComptePersonnelData(mydata)
+        this._task_service.addPersonnel(mydata)
       )
     });
     forkJoin(observ).subscribe()
@@ -117,7 +121,17 @@ export class HomeComponent implements OnInit {
   upload_engins() {
     let obsrv: Observable<any>[] = []
     this._engins_store.donnees_engins().forEach((element) => {
-
+      let pannes = this._pannes_store.pannes_data().filter(x => x.engin_id == element.id);
+      let pannes_engins: any = [];
+      pannes.forEach(element => {
+        pannes_engins.push({
+          'date_panne': element.debut_panne,
+          'date_depanne': element.fin_panne,
+          'motif': element.motif_panne,
+          'heure_panne': element.heure_debut,
+          'heure_depanne': element.heure_fin
+        })
+      });
       let myId = uuid();
       let mydata = {
         "id": myId,
@@ -126,10 +140,11 @@ export class HomeComponent implements OnInit {
         "classe_id": element.classe_id,
         "utilisateur_id": element.utilisateur_id,
         "immatriculation": element.immatriculation,
+        "pannes": pannes_engins
       }
 
       obsrv.push(
-        this._task_service.addCompteEnginsData(mydata)
+        this._task_service.addEngins(mydata)
       )
     })
     forkJoin(obsrv).subscribe()
@@ -139,13 +154,12 @@ export class HomeComponent implements OnInit {
     this._classe_store.classes().forEach((element) => {
       let myId = uuid();
       let mydata = {
-        "id": element.id,
         "designation": element.designation,
         "taches": element.taches
       }
 
       obsrv.push(
-        this._task_service.addCompteClasseEnginsData(mydata)
+        this._task_service.addClassesEngins(mydata)
       )
     })
     forkJoin(obsrv).subscribe()
@@ -158,17 +172,9 @@ export class HomeComponent implements OnInit {
     )
     )
     localStorage.setItem('user', JSON.stringify(this._auth_service.userSignal()));
-    this._compte_store.loadCompte()
   }
-  update_engins() {
-    let mydata = {
-      "id": uuid(),
-      "designation": 'element.designation',
-      "code_parc": 'element.code_parc',
-      "classe_id": 'element.code_parc',
-      "utilisateur_id": 'element.classe_id',
-      "immatriculation": 'element.immatriculation',
-    }
-    this._task_service.updateEnginsData(mydata).subscribe();
+  other()
+  {
+   this._service.getallProjetId().then(console.log)
   }
 }

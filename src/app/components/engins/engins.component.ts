@@ -133,7 +133,7 @@ export class EnginsComponent implements OnInit {
     }
   );
   ngOnInit() {
-    this._compte_store.loadCompte();
+    this._compte_store.loadData();
   }
   updateData(data: any) {
     let valeur = data[0]

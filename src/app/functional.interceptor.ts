@@ -11,7 +11,7 @@ export const functionalInterceptor: HttpInterceptorFn = (req, next) => {
     return next(
       req.clone(
         {
-          params: new HttpParams().set('auth', token ? token : '')
+          headers: req.headers.set('Authorization', token?'Bearer '+token:'Bearer '+'')
         }
       )
     ).pipe()

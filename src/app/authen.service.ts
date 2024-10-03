@@ -2,14 +2,17 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, from, tap } from 'rxjs';
 import { Users } from './models/modeles';
 import { Router } from '@angular/router';
-import { Auth, signOut, user } from '@angular/fire/auth';
-import { Firestore } from '@angular/fire/firestore';
+import { Auth, signInWithEmailAndPassword, signOut, user } from '@angular/fire/auth';
+import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { WenService } from './wen.service';
 import { EntrepriseStore, UserStore } from './store/appstore';
-import { getAuth } from 'firebase/auth';
+import { browserLocalPersistence, browserSessionPersistence, getAuth, setPersistence, signInWithCustomToken } from 'firebase/auth';
 import { Database } from '@angular/fire/database';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
+import { and } from 'firebase/firestore';
+import { sign } from 'node:crypto';
+import { NumberSymbol } from '@angular/common';
 const apiKey = environment.firebaseConfig.apiKey;
 @Injectable({
   providedIn: 'root'
@@ -22,7 +25,8 @@ export class AuthenService {
   _firestore = inject(Firestore);
   _service = inject(WenService);
   _user_store = inject(UserStore);
-  _entreprise_store = inject(EntrepriseStore)
+  _entreprise_store = inject(EntrepriseStore);
+  token = signal('');
   user$ = user(this._auth);
   url_entreprise = computed(() => {
     let entreprise = this._entreprise_store.donnees_entreprise().find(x => x.id == this.userSignal()?.entreprise_id);
@@ -42,33 +46,31 @@ export class AuthenService {
       }
     ).pipe(tap((resp: any) => {
       let userId = resp.localId;
-      this._http.put('https://mon-projet-35c49-default-rtdb.firebaseio.com/users/' + userId + '.json',
-        {
-          email: resp.email, 
-          username: nom,
-          role: role,
-          entreprise_id: entreprise_id,
-          projet_id:{...projet_id}
-        }
-      ).subscribe()
+      let data = {
+        id: userId,
+        email: resp.email,
+        username: nom,
+        role: role,
+        entreprise_id: entreprise_id,
+        projet_id: projet_id
+      }
+      this._service.addUser(data).subscribe()
     }))
   };
   loginFirebase(email: string, password: string): Observable<any> {
-    
-    const auth = getAuth();
-
     this.loadings.set(true);
-    return this._http.post('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + apiKey,
-      {
-        email: email,
-        password: password,
-        returnSecureToken: true
-      }
-    ).pipe(
-      tap(resp =>
-        this.handleCreateUser(resp)
-      )
-    )
+    const auth = getAuth();
+    return from(this._auth.setPersistence(browserSessionPersistence).then(() => {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          this.handleCreateUser(user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+        })
+    }))
   }
   logout(): Observable<any> {
     let promise = signOut(this._auth).then(() => {
@@ -90,36 +92,34 @@ export class AuthenService {
     let data = localStorage.getItem('user');
     if (data) {
       const dataparse = JSON.parse(data);
-      if (dataparse.expiretime && new Date(dataparse.expiretime) >= new Date()) {
-        this.userSignal.set(dataparse);
-      }
+      this.userSignal.set(dataparse);
     }
   }
   handleCreateUser(user: any) {
-    const expiresInTs = new Date().getTime() + user.expiresIn * 1000;
-    const expireIn = expiresInTs;
     let new_user: Users = {
-      uid: user.localId,
+      uid: user.uid,
       email: user.email,
-      token: user.idToken,
-      expiretime: expireIn,
+      token: this.token(),
       role: '',
       entreprise_id: '',
       projet_id: [''],
-      current_projet_id:''
+      current_projet_id: ''
     }
     this.userSignal.set(new_user);
-    this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/users/' + user.localId + '.json').pipe(
+    localStorage.setItem('user', JSON.stringify(this.userSignal()));
+    this._service.getallUsersByUid(user.uid).pipe(
       tap(
         (resp: any) => {
+          let data= resp.data();
           this.userSignal.update(
-            (user: any) => (
+            (user: any) =>
+            (
               {
                 ...user,
-                role: resp.role,
-                entreprise_id: resp.entreprise_id,
-                projet_id: resp.projet_id,
-                current_projet_id:resp.projet_id[0]
+                'role': data.role,
+                'entreprise_id': data.entreprise_id,
+                'projet_id': data.projet_id,
+                'current_projet_id': data.projet_id[0]
               }
             )
           )
