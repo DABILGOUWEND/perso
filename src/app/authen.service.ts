@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { Observable, from, tap } from 'rxjs';
 import { Users } from './models/modeles';
 import { Router } from '@angular/router';
@@ -12,12 +12,17 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { and } from 'firebase/firestore';
 import { sign } from 'node:crypto';
-import { NumberSymbol } from '@angular/common';
+import { isPlatformBrowser, NumberSymbol } from '@angular/common';
 const apiKey = environment.firebaseConfig.apiKey;
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenService {
+  constructor() {
+    this.isBrowser = isPlatformBrowser(this.platformId)
+  }
+  platformId=inject(PLATFORM_ID)
+  isBrowser :boolean;
   router = inject(Router);
   _auth = inject(Auth);
   _http = inject(HttpClient);
@@ -25,7 +30,9 @@ export class AuthenService {
   _firestore = inject(Firestore);
   _service = inject(WenService);
   _user_store = inject(UserStore);
+  
   _entreprise_store = inject(EntrepriseStore);
+ 
   token = signal('');
   user$ = user(this._auth);
   url_entreprise = computed(() => {
@@ -35,6 +42,7 @@ export class AuthenService {
 
   loadings = signal(false);
   userSignal = signal<Users | undefined>(undefined);
+  affichage=signal<string|null|undefined>('')
   get_rt_database(): Observable<any> {
     return this._http.get('https://mon-projet-35c49-default-rtdb.firebaseio.com/users.json')
   }
@@ -64,6 +72,7 @@ export class AuthenService {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
+          this.affichage.set(user.email)
           this.handleCreateUser(user);
         })
         .catch((error) => {
@@ -76,11 +85,12 @@ export class AuthenService {
     let promise = signOut(this._auth).then(() => {
       setTimeout(() => {
         this.router.navigateByUrl('/login');
+        localStorage.removeItem('user');
+        this.userSignal.set(undefined);
       }, 2000);
     }
     );
-    localStorage.removeItem('user');
-    this.userSignal.set(undefined);
+ 
     return from(promise);
   }
 
@@ -89,44 +99,48 @@ export class AuthenService {
     return uid != null;
   }
   autoLogin() {
-    let data = localStorage.getItem('user');
-    if (data) {
-      const dataparse = JSON.parse(data);
-      this.userSignal.set(dataparse);
+    if(this.isBrowser)
+    {
+      let data = localStorage.getItem('user');
+      if (data) {
+       const dataparse = JSON.parse(data);
+       this.userSignal.set(dataparse);
+     } 
     }
   }
   handleCreateUser(user: any) {
-    let new_user: Users = {
-      uid: user.uid,
-      email: user.email,
-      token: this.token(),
-      role: '',
-      entreprise_id: '',
-      projet_id: [''],
-      current_projet_id: ''
-    }
-    this.userSignal.set(new_user);
-    localStorage.setItem('user', JSON.stringify(this.userSignal()));
-    this._service.getallUsersByUid(user.uid).pipe(
-      tap(
-        (resp: any) => {
-          let data= resp.data();
-          this.userSignal.update(
-            (user: any) =>
-            (
-              {
-                ...user,
-                'role': data.role,
-                'entreprise_id': data.entreprise_id,
-                'projet_id': data.projet_id,
-                'current_projet_id': data.projet_id[0]
-              }
+      let new_user: Users = {
+        uid: user.uid,
+        email: user.email,
+        token: this.token(),
+        role: '',
+        entreprise_id: '',
+        projet_id: [''],
+        current_projet_id: ''
+      }
+      this.userSignal.set(new_user);
+      localStorage.setItem('user', JSON.stringify(this.userSignal()));
+      this._service.getallUsersByUid(user.uid).pipe(
+        tap(
+          (resp: any) => {
+            let data= resp.data();
+            this.userSignal.update(
+              (user: any) =>
+              (
+                {
+                  ...user,
+                  'role': data.role,
+                  'entreprise_id': data.entreprise_id,
+                  'projet_id': data.projet_id,
+                  'current_projet_id': data.projet_id[0]
+                }
+              )
             )
-          )
-          localStorage.setItem('user', JSON.stringify(this.userSignal()));
-        }
-      )
-    ).subscribe()
-  }
+            localStorage.setItem('user', JSON.stringify(this.userSignal()));
+          }
+        )
+      ).subscribe()
+    }
+    
 
 }

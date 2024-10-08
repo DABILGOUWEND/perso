@@ -255,7 +255,11 @@ const initialCompte: comptes =
     engins: [],
     personnel: [],
     classes_engins: [],
+    appro_go: [],
+    conso_go: [],
     current_user: undefined,
+    selected_engin: '',
+    selected_personnel: ''
 }
 export const ProjetStore = signalStore(
     { providedIn: 'root' },
@@ -1064,7 +1068,7 @@ export const PersonnelStore = signalStore(
                 let filtre = store.personnel_data().filter(x => x.dates.includes(date))
                 filtre.forEach(element => {
                     let mydates = element.dates
-                    let presence = element.Presence
+                    let presence = element.presence
                     let ind = mydates.lastIndexOf(date)
                     if (ind != -1) {
                         data.push(presence[ind])
@@ -1081,7 +1085,7 @@ export const PersonnelStore = signalStore(
                 let filtre = store.personnel_data().filter(x => x.dates.includes(date))
                 filtre.forEach(element => {
                     let mydates = element.dates
-                    let presence = element.Presence
+                    let presence = element.presence
                     let ind = mydates.indexOf(date, 0)
                     if (ind != -1) {
                         if (presence[ind]) {
@@ -1214,9 +1218,9 @@ export const PersonnelStore = signalStore(
                     for (let row of filtre) {
                         let data = row
                         let index = data.dates.indexOf(store.current_date(), 0)
-                        let presence = data.Presence
+                        let presence = data.presence
                         presence[index] = completed
-                        data.Presence = presence
+                        data.presence = presence
                         let heurenorm = data.heuresN
                         let heuresup = data.heureSup
                         if (!completed) {
@@ -1462,7 +1466,7 @@ export const EnginsStore = signalStore(
 export const GasoilStore = signalStore(
     { providedIn: 'root' },
     withState(initialGasoilState),
-    withComputed((store, engins = inject(EnginsStore)) => (
+    withComputed((store, compte = inject(CompteStore)) => (
         {
             lastNum: computed(() => {
                 let nb = store.conso_data().length
@@ -1501,8 +1505,9 @@ export const GasoilStore = signalStore(
             datasource: computed(() => {
                 let enginId = store.selectedEngin();
                 let classId = store.selectedClass();
-                let myengins = classId != '' ? engins.donnees_engins()
-                    .filter(x => x.classe_id == classId) : engins.donnees_engins();
+                let engins = compte.engins();
+                let myengins = classId != '' ? engins
+                    .filter(x => x.classe_id == classId) : engins;
                 let enginsClass = myengins.map(x => x.id);
 
                 let myconso1 = store.conso_data().filter(x => enginsClass.includes(x.id_engin));
@@ -1544,7 +1549,7 @@ export const GasoilStore = signalStore(
             }
             )
         })),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar), comptes = inject(CompteStore)) =>
     (
         {
 
@@ -1564,14 +1569,35 @@ export const GasoilStore = signalStore(
                 patchState(store, { selectedClass: classId })
 
             },
-            loadconso: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallGasoil().pipe(
-                    tap((data) => {
-                        patchState(store, { conso_data: classeTabDateGas(data) })
-                    })
+            allconso() {
+                let gasoil = comptes.donnees_engins().map(x => {
+                    let data = x.gasoil;
+                    let data_gasoil: any = [];
+                    data.forEach(element => {
+                        data_gasoil.push({ ...element, 'engin_id': x.id })
+                    });
+                    return data_gasoil
+                });
+                console.log(gasoil)
+            },
+            loadconso() {
+                patchState(store, { conso_data: comptes.conso_go() })
+            },
+            loadconso2: rxMethod<void>(pipe(
+                switchMap(
+                    () => {
+                        return monservice.getallGasoil().pipe(
+                            tap(
+                                (data) => {
+                                    patchState(store, { conso_data: data })
+                                }
+                            )
+                        )
+                    }
                 )
-            }
-            ))),
+            )
+            )
+            ,
             addconso: rxMethod<any>(pipe(
                 switchMap((gasoil) => {
                     return monservice.addgasoil(gasoil).pipe(
@@ -3346,12 +3372,27 @@ export const CompteStore = signalStore(
         {
             donnees_engins: computed(
                 () => {
-                    return store.engins();
+                    let enginName = store.selected_engin();
+                    if (enginName == '') {
+                        return store.engins()
+                    } else {
+                        return store.engins().filter(
+                            x => x.designation.toUpperCase().includes(enginName)
+                        )
+                    }
                 }
             ),
             donnees_personnel: computed(
                 () => {
-                    return store.personnel();
+                    let personneName = store.selected_personnel()
+                    if (personneName == '') {
+                        return store.personnel();
+                    }
+                    else {
+                        return store.personnel().filter(
+                            x => (x.nom + x.prenom).toUpperCase().includes(personneName)
+                        )
+                    }
                 }
             )
             ,
@@ -3366,6 +3407,22 @@ export const CompteStore = signalStore(
     withMethods((store, monservice = inject(TaskService), snackbar = inject(MatSnackBar)) =>
     (
         {
+            filterEngin(enginName: string) {
+                patchState(store,
+                    {
+                        selected_engin: enginName.toUpperCase()
+                    }
+                )
+            }
+            ,
+            filterPersonnel(personnelName: string) {
+                patchState(store,
+                    {
+                        selected_personnel: personnelName.toUpperCase()
+                    }
+                )
+            }
+            ,
             loadData: rxMethod<void>(
                 pipe(
                     switchMap(
@@ -3374,44 +3431,66 @@ export const CompteStore = signalStore(
                                 tap(resp => {
                                     patchState(store,
                                         {
-                                            engins: resp
+                                            engins: resp.sort((a, b) => {
+                                                return a.designation.localeCompare(b.designation)
+                                            })
                                         }
                                     )
                                 }
                                 )
-                            )
+                            );
                             let observ_personnel = monservice.getallPersonnel().pipe(
                                 tap(resp => {
                                     patchState(store,
                                         {
-                                            personnel: resp
+                                            personnel: resp.sort((a, b) => {
+                                                return (a.nom + a.prenom).localeCompare(b.nom + b.prenom)
+                                            })
                                         }
                                     )
                                 }
                                 )
-                            )
-                            return forkJoin(
-                                [
-                                    observ_engins,
-                                    observ_personnel
-                                ]
-                            )
-                        }
-                    )
-                )),
-            loadPersonnel: rxMethod<void>(
-                pipe(
-                    switchMap(
-                        () => {
-                            return monservice.getallPersonnel().pipe(
+                            );
+                            let observ_classes_engins = monservice.getallClassesEngins().pipe(
                                 tap(resp => {
                                     patchState(store,
                                         {
-                                            personnel: resp
+                                            classes_engins: resp.sort((a, b) => {
+                                                return a.designation.localeCompare(b.designation)
+                                            })
                                         }
                                     )
                                 }
                                 )
+                            );
+                            let observ_conso_go = monservice.getallConsogo().pipe(
+                                tap(resp => {
+                                    patchState(store,
+                                        {
+                                            conso_go: resp
+                                        }
+                                    )
+                                }
+                                )
+                            );
+                            let observ_appro_go = monservice.getAllApproGo().pipe(
+                                tap(resp => {
+                                    patchState(store,
+                                        {
+                                            appro_go: resp
+                                        }
+                                    )
+                                }
+                                )
+                            );
+                            return forkJoin(
+                                [
+                                    observ_engins,
+                                    observ_personnel,
+                                    observ_classes_engins,
+                                    observ_conso_go,
+                                    observ_appro_go
+                                ]
                             )
                         }
                     )
@@ -3424,8 +3503,8 @@ export const CompteStore = signalStore(
                                 tap(
                                     {
                                         next: () => {
-                                            const updatedonnes = [...store.engins(), data]
-                                            patchState(store, { engins: updatedonnes })
+                                            //const updatedonnes = [...store.engins(), data]
+                                            //patchState(store, { engins: updatedonnes })
                                             Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                                         }
                                     }
@@ -3443,8 +3522,8 @@ export const CompteStore = signalStore(
                                 tap(
                                     {
                                         next: () => {
-                                            const updatedonnes = [...store.personnel(), data]
-                                            patchState(store, { personnel: updatedonnes })
+                                            //const updatedonnes = [...store.personnel(), data]
+                                            // patchState(store, { personnel: updatedonnes })
                                             Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                                         }
                                     }
@@ -3458,10 +3537,10 @@ export const CompteStore = signalStore(
                 pipe(switchMap(engin => {
                     return monservice.updateEngins(engin).pipe(
                         tap(() => {
-                            var mydata = store.engins();
-                            var index = mydata.findIndex(x => x.id == engin.id);
-                            mydata[index] = engin;
-                            patchState(store, { engins: mydata })
+                            //var mydata = store.engins();
+                            //var index = mydata.findIndex(x => x.id == engin.id);
+                            // mydata[index] = engin;
+                            //patchState(store, { engins: mydata })
                         })
                     )
                 }))
@@ -3471,10 +3550,10 @@ export const CompteStore = signalStore(
                 pipe(switchMap(personnel => {
                     return monservice.updatePersonnel(personnel).pipe(
                         tap(() => {
-                            var mydata = store.personnel();
-                            var index = mydata.findIndex(x => x.id == personnel.id);
-                            mydata[index] = personnel;
-                            patchState(store, { personnel: mydata })
+                            //var mydata = store.personnel();
+                            //var index = mydata.findIndex(x => x.id == personnel.id);
+                            //mydata[index] = personnel;
+                            // patchState(store, { personnel: mydata })
                         })
                     )
                 }))
@@ -3484,9 +3563,9 @@ export const CompteStore = signalStore(
                 pipe(switchMap(id => {
                     return monservice.deletePersonnel(id).pipe(
                         tap(() => {
-                            var mydata = store.personnel();
-                            var data_reste = mydata.filter(x => x.id != id);
-                            patchState(store, { personnel: data_reste })
+                            //var mydata = store.personnel();
+                            //var data_reste = mydata.filter(x => x.id != id);
+                            //patchState(store, { personnel: data_reste })
                         })
                     )
                 }))
@@ -3498,9 +3577,9 @@ export const CompteStore = signalStore(
                         return monservice.deleteEngins(id).pipe(
                             tap(
                                 () => {
-                                    var mydata = store.engins();
-                                    var data_reste = mydata.filter(x => x.id != id);
-                                    patchState(store, { engins: data_reste })
+                                    //var mydata = store.engins();
+                                    //var data_reste = mydata.filter(x => x.id != id);
+                                    //patchState(store, { engins: data_reste })
                                 }
                             )
                         )
@@ -3521,7 +3600,7 @@ function classeTabDate(mytable: any[]) {
     return mytable.sort((a, b) => new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime());
 }
 function classeTabDateGas(mytable: Gasoil[]) {
-    return mytable.sort((a, b) => new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime() || Number(a) - Number(b));
+    return mytable.sort((a, b) => new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime());
 }
 function classeTabBynumero(mytable: Gasoil[]) {
     return mytable.sort((a, b) => Number(b.numero) - Number(a.numero));

@@ -1,105 +1,73 @@
-<mat-sidenav-container fullscreen>
-    <mat-sidenav #sidnav>
-        <mat-nav-list (click)="sidnav.close()">
-            <a mat-list-item routerLink="materiel">
-                <mat-icon>build </mat-icon>
-                <span>Liste du Matériel</span>
-            </a>
+<app-home-template [nav_liste]="nav_liste" [toolbar]="toolbar" [content]="content">
+</app-home-template>
+<ng-template #nav_liste>
 
-            <a mat-list-item routerLink="personnel">
-                <mat-icon>people </mat-icon>
-                <span>Liste du Personnel</span>
-            </a>
-            -----------------------
-
-            <a mat-list-item routerLink="rapportpannes">
-                <mat-icon>library_books </mat-icon>
-                <span>Rapport des pannes</span>
-            </a>
-            -----------------------
-            <a mat-list-item (click)="logout()">
-                <mat-icon fontIcon="logout">logout </mat-icon>
-                <span>déconnection</span>
-            </a>
-
-            -----------------------
-            <a mat-list-item (click)="click_register()">
-                <mat-icon fontIcon="Register"></mat-icon>
-                <span>Register</span>
-            </a>
-        </mat-nav-list>
-    </mat-sidenav>
-    <mat-sidenav-content class="toolbar">
-        <mat-toolbar>
-
-            <button mat-fab (click)="sidnav.open()" type="button">
-                <mat-icon>apps</mat-icon>
-            </button>
-
-            <span class="example-spacer2"> </span>
-
-            <button mat-fab (click)="click_accueil()" type="button">
-                <mat-icon> home</mat-icon>
-            </button>
-
-            <span class="example-spacer2"> </span>
-
-            <button mat-fab extended color="Accent" (click)="click_gasoil()" type="button">
-                GASOIL
-            </button>
-
-            <span class="example-spacer2"> </span>
-
-            <button mat-fab extended color="Accent" (click)="click_pannes()" type="button">
-                PANNE ENGINS
-            </button>
-
-            <span class="example-spacer2"> </span>
-
-            <button mat-fab extended color="Accent" (click)="click_pointage()" type="button">
-                POINTAGE PERSONNEL
-            </button>
-
-
-            <span class="example-spacer2"> </span>
-
-            <button mat-fab extended color="Accent" (click)="click_travaux()" type="button">
-                POINTAGE TRAVAUX
-            </button>
-
-            <span class="example-spacer2"> </span>
-
-            <button mat-fab extended color="Accent" (click)="prestation()" type="button">
-                PRESTATION TRAVAUX
-            </button>
-            <span class="example-spacer2"> </span>
-            <ng-container>
-                <h1>{{ _auth_service.userSignal()?.email}}</h1>
-            </ng-container>
-            <ng-container>
-                <mat-form-field>
-                    <mat-label>
-                        Choix projet
-                    </mat-label>
-                    <mat-select [(ngModel)]="selectedOption" (selectionChange)="choice_projet($event)">
-                        @for(item of projet_compte(); track item)
-                        {
-                            <mat-option    value={{item.id}}>{{item.intitule}} </mat-option>
-                        }
-                    </mat-select>
-                </mat-form-field>
-            </ng-container>
-            <span class="example-spacer2"> </span>
-            <div class="logo">
-                <h3>SOLUBTP </h3>
-                <h4>By Wen</h4>
-            </div>
-
-        </mat-toolbar>
-
-        <button mat-raised-button (click)="upload_classe_engins()">
-            Uploader
+</ng-template>
+<ng-template #toolbar>
+    <div class="example-spacer2">
+        <button mat-fab type="button">
+            <mat-icon>home</mat-icon>
         </button>
-    </mat-sidenav-content>
+    </div>
+    <span class="example-spacer3"> </span>
+    <div class="spacer_user">
+        <button mat-raised-button extended type="button" (click)="upload_gasoil()">
+            essais
+        </button>
+    </div>
+    <div class="spacer_user">
+        <h1>{{ _auth_service.userSignal()?.email}}</h1>
+        <button mat-raised-button extended type="button" (click)="logout()">
+            déconnexion
+        </button>
+    </div>
+    <div class="spacer_register">
+        <button mat-raised-button extended type="button" (click)="click_register()">
+            Register
+        </button>
+    </div>
+    <div class="spacer_logo">
+        <div class="logo">
+            <h3>SOLUBTP </h3>
+            <h4>By Wen</h4>
+        </div>
+    </div>
 
-</mat-sidenav-container>
+</ng-template>
+<ng-template #content>
+    <section>
+        <div id="icon-wrapper">
+            <a routerLink="/home_travaux">
+                <div class="icons">
+                    <div class="icon-slide-container">
+                        <img class="slide-icon" alt="travaux" height="100" src="/assets/images/travaux.jpg">
+                    </div>
+                </div>
+            </a>
+
+            <a routerLink="/home_gestion">
+                <div class="icons2">
+                    <div class="icon-slide-container">
+                        <img class="slide-icon" alt="gestion" height="100" src='/assets/images/gestion_chantier.jpg'>
+                    </div>
+                </div>
+            </a>
+
+            <a>
+                <div class="icons3">
+                    <div class="icon-slide-container">
+                        <img class="slide-icon" alt="The Kite Map Logo" height="100" src="/assets/images/view-all.jpg">
+                    </div>
+                </div>
+            </a>
+
+            <a>
+                <div class="icons4">
+                    <div class="icon-slide-container">
+                        <img class="slide-icon" alt="The Kite Map Logo" height="100" src="/assets/images/feedback.jpg">
+                    </div>
+                </div>
+            </a>
+        </div>
+    </section>
+</ng-template>

@@ -26,7 +26,7 @@ export const appConfig: ApplicationConfig = {
     useValue: ''
   },
   provideRouter(routes), 
-  provideHttpClient(),
+  provideHttpClient(withFetch()),
   provideAnimationsAsync(),
   provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), 
   provideFirebaseApp(() => 

@@ -1,1 +1,23 @@
-<button  (click)="valider()"> essai</button>
+<mat-sidenav-container fullscreen>
+    <mat-sidenav #sidnav>
+        <mat-nav-list (click)="sidnav.close()">
+
+        </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content class="toolbar">
+        <mat-toolbar>
+            <div class="example-spacer2"> menu1</div>
+            <span  class="example-spacer3"> </span>
+            <div class="example-spacer2"> menu1</div>
+            <div class="example-spacer0">
+                <div class="logo">
+                    <h3>SOLUBTP </h3>
+                    <h4>By Wen</h4>
+                </div>
+            </div>
+       
+
+        </mat-toolbar>
+    </mat-sidenav-content>
+
+</mat-sidenav-container>

@@ -4,7 +4,9 @@ export interface Engins {
     code_parc: string,
     immatriculation: string,
     utilisateur_id: string,
-    classe_id: string
+    classe_id: string,
+    pannes:any[],
+    gasoil:any[]
 
 }
 
@@ -49,7 +51,7 @@ export interface Gasoil {
     quantite_go: string,
     date: string,
     diff_work: string,
-    numero: string
+    numero:string
 }
 
 export interface appro_gasoil {
@@ -77,7 +79,7 @@ export interface tab_personnel {
     dates: string[],
     heuresN: number[],
     heureSup: number[],
-    Presence: boolean[],
+    presence: boolean[],
     statut_id: string
 }
 
@@ -515,5 +517,9 @@ export interface comptes{
     'engins':Engins[],
     'personnel':tab_personnel[],
     'classes_engins':classe_engins[],
-    'current_user':Users|undefined
+    'conso_go':Gasoil[],
+    'appro_go':appro_gasoil[],
+    'current_user':Users|undefined,
+    'selected_engin':string,
+    'selected_personnel':string
 }

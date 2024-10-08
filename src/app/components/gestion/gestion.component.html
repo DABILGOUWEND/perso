@@ -1,0 +1,49 @@
+<app-home-template [nav_liste]="nav_liste" [toolbar]="toolbar" [content]="content">
+</app-home-template>
+<ng-template #nav_liste>
+
+</ng-template>
+<ng-template #toolbar>
+    <div class="example-spacer2">
+        <button mat-fab type="button" (click)="click_accueil()">
+            <mat-icon>home</mat-icon>
+        </button>
+    </div>
+    <div class="example-spacer3">
+        <button mat-fab extended type="button" (click)="click_gasoil()">
+            GASOIL
+        </button>
+        <button mat-fab extended type="button" (click)="click_pannes()">
+            PANNES ENGINS
+        </button>
+        <button mat-fab extended type="button" (click)="click_pointages()">
+            POINTAGE PERSONNEL
+        </button>
+        <button mat-fab extended type="button">
+            MAGASIN
+        </button>
+        <button mat-fab extended type="button">
+            LISTE ENGINS
+        </button>
+        <button mat-fab extended type="button">
+            LISTE DU PERSONNEL
+        </button>
+    </div>
+    <div class="spacer_user">
+        <h1>{{ _auth_service.userSignal()?.email}}</h1>
+        <button mat-raised-button extended type="button" (click)="logout()">
+            déconnexion
+        </button>
+    </div>
+    <div class="spacer_logo">
+        <div class="logo">
+            <h3>SOLUBTP </h3>
+            <h4>By Wen</h4>
+        </div>
+    </div>
+
+</ng-template>
+<ng-template #content>
+    <router-outlet>
+    </router-outlet>
+</ng-template>

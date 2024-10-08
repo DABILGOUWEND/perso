@@ -1,14 +1,9 @@
-import { Component, OnInit, computed, effect, inject } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { ImportedModule } from './modules/imported/imported.module';
 import { AuthenService } from './authen.service';
-import { CompteStore, EnginsStore, EntrepriseStore, ProjetStore, UserStore } from './store/appstore';
-import { WenService } from './wen.service';
-import { map, of, switchMap, tap } from 'rxjs';
-import { getAuth } from 'firebase/auth';
-import { getDatabase, onValue, ref } from 'firebase/database';
-import { HttpClient } from '@angular/common/http';
-import { v4 as uuid } from 'uuid';
+import { Auth } from '@angular/fire/auth';
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -17,48 +12,17 @@ import { v4 as uuid } from 'uuid';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  title = 'wenbtp';
-  router = inject(Router);
+  constructor() {
+    this._auth.onAuthStateChanged(
+      (userCredential) => {
+        if(userCredential)
+        this._auth_service.handleCreateUser(userCredential);
+      })
+  }
   _auth_service = inject(AuthenService);
-  _user_store = inject(UserStore);
-  _service = inject(WenService);
-  _engins_store = inject(EnginsStore);
-  _entreprise_store = inject(EntrepriseStore);
-  _projet_store=inject(ProjetStore)
-  _compte_store=inject(CompteStore);
-  _http = inject(HttpClient);
-
+  _auth = inject(Auth);
+  title = signal('wenbtp');
   ngOnInit() {
-    this._auth_service.autoLogin();
-    }
-  click_login() {
-    this.router.navigateByUrl('/login');
+   this._auth_service.autoLogin();
   }
-  click_register() {
-    this.router.navigateByUrl('/register');
-  }
-  logout() {
-    this._auth_service.logout().subscribe({
-      next: () => { this.router.navigateByUrl('/login') }
-    })
-  }
-  click_gasoil() {
-    this.router.navigateByUrl('/gasoil');
-  }
-  click_pointage() {
-    this.router.navigateByUrl('/pointage');
-  }
-  click_pannes() {
-    this.router.navigateByUrl('/pannes');
-  }
-  click_travaux() {
-    this.router.navigateByUrl('/travaux');
-  }
-  click_accueil() {
-    this.router.navigateByUrl('/accueil');
-  }
-  prestation() {
-    this.router.navigateByUrl('/prestation');
-  }
-
 }

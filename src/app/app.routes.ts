@@ -21,75 +21,86 @@ import { administraGuard } from './administra.guard';
 import { travauxGuard } from './travaux.guard';
 import { HomeComponent } from './components/home/home.component';
 import { homeGuard } from './home.guard';
+import { MyessaisComponent } from './components/myessais/myessais.component';
+import { AdminComponent } from './components/admin/admin.component';
+import { adminGuard } from './admin.guard';
+import { HomeComptaComponent } from './components/home-compta/home-compta.component';
+import { HomeTravauxComponent } from './components/home-travaux/home-travaux.component';
+import { HomeMagasinComponent } from './components/home-magasin/home-magasin.component';
+import { HomeAdminComponent } from './components/home-admin/home-admin.component';
+import { GestionComponent } from './components/gestion/gestion.component';
+import { gestionGuard } from './gestion.guard';
 
 export const routes: Routes = [
     {
         path: "", redirectTo: "/home", pathMatch: "full"
     },
     {
-        path: 'accueil', component: AccueilComponent,canActivate  : [homeGuard]
-    },
+        path: 'home', component: HomeComponent, canActivate: [homeGuard]
+
+    }
+    ,
     {
         path: 'login', component: LoginComponent
     },
     {
-        path: 'travaux', component: TravauxComponent,canActivate: [travauxGuard] 
+        path: "home_compta",
+        component: HomeComptaComponent,
     },
+    {
+        path: "home_travaux",
+        component: HomeTravauxComponent, canActivate: [travauxGuard],
+        children: [
+            {
+                path: "devis",
+                component: EnginsComponent
+            },
+            {
+                path: "budget",
+                component: EnginsComponent
+            }
+            ,
+            {
+                path: "constats",
+                component: EnginsComponent
+            }  ,
+            {
+                path: "factures",
+                component: EnginsComponent
+            }
+        ]
+    },
+    {
+        path: "home_gestion",
+        component: GestionComponent, canActivate: [gestionGuard],
+        children: [
+            {
+                path: "gasoil",
+                component: GasoilComponent
+            },
+            {
+                path: "pannes",
+                component: PannesComponent
+            }
+            ,
+            {
+                path: "pointage",
+                component:PersonnelComponent
+            }  
+        ]
+    },
+    {
+        path: "admin",
+        component: AdminComponent, canActivate: [adminGuard]
+    },
+    {
+        path: "register",
+        component: RegisterComponent, canActivate: [adminGuard]
+    },
+    {
+        path: "essai",
+        component: Essai2Component
+    }
 
-    {
-        path: 'pannes', component: PannesComponent,canActivate: [administraGuard]   
-    },
-    {
-        path: 'materiel', component: EnginsComponent,canActivate: [administraGuard]   
-    },
-    {
-        path: 'personnel', component: PersonnelComponent,canActivate: [administraGuard]   
-    }
-    ,
-    {
-        path: 'gasoil', component: GasoilComponent,canActivate  : [administraGuard]
-    }
-    ,
-    {
-        path: 'rapportpannes', component: RapportPanneComponent,canActivate: [administraGuard]   
-    }
-    ,
-    {
-        path: 'essai', component: Essai2Component
-    }
-    ,
-    {
-        path: 'sstrce', component: SousTraitanceComponent,canActivate: [travauxGuard] 
-    }
-    ,
-    {
-        path: 'constats', component: ConstatsComponent,canActivate: [travauxGuard] 
-    }
-    ,
-    {
-        path: 'attachements', component: AttachementsComponent,canActivate: [travauxGuard] 
-    }
-    ,
-    {
-        path: 'prestation', component: PrestationComponent,canActivate: [travauxGuard] 
-    }
-    ,
-    {
-        path: 'decomptes', component: DecomptesComponent
-    },
-    {
-        path: 'pointagestrvx', component: PointageTrvxEnginsComponent,canActivate: [travauxGuard] 
-    }
-    ,
-    {
-        path: 'taches_projets', component: TableauBordComponent,canActivate: [travauxGuard] 
-    }
-    ,
-    {
-        path: 'register', component: RegisterComponent
-    }
-    ,
-    {
-        path: 'home', component: HomeComponent,canActivate:[homeGuard]
-    }
+
 ];

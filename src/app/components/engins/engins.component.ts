@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { FormControl, Validators, NonNullableFormBuilder } from '@angular/forms';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
@@ -14,12 +14,18 @@ import { EssaiComponent } from '../essai/essai.component';
   styleUrl: './engins.component.scss'
 })
 export class EnginsComponent implements OnInit {
+  constructor()
+  {
+    effect(()=>{
+     // console.log(this._compte_store.donnees_engins())
+    })
+  }
   EnginsStore = inject(EnginsStore);
   personnel_store = inject(PersonnelStore);
   classeEngins_store = inject(ClasseEnginsStore);
   statut_store = inject(StatutStore);
   _compte_store = inject(CompteStore);
-  fb = inject(NonNullableFormBuilder)
+  fb = inject(NonNullableFormBuilder);
   table_update_form = this.fb.group({
     id: new FormControl(''),
     designation: new FormControl('', Validators.required),
@@ -27,7 +33,7 @@ export class EnginsComponent implements OnInit {
     utilisateur_id: new FormControl('', Validators.required),
     classe_id: new FormControl('', Validators.required),
     immatriculation: new FormControl(''),
-  })
+  });
   displayedColumns = {
     'classe': 'CLASSE',
     'designation': 'DESIGNATION',
@@ -36,7 +42,7 @@ export class EnginsComponent implements OnInit {
     'utilisateur': 'UTILISATEUR',
     'actions': ''
   }
-  titre_tableau = signal('Liste du matériel')
+  titre_tableau = signal('Liste du matériel');
   table = computed(() => {
     let mytable =
       [{
@@ -113,9 +119,9 @@ export class EnginsComponent implements OnInit {
       
       let donnees: any = []
       this._compte_store.donnees_engins().forEach(element => {
+        
         let classe = this._compte_store.donnees_classesEngins().find(x => x.id == element.classe_id)
         let utilisat = this._compte_store.donnees_personnel().find(x => x.id == element.utilisateur_id)
-         
         donnees.push(
           {
             'id': element.id,
@@ -125,15 +131,16 @@ export class EnginsComponent implements OnInit {
             'classe': classe?.designation,
             'classe_id': element.classe_id,
             'utilisateur': utilisat?.nom + ' ' + utilisat?.prenom,
-            'utilisateur_id': element.utilisateur_id
+            'utilisateur_id': element.utilisateur_id,
+            'pannes':element.pannes,
+            'gasoil':element.gasoil
           }
         )
       });
       return donnees
     }
-  );
+  )
   ngOnInit() {
-    this._compte_store.loadData();
   }
   updateData(data: any) {
     let valeur = data[0]
@@ -149,31 +156,33 @@ export class EnginsComponent implements OnInit {
         immatriculation: valeur.immatriculation,
         classe_id: valeur.classe_id,
         utilisateur_id: valeur.utilisateur_id,
+        pannes:current_row.pannes,
+        gasoil:current_row.gasoil,
       }
-      this._compte_store.updateEnginsCompte(mydata)
-
+      this._compte_store.updateEnginsCompte(mydata);
     }
     else {
       mydata = {
-        id: '',
         designation: valeur.designation,
         code_parc: valeur.code_parc,
         immatriculation: valeur.immatriculation,
         classe_id: valeur.classe_id,
         utilisateur_id: valeur.utilisateur_id,
+        pannes:[],
+        gasoil:[]
       }
-      this._compte_store.addEngins(mydata)
+      this._compte_store.addEngins(mydata);
     }
   }
   deleteData(id: any) {
     if (confirm('voulez-vous supprimer cet élement?'))
-      this._compte_store.deleteEnginCompte(id)
+      this._compte_store.deleteEnginCompte(id);
   }
   recherche(word: any) {
-    this.EnginsStore.filterbyDesignation(word)
+    this._compte_store.filterEngin(word);
   }
   afficheTout() {
-    this.EnginsStore.filterbyDesignation('')
+    this._compte_store.filterEngin('');
   }
   PatchEventFct(row: any) {
     this.table_update_form.patchValue(
@@ -181,6 +190,6 @@ export class EnginsComponent implements OnInit {
     )
   }
   addEventFct() {
-    this.table_update_form.reset()
+    this.table_update_form.reset();
   }
 }

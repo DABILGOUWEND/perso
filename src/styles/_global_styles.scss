@@ -2721,7 +2721,7 @@ wen-table:make-gold {
       margin-left: 10px;
       font-size: 14px;
       text-align: center;
-      background-color: rgb(216, 214, 197)!important;
+      background-color: rgb(216, 214, 197) !important;
     }
 
     button {
@@ -2745,11 +2745,11 @@ wen-table:make-gold {
 
     .logo {
       display: block;
-      height: 100%;
       background-color: #4890d8;
+      height: 80px;
+      padding-top: 20px;
 
       h3 {
-        margin-top: 30px;
         margin-left: 10px;
         margin-right: 10px;
         font-size: 24px;
@@ -3108,10 +3108,57 @@ wen-table:make-gold {
   padding-left: 10px;
 }
 
+.spacer_logo {
+  flex: 0.2 1 auto;
+  margin-left: 10px;
+  text-align: center;
+  button {
+    margin-top: 10px;
+    margin-left: 20px;
+    background-color: rgb(238, 168, 168)!important;
+    color: blue;
+  }
+}
+.spacer_user {
+  flex: 0.2 1 auto;
+  margin-left: 10px;
+  text-align: center;
+  button {
+    margin-top: 10px;
+    margin-left: 20px;
+    background-color: rgb(238, 168, 168)!important;
+    color: blue;
+  }
+}
+.spacer_register {
+  flex: 0.2 1 auto;
+  margin-left: 10px;
+  text-align: center;
+  button {
+    margin-top: 10px;
+    margin-left: 20px;
+    background-color: rgb(238, 168, 168)!important;
+    color: blue;
+  }
+}
+
 .example-spacer2 {
   flex: 1 1 auto;
-  padding-top: 10px;
+  margin-left: 10px;
   padding-left: 10px;
+
+  button {
+    margin-left: 20px;
+  }
+}
+
+.example-spacer3 {
+  flex: 4 1 auto;
+  padding-top: 10px;
+  margin-left: 10px;
+  button{
+    margin-left: 50px;
+  }
 }
 
 .couleur {

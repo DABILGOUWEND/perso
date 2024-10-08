@@ -5,7 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { tab_personnel } from '../../models/modeles';
-import { ClasseEnginsStore, EnginsStore, PersonnelStore, StatutStore } from '../../store/appstore';
+import { ClasseEnginsStore, CompteStore, EnginsStore, PersonnelStore, StatutStore } from '../../store/appstore';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
 import { EssaiComponent } from '../essai/essai.component';
 
@@ -17,10 +17,11 @@ import { EssaiComponent } from '../essai/essai.component';
   styleUrl: './personnel.component.scss'
 })
 export class PersonnelComponent  implements OnInit{
-  readonly EnginsStore = inject(EnginsStore)
-  readonly personnel_store = inject(PersonnelStore)
-  readonly classeEngins_store = inject(ClasseEnginsStore)
-  readonly statut_store = inject(StatutStore)
+  EnginsStore = inject(EnginsStore)
+  personnel_store = inject(PersonnelStore)
+  classeEngins_store = inject(ClasseEnginsStore)
+  statut_store = inject(StatutStore)
+  _compte_store=inject(CompteStore)
   fb = inject(NonNullableFormBuilder)
   table_update_form = this.fb.group({
     id: new FormControl(''),
@@ -125,7 +126,7 @@ export class PersonnelComponent  implements OnInit{
   dataSource = computed(
     () => {
       let donnees: any = []
-      this.personnel_store.donnees_personnel().forEach(element => {
+      this._compte_store.donnees_personnel().forEach(element => {
         let statut = this.statut_store.donnees_statut().find(x => x.id == element.statut_id)
         let statut_a = statut?.designation
         donnees.push(
@@ -141,7 +142,7 @@ export class PersonnelComponent  implements OnInit{
             'num_matricule': element.num_matricule,
             'email': element.email,
             'dates': element.dates,
-            'Presence': element.Presence,
+            'presence': element.presence,
             'heureSup': element.heureSup,
             'heuresN': element.heuresN,
           }
@@ -170,7 +171,7 @@ export class PersonnelComponent  implements OnInit{
         email: valeur.email,
         num_matricule: valeur.num_matricule,
         dates: current_row.dates,
-        Presence: current_row.Presence,
+        presence: current_row.presence,
         heuresN: current_row.heuresN,
         heureSup: current_row.heureSup,
         statut_id: valeur.statut_id
@@ -188,7 +189,8 @@ export class PersonnelComponent  implements OnInit{
         num_phone2: valeur.num_phone2,
         email: valeur.email,
         num_matricule: valeur.num_matricule,
-        statut_id: valeur.statut_id
+        statut_id: valeur.statut_id,
+        presence:[]
       }
       this.personnel_store.addPersonnel(mydata)
     }

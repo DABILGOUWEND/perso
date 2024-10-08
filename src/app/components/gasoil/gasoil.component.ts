@@ -14,6 +14,7 @@ import { WenService } from '../../wen.service';
 import { GasoilModelComponent } from '../gasoil-model/gasoil-model.component';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import e from 'express';
 @Component({
   selector: 'app-gasoil',
   standalone: true,
@@ -22,13 +23,15 @@ import autoTable from 'jspdf-autotable';
   styleUrl: './gasoil.component.scss'
 })
 export class GasoilComponent {
-  readonly gasoil_store = inject(GasoilStore);
+  gasoil_store = inject(GasoilStore);
 
-  readonly approgo_store = inject(ApproGasoilStore);
+  approgo_store = inject(ApproGasoilStore);
 
-  readonly engins_store = inject(EnginsStore);
+  engins_store = inject(EnginsStore);
 
-  readonly classes_store = inject(ClasseEnginsStore);
+  classes_store = inject(ClasseEnginsStore);
+
+  
   is_open2 = signal(false)
   is_table_being_updated = false
   formG2: FormGroup
@@ -265,16 +268,18 @@ export class GasoilComponent {
       date_debut: new FormControl(new Date(), Validators.required),
       date_fin: new FormControl(new Date(), Validators.required)
     });
-
+effect(()=>{
+  console.log(this.gasoil_store.conso_data())
+})
   }
   ngOnInit() {
     this.default_date.set(new Date())
     this.madate.set(new Date().toLocaleDateString())
-    this.gasoil_store.loadconso()
-    this.approgo_store.loadappro()
-    this.engins_store.loadengins()
-    this.classes_store.loadclasses()
-    this.gasoil_store.setCurrentDate(this.madate())
+    this.gasoil_store.loadconso();
+    this.approgo_store.loadappro();
+    this.engins_store.loadengins();
+    this.classes_store.loadclasses();
+    this.gasoil_store.setCurrentDate(this.madate());
   }
 
   addEvent(event: MatDatepickerInputEvent<any>) {
@@ -382,7 +387,7 @@ export class GasoilComponent {
         quantite_go: valeur.quantite_go,
         compteur: valeur.compteur != null ? valeur.compteur.toString() : "0",
         diff_work: "0",
-        numero: (this.gasoil_store.lastNum() + 1).toString()
+        numero: (this.gasoil_store.lastNum() + 1)
 
       }
       this.gasoil_store.addconso(val_tr);
@@ -523,9 +528,9 @@ export class GasoilComponent {
     }
 
     doc.text(periode, 15, yline + 10);
-    doc.text("TOTAL CONSOMME: "+this._service.FormatMonnaie( this.total_conso())+" litres", 15, yline + 20);
+    doc.text("TOTAL CONSOMME: " + this._service.FormatMonnaie(this.total_conso()) + " litres", 15, yline + 20);
     let data = this.gasoil_store.datasource().
-    sort((a, b) => new Date(this._service.convertDate(a.date)).getTime() - new Date(this._service.convertDate(b.date)).getTime());;
+      sort((a, b) => new Date(this._service.convertDate(a.date)).getTime() - new Date(this._service.convertDate(b.date)).getTime());;
     let data_imp = []
     for (let row of data) {
       let engin = this.engins_store.donnees_engins().find(x => x.id == row.id_engin);
@@ -625,7 +630,7 @@ export class GasoilComponent {
           }
         },
         {
-          content: this._service.FormatMonnaie( this.total_conso()) ,
+          content: this._service.FormatMonnaie(this.total_conso()),
           styles: {
             fontSize: 10,
             fontStyle: "bold",
@@ -633,7 +638,7 @@ export class GasoilComponent {
             fillColor: [200, 160, 160]
           }
         }
-      ])
+        ])
 
     } else {
       head0 = [{
@@ -661,7 +666,7 @@ export class GasoilComponent {
           }
         },
         {
-          content: this._service.FormatMonnaie( this.total_conso()),
+          content: this._service.FormatMonnaie(this.total_conso()),
           styles: {
             fontStyle: "bold",
             halign: 'center',
@@ -669,7 +674,7 @@ export class GasoilComponent {
             fillColor: [200, 160, 160]
           }
         }
-      ])
+        ])
     }
 
     let doker: any = {

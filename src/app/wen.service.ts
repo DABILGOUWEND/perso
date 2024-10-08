@@ -1994,7 +1994,7 @@ export class WenService {
     for (let i = 2; i <= totalPages; i++) {
       pdfDoc.line(10, 283, 200, 283);
       //pdfDoc.addImage(img, 'png', 180, 3, 15, 10)
-      pdfDoc.setPage(i);
+      pdfDoc.setPage(i); 
       pdfDoc.setFont('Newsreader', 'italic');
       pdfDoc.text(
         `Page ${i - 1} / ${totalPages - 1}`,
@@ -2229,7 +2229,7 @@ export class WenService {
   updatePerson(row: tab_personnel, date: string): Observable<void> {
     let curendate = row.dates[row.dates.length - 1]
     let dates = [...row.dates, date]
-    let presence = [...row.Presence, true]
+    let presence = [...row.presence, true]
     let heureNorm = [...row.heuresN, 8]
     let heureSup = [...row.heureSup, 0]
     const docRef1 = doc(this.db, 'personnel/' + row.id)
@@ -2259,7 +2259,7 @@ export class WenService {
 
     let initheurenor = row.heuresN
     let initheuresup = row.heureSup
-    let initpresence = row.Presence
+    let initpresence = row.presence
 
     let remdate = initdate.splice(ind, 1)
     let remheurenom = initheurenor.splice(ind, 1)
@@ -2287,7 +2287,7 @@ export class WenService {
     let id = row.id
     let heuresN = row.heuresN
     let heuresup = row.heureSup
-    let presence = row.Presence
+    let presence = row.presence
     const docRef1 = doc(this.db, 'personnel/' + id)
     const docRef = updateDoc(docRef1, { heuresN: heuresN, heureSup: heuresup, Presence: presence }).then
       (response => { }
@@ -2300,7 +2300,7 @@ export class WenService {
     let id = row.id
     let heuresN = row.heuresN
     let heuresup = row.heureSup
-    let presence = row.Presence
+    let presence = row.presence
     const docRef1 = doc(this.db, 'personnel/' + id)
     const docRef = updateDoc(docRef1, { heuresN: heuresN, heureSup: heuresup, Presence: presence }).then
       (response => { }
