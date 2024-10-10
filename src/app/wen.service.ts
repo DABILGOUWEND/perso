@@ -2320,7 +2320,7 @@ export class WenService {
     )
   }
 
-  uploadGasoilNumero(enginId: string[]): Observable<any> {
+/*   uploadGasoilNumero(enginId: string[]): Observable<any> {
     return this.getallGasoil().pipe(
       concatMap(resp => {
         let resp_classes = this.classementDates(resp)
@@ -2358,7 +2358,7 @@ export class WenService {
         return forkJoin(obs)
       })
     )
-  }
+  } */
 
 
   uploadSatut(): Observable<any> {

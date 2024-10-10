@@ -29,7 +29,7 @@ export class TravauxComponent {
   readonly naturetrvx_store = inject(NatureTrvxStore)
   ngOnInit() {
     this.engins_store.loadengins()
-    this.gasoil_store.loadconso()
+    this.gasoil_store.load_compte_conso()
     this.travaux_store.loadtravaux()
     this.naturetrvx_store.loadnaturetrvx()
     this.travaux_store.filterbyDate('')
@@ -78,9 +78,9 @@ export class TravauxComponent {
     let gasoil = this.gasoil_store.datasource()
     let mygasoil: any = []
     this.engins_appro().forEach(element => {
-      let filtre = gasoil.filter(x => x.id_engin == element.id)
+      let filtre = gasoil.filter((x:any) => x.engin_id == element.id)
       if (filtre) {
-        mygasoil.push(this.service.somme(filtre.map(x => x.quantite_go)))
+        mygasoil.push(this.service.somme(filtre.map((x:any) => x.quantite_go)))
       }
       else {
         mygasoil.push(0)
@@ -93,9 +93,9 @@ export class TravauxComponent {
     let gasoil = this.gasoil_store.datasource()
     let mygasoil: any = []
     this.engins_compactage().forEach(element => {
-      let filtre = gasoil.filter(x => x.id_engin == element.id)
+      let filtre = gasoil.filter((x:any) => x.engin_id == element.id)
       if (filtre) {
-        mygasoil.push(this.service.somme(filtre.map(x => x.quantite_go)))
+        mygasoil.push(this.service.somme(filtre.map((x:any) => x.quantite_go)))
       }
       else {
         mygasoil.push(0)

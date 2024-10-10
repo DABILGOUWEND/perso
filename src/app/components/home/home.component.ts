@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit {
   _auth = inject(Auth);
   constructor() {
     effect(() => {
+      console.log(this._gasoil_store.conso_data().filter(x=>x.date==="07/10/2024"))
     })
   }
 
@@ -53,9 +54,10 @@ export class HomeComponent implements OnInit {
   //methods
   ngOnInit() {
     //this.selectedOption.set(this._auth_service.userSignal()?.current_projet_id);
-    //this._gasoil_store.loadconso2()
+    
     if (this._auth_service.userSignal()) {
-      //this._compte_store.loadData()
+      //this._compte_store.loadData();
+      //this._gasoil_store.loadconso2();
     }
   }
   logout() {
@@ -128,7 +130,7 @@ export class HomeComponent implements OnInit {
     let obsrv: Observable<any>[] = []
     this._engins_store.donnees_engins().forEach((element) => {
       let pannes = this._pannes_store.pannes_data().filter(x => x.engin_id == element.id);
-      let gasoil = this._gasoil_store.conso_data().filter(x => x.id_engin == element.id);
+      let gasoil = this._gasoil_store.conso_data().filter(x => x.engin_id == element.id);
       let pannes_engins: any = [];
       pannes.forEach(element => {
         pannes_engins.push({
@@ -166,16 +168,15 @@ export class HomeComponent implements OnInit {
   upload_gasoil() {
     let obsrv: Observable<any>[] = []
     let gasoil = this._gasoil_store.conso_data();
-    console.log(gasoil)
     gasoil.forEach(element => {
       obsrv.push(
         this._task_service.addConsogo({
-          'engin_id': element.id_engin,
+          'engin_id': element.engin_id,
           'date': element.date,
           'quantite_go': element.quantite_go,
-          'compteur': element.compteur ? element.compteur : null,
-          'diff_work': element.diff_work ? element.diff_work : null,
-          'numero': element.numero != '' ? Number(element.numero) : 0
+          'compteur': element.compteur ,
+          'diff_work': element.diff_work,
+          'numero': element.numero
         })
       )
     })

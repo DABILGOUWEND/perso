@@ -1,6 +1,21 @@
-<app-model [is_open]="is_open" [Entete]="Entete" [Corps]="Corps" [is_open2]="is_open2">
+<mat-drawer-container class="wen-table-drawer-container">
+    <mat-drawer mode="over" position="start"  [opened]="is_open()" disableClose="true">
+        <ng-container [ngTemplateOutlet]="Entete">
+        </ng-container>
+    </mat-drawer>
+    <mat-drawer mode="over" position="end" #table_update2 id="table_ajout_gasoil" [opened]="appro_opened()"
+        disableClose="true">
+        <section class="table-update">
+            <app-approgo [is_new_row_being_added]="true" (onRowAdd)="retourQuitter()">
 
-</app-model>
+            </app-approgo>
+        </section>
+    </mat-drawer>
+    <mat-drawer-content>
+        <ng-container [ngTemplateOutlet]="Corps">
+        </ng-container>
+    </mat-drawer-content>
+</mat-drawer-container>
 
 <ng-template #Entete>
     <section class="table-update">
@@ -55,9 +70,8 @@
         [disabled]="!formGroup.valid">{{is_update()?'Modifier':'Enregistrer'}}</button>
     <button mat-flat-button type="button" (click)="annuler()" color="warn">annuler</button>
 </ng-template>
-<ng-template #saisies let-formGroup="formGroup" let-table="table">
+<ng-template #saisies let-formGroup="formGroup" let-table="table()">
     <ng-content>
-
     </ng-content>
     @for (item of table; track $index) {
     @switch (item.type) {
@@ -99,18 +113,18 @@
     <div class="content_add_button">
         <div class="AlignGauche">
             <button (click)="printElement()" mat-fab extended color="primary" matTooltip="Imprimer rapport"
-            matTooltipPosition="left" aria-label="print">
-            <span class="material-icons">
-                print
-            </span>
-            imprimer rapport
-        </button>
+                matTooltipPosition="left" aria-label="print">
+                <span class="material-icons">
+                    print
+                </span>
+                imprimer rapport
+            </button>
         </div>
         <div class="AlignMilieu">
             <ng-container [ngTemplateOutlet]="conso">
             </ng-container>
         </div>
-     
+
         <div class="AlignDroite">
             <button (click)="addElement()" mat-fab extended color="primary" matTooltip="Ajouter nouveau"
                 matTooltipPosition="left" aria-label="nouvelle conso">

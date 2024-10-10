@@ -10,18 +10,18 @@
         </button>
     </div>
     <span class="example-spacer3"> </span>
-    <div class="spacer_user">
+<!--     <div class="spacer_user">
         <button mat-raised-button extended type="button" (click)="upload_gasoil()">
             essais
         </button>
-    </div>
+    </div> -->
     <div class="spacer_user">
         <h1>{{ _auth_service.userSignal()?.email}}</h1>
         <button mat-raised-button extended type="button" (click)="logout()">
             déconnexion
         </button>
     </div>
-    <div class="spacer_register">
+    <div class="spacer_register"  *ngIf="_auth_service.userSignal()?.role==='admin'">
         <button mat-raised-button extended type="button" (click)="click_register()">
             Register
         </button>

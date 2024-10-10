@@ -46,12 +46,12 @@ export interface Pannes {
 
 export interface Gasoil {
     id: string,
-    id_engin: string,
-    compteur: string,
-    quantite_go: string,
+    engin_id: string,
+    compteur: number,
+    quantite_go: number,
     date: string,
-    diff_work: string,
-    numero:string
+    diff_work: number,
+    numero:number
 }
 
 export interface appro_gasoil {

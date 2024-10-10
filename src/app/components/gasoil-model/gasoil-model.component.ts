@@ -1,29 +1,31 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, WritableSignal, computed, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, WritableSignal, computed, input, output, signal } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { FormSaisiComponent } from '../form-saisi/form-saisi.component';
 import { ModelComponent } from '../model/model.component';
+import { ApprogoComponent } from '../approgo/approgo.component';
 
 @Component({
   selector: 'app-gasoil-model',
   standalone: true,
-  imports: [ImportedModule, FormSaisiComponent, ModelComponent],
+  imports: [ImportedModule, FormSaisiComponent, ModelComponent,ApprogoComponent],
   templateUrl: './gasoil-model.component.html',
   styleUrl: './gasoil-model.component.scss'
 })
 export class GasoilModelComponent implements OnInit {
-  is_open = signal(false)
-  @Input() is_open2: any
-  is_update = signal(false)
-  current_row: WritableSignal<any> = signal([])
+  appro_opened=input.required<boolean>();
+  appro_openedEmit=output();
+  appro_closedEmit=output();
+  is_update = signal(false);
+  is_open=signal(false);
+  current_row: WritableSignal<any> = signal([]);
   @Input() titre: TemplateRef<any>;
   @Input() conso: TemplateRef<any>;
-  @Input() table_update_form: FormGroup
-  @Input() titre_tableau: string
-  @Input() table: any
-  @Input() displayedColumns: any
-  @Input() dataSource: any
+  @Input() table_update_form: FormGroup;
+  @Input() table: any;
+  @Input() displayedColumns: any;
+  @Input() dataSource: any;
   @Output() newItemEvent = new EventEmitter<any>();
   @Output() RemoveItemEvent = new EventEmitter<any>();
   @Output() RechercheEvent = new EventEmitter<any>();
@@ -44,7 +46,6 @@ export class GasoilModelComponent implements OnInit {
     this.is_open.set(true)
     this.is_update.set(true)
     this.PatchEvent.emit(row)
-
   }
   addNewItem() {
     if (this.table_update_form.valid) {
@@ -80,13 +81,17 @@ export class GasoilModelComponent implements OnInit {
 
 
   annuler2() {
-    this.is_open2.set(false)
+    this.appro_closedEmit.emit();
   }
   ouvrir_appro() {
-    this.is_open2.set(true)
+   this.appro_openedEmit.emit();
   }
 
   printElement() {
     this.printEvent.emit();
+  }
+  retourQuitter()
+  {
+    this.appro_closedEmit.emit()
   }
 }

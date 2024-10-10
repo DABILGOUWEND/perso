@@ -367,14 +367,19 @@ export const ClasseEnginsStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store,
+        monservice = inject(WenService),
+        snackbar = inject(MatSnackBar),
+        compte = inject(CompteStore)) =>
     (
         {
 
             filtrebyId(id: string) {
                 patchState(store, { selectedId: id })
             },
-
+            load_compte_classes() {
+                patchState(store, { classes: compte.classes_engins() })
+            },
             loadclasses: rxMethod<void>(pipe(switchMap(() => {
                 return monservice.getallClasses().pipe(
                     tap((data) => {
@@ -421,7 +426,6 @@ export const ClasseEnginsStore = signalStore(
         }
     ))
 )
-
 export const DatesStore = signalStore(
     { providedIn: 'root' },
     withState(initialDatesState),
@@ -1268,12 +1272,15 @@ export const PersonnelStore = signalStore(
         }
     ))
 )
-
 export const EnginsStore = signalStore(
     { providedIn: 'root' },
     withState(initialEnginState),
-    withComputed((store,
-        classe_store = inject(ClasseEnginsStore), monservice = inject(PersonnelStore)) => (
+    withComputed((
+        store,
+        classe_store = inject(ClasseEnginsStore),
+        monservice = inject(PersonnelStore),
+
+    ) => (
         {
             taille: computed(() => store.engins().length),
             donnees_engins: computed(() => {
@@ -1352,7 +1359,10 @@ export const EnginsStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store,
+        monservice = inject(WenService),
+        compte = inject(CompteStore),
+        snackbar = inject(MatSnackBar)) =>
     (
         {
 
@@ -1366,7 +1376,9 @@ export const EnginsStore = signalStore(
                 patchState(store, { selectedClasseId: id })
             },
             filterbyDesignation(mot: string) { patchState(store, { selectedDesignation: mot }) },
-
+            load_compte_engins() {
+                patchState(store, { engins: compte.engins() })
+            },
             loadengins: rxMethod<void>(pipe(switchMap(() => {
                 return monservice.getallEngins().pipe(switchMap((engins) => {
                     return monservice.getallGasoil().pipe(
@@ -1374,7 +1386,7 @@ export const EnginsStore = signalStore(
                             return monservice.getallpannes().pipe(
                                 tap((pannes) => {
                                     engins.forEach(element => {
-                                        let tab_gasoil = gasoil.filter(x => x.id_engin == element.id).map(x => {
+                                        let tab_gasoil = gasoil.filter(x => x.engin_id == element.id).map(x => {
 
                                             return {
                                                 compteur: x.compteur,
@@ -1462,32 +1474,30 @@ export const EnginsStore = signalStore(
         }
     ))
 )
-
 export const GasoilStore = signalStore(
     { providedIn: 'root' },
     withState(initialGasoilState),
     withComputed((store, compte = inject(CompteStore)) => (
         {
             lastNum: computed(() => {
-                let nb = store.conso_data().length
                 return Math.max(...store.conso_data().map(x => Number(x.numero)))
             }),
             taille: computed(() => store.conso_data().length),
             quantite_go: computed(() => {
-                let data = store.conso_data().map(x => x.quantite_go)
+                let data = store.conso_data().map(x => x.quantite_go);
                 return somme(data)
             }),
             conso_jour: computed(() => {
-                let madate = store.selectedDate()
+                let madate = store.selectedDate();
                 if (madate[0] == '') {
                     return somme(store.conso_data().filter(x => {
                         return convertDate(x.date).setHours(0, 0, 0, 0) == convertDate(store.date_jour()).setHours(0, 0, 0, 0)
-                    }).map(x => x.quantite_go))
+                    }).map(x => x.quantite_go));
                 }
                 else {
                     return somme(store.conso_data().filter(x => {
                         return convertDate(x.date).setHours(0, 0, 0, 0) == convertDate(madate[0]).setHours(0, 0, 0, 0)
-                    }).map(x => x.quantite_go))
+                    }).map(x => x.quantite_go));
                 }
             }
             ),
@@ -1495,7 +1505,7 @@ export const GasoilStore = signalStore(
                 return store.date_jour()
             }),
             conso_intervalle: computed(() => {
-                let madate = store.selectedDate()
+                let madate = store.selectedDate();
                 return somme(store.conso_data().filter(x => {
                     return convertDate(x.date).setHours(0, 0, 0, 0) >= convertDate(madate[0]).setHours(0, 0, 0, 0) &&
                         convertDate(x.date).setHours(0, 0, 0, 0) <= convertDate(madate[1]).setHours(0, 0, 0, 0)
@@ -1506,157 +1516,181 @@ export const GasoilStore = signalStore(
                 let enginId = store.selectedEngin();
                 let classId = store.selectedClass();
                 let engins = compte.engins();
-                let myengins = classId != '' ? engins
-                    .filter(x => x.classe_id == classId) : engins;
+                let myengins = classId !== '' ? engins
+                    .filter(x => x.classe_id === classId) : engins;
                 let enginsClass = myengins.map(x => x.id);
-
-                let myconso1 = store.conso_data().filter(x => enginsClass.includes(x.id_engin));
-                let myconso2 = enginId != '' ? myconso1.filter(x => x.id_engin == enginId) : myconso1;
-
+                let myconso1 = store.conso_data().
+                    filter(x => enginsClass.includes(x.engin_id));
+                let myconso2 = enginId !== '' ? myconso1.
+                    filter(x => x.engin_id === enginId) : myconso1;
                 var madate = store.selectedDate();
-                if (madate[0] == '') {
-                    return myconso2
+                let donnees_gasoil: Gasoil[];
+                if (madate[0] === '') {
+                    donnees_gasoil = myconso2;
                 }
                 else {
-                    if (madate.length == 1) {
-                        return classeTabBynumero(myconso2.filter(x => x.date == madate[0]))
+                    if (madate.length === 1) {
+                        donnees_gasoil = classeTabBynumero(myconso2.
+                            filter(x => x.date === madate[0]))
                     }
                     else {
-                        let filtre = myconso2.filter(x => {
-                            return convertDate(x.date).setHours(0, 0, 0, 0) >= convertDate(madate[0]).setHours(0, 0, 0, 0) &&
-                                convertDate(x.date).setHours(0, 0, 0, 0) <= convertDate(madate[1]).setHours(0, 0, 0, 0)
-                        })
-                        return filtre;
+                        let filtre = myconso2.
+                            filter(x => {
+                                return convertDate(x.date).setHours(0, 0, 0, 0) >= convertDate(madate[0]).setHours(0, 0, 0, 0) &&
+                                    convertDate(x.date).setHours(0, 0, 0, 0) <= convertDate(madate[1]).setHours(0, 0, 0, 0)
+                            })
+                        donnees_gasoil = filtre;
                     }
                 }
+                let donnees: any = [];
+                donnees_gasoil.forEach(element => {
+                    let engin = engins.find(x => x.id == element.engin_id);
+                    donnees.push(
+                        {
+                            'id': element.id,
+                            'situation_cp': 'ok',
+                            'designation': engin?.designation,
+                            'engin_id': element.engin_id,
+                            'classe_id': engin?.classe_id,
+                            'code_parc': engin?.code_parc,
+                            'compteur': element.compteur,
+                            'quantite_go': element.quantite_go,
+                            'date': element.date,
+                            'numero': element.numero,
+                            'diff_work': element.diff_work
+                        }
+                    )
+                })
+                return classeTabDate(donnees).sort((a: any, b: any) =>
+                    b.numero - a.numero
+                );
             }),
             historique_consogo: computed(() => {
                 let unique_dates = classement(store.conso_data().map(x => x.date).filter((value, index, self) => self.indexOf(value) === index))
-                let conso: any = []
-                let i = 0
+                
+                let conso: any = [];
                 for (let i = 0; i <= 9; i++) {
-                    let row = unique_dates[i]
-                    let filtres = store.conso_data().filter(x => x.date == row)
+                    let row = unique_dates[i];
+                    let filtres = store.conso_data().filter(x => x.date === row);
                     if (row) {
-                        let som = somme(filtres.map(x => x.quantite_go))
+                        let som = somme(filtres.map(x => x.quantite_go));
                         conso = [...conso, {
                             x: convertDate(row),
                             y: som
                         }]
                     }
                 }
+                console.log(conso)
                 return [conso, unique_dates]
             }
             )
         })),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar), comptes = inject(CompteStore)) =>
-    (
-        {
+    withMethods(
+        (store,
+            monservice = inject(WenService),
+            task_service = inject(TaskService),
+            snackbar = inject(MatSnackBar),
+            comptes = inject(CompteStore)) => ({
+                filtrebyDate(date: string[]) {
+                    patchState(store, { selectedDate: date })
+                }
+                ,
+                setCurrentDate(date: string) {
+                    patchState(store, { date_jour: date })
+                },
+                filterByEnginId(enginId: string) {
+                    patchState(store, { selectedEngin: enginId })
+                },
+                filterByClassId(classId: string) {
+                    patchState(store, { selectedClass: classId })
 
-            filtrebyDate(date: string[]) {
-                patchState(store, { selectedDate: date })
-            }
-            ,
-            setCurrentDate(date: string) {
-                patchState(store, { date_jour: date })
-            },
-            filterByEnginId(enginId: string) {
-                patchState(store, { selectedEngin: enginId })
-
-            }
-            ,
-            filterByClassId(classId: string) {
-                patchState(store, { selectedClass: classId })
-
-            },
-            allconso() {
-                let gasoil = comptes.donnees_engins().map(x => {
-                    let data = x.gasoil;
-                    let data_gasoil: any = [];
-                    data.forEach(element => {
-                        data_gasoil.push({ ...element, 'engin_id': x.id })
+                },
+                allconso() {
+                    let gasoil = comptes.donnees_engins().map(x => {
+                        let data = x.gasoil;
+                        let data_gasoil: any = [];
+                        data.forEach(element => {
+                            data_gasoil.push({ ...element, 'engin_id': x.id })
+                        });
+                        return data_gasoil
                     });
-                    return data_gasoil
-                });
-                console.log(gasoil)
-            },
-            loadconso() {
-                patchState(store, { conso_data: comptes.conso_go() })
-            },
-            loadconso2: rxMethod<void>(pipe(
-                switchMap(
-                    () => {
-                        return monservice.getallGasoil().pipe(
-                            tap(
-                                (data) => {
-                                    patchState(store, { conso_data: data })
+                    console.log(gasoil)
+                },
+                load_compte_conso() {
+                    patchState(store, { conso_data: comptes.conso_go() })
+                },
+                loadconso2: rxMethod<void>(pipe(
+                    switchMap(
+                        () => {
+                            return monservice.getallGasoil().pipe(
+                                tap(
+                                    (data) => {
+                                        patchState(store, { conso_data: data })
+                                    }
+                                )
+                            )
+                        }
+                    )
+                )
+                )
+                ,
+                addconso: rxMethod<any>(pipe(
+                    switchMap((gasoil) => {
+                        return task_service.addConsogo(gasoil).pipe(
+                            tap({
+                                next: () => {
+                                    //const updatedonnes = [...store.conso_data(), gasoil]
+                                    //patchState(store, { conso_data: store.conso_data()})
+                                    Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
+                                },
+                                error: () => {
+                                    patchState(store, { message: 'echoué' });
+                                    Showsnackerbaralert('échoué', 'fail', snackbar)
                                 }
+                            }
                             )
                         )
-                    }
-                )
-            )
-            )
-            ,
-            addconso: rxMethod<any>(pipe(
-                switchMap((gasoil) => {
-                    return monservice.addgasoil(gasoil).pipe(
-                        tap({
-                            next: () => {
-                                //const updatedonnes = [...store.conso_data(), gasoil]
-                                //patchState(store, { conso_data: store.conso_data()})
-                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
-                            },
-                            error: () => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                    })
+                )),
+                removeconso: rxMethod<string>(pipe(
+                    switchMap((id) => {
+                        return task_service.deleteConsogo(id).pipe(tap(
+                            {
+                                next: () => {
+                                    const updatedonnes = store.conso_data().filter(x => x.id != id)
+                                    patchState(store, { conso_data: updatedonnes })
+                                    Showsnackerbaralert('élément supprimé', 'pass', snackbar)
+                                },
+                                error: () => {
+                                    patchState(store, { message: 'echoué' });
+                                    Showsnackerbaralert('échoué', 'fail', snackbar)
+                                }
                             }
-                        }
+
+                        ))
+                    }))),
+                updateconso: rxMethod<any>(pipe(
+                    switchMap((gasoil) => {
+                        return task_service.updateConsogo(gasoil).pipe(
+                            tap({
+                                next: () => {
+                                    var data = store.conso_data()
+                                    var index = data.findIndex(x => x.id == gasoil.id)
+                                    data[index] = gasoil
+                                    patchState(store, { conso_data: data })
+                                    Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                                },
+                                error: () => {
+                                    patchState(store, { message: 'echoué' });
+                                    Showsnackerbaralert('échoué', 'fail', snackbar)
+                                }
+                            }
+                            )
                         )
-                    )
-                })
-            )),
-            removeconso: rxMethod<string>(pipe(
-                switchMap((id) => {
-                    return monservice.deleteGasoil(id).pipe(tap(
-                        {
-                            next: () => {
-                                const updatedonnes = store.conso_data().filter(x => x.id != id)
-                                patchState(store, { conso_data: updatedonnes })
-                                Showsnackerbaralert('élément supprimé', 'pass', snackbar)
-                            },
-                            error: () => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-
-                    ))
-                }))),
-            updateconso: rxMethod<any>(pipe(
-                switchMap((gasoil) => {
-                    return monservice.updateGasoil(gasoil).pipe(
-                        tap({
-                            next: () => {
-                                var data = store.conso_data()
-                                var index = data.findIndex(x => x.id == gasoil.id)
-                                data[index] = gasoil
-                                patchState(store, { conso_data: data })
-                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
-                            },
-                            error: () => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            ))
-
-
-        }
-    ))
+                    })
+                ))
+            }
+        ))
 )
 export const ApproGasoilStore = signalStore(
     { providedIn: 'root' },
@@ -1672,7 +1706,7 @@ export const ApproGasoilStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store, monservice = inject(WenService), compte = inject(CompteStore), snackbar = inject(MatSnackBar)) =>
     (
         {
 
@@ -1681,6 +1715,10 @@ export const ApproGasoilStore = signalStore(
                 patchState(store, { approgo_data: classeTabDate(data) })
             }
             ,
+            load_compte_appro() {
+                patchState(store, { approgo_data: compte.appro_go() })
+            },
+
             loadappro: rxMethod<void>(pipe(switchMap(() => {
                 return monservice.getallApproGo().pipe(
                     tap((data) => {
@@ -1862,7 +1900,7 @@ export const TravauxStore = signalStore(
                     || x.classe_id == 'oe39MfblrBDc9ny2yEvS')
                 for (let i = 0; i <= 9; i++) {
                     let row = unique_dates[i]
-                    let filtres = go_store.conso_data().filter(x => x.date == row && engins.map(x => x.id).includes(x.id_engin))
+                    let filtres = go_store.conso_data().filter(x => x.date == row && engins.map(x => x.id).includes(x.engin_id))
                     if (row)
                         if (filtres.length > 0) {
                             let som = somme(filtres.map(x => x.quantite_go))
@@ -3597,13 +3635,13 @@ function convertDate(strdate: string): Date {
     return date1
 }
 function classeTabDate(mytable: any[]) {
-    return mytable.sort((a, b) => new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime());
+    return mytable.sort((a, b) => {return new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime()});
 }
 function classeTabDateGas(mytable: Gasoil[]) {
     return mytable.sort((a, b) => new Date(convertDate(b.date)).getTime() - new Date(convertDate(a.date)).getTime());
 }
 function classeTabBynumero(mytable: Gasoil[]) {
-    return mytable.sort((a, b) => Number(b.numero) - Number(a.numero));
+    return mytable.sort((a, b) => b.numero - a.numero);
 }
 function classeTabBynumeroDec(mytable: Gasoil[]) {
     return mytable.sort((a, b) => Number(a.numero) - Number(b.numero));

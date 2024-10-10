@@ -75,6 +75,9 @@ export const routes: Routes = [
         component: GestionComponent, canActivate: [gestionGuard],
         children: [
             {
+                path: "", redirectTo: "/home_gestion/gasoil", pathMatch: "full"
+            },
+            {
                 path: "gasoil",
                 component: GasoilComponent
             },
