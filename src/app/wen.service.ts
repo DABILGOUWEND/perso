@@ -437,13 +437,13 @@ export class WenService {
     let collect = collectionData(UsersCollection, { idField: 'id' }) as Observable<any[]>
     return collect
   }
-   getallUsersByUid(uid:string): Observable<any> {
+  getallUsersByUid(uid: string): Observable<any> {
     const docRef = doc(this.db, "myusers", uid);
     const docSnap = getDoc(docRef);
     return from(docSnap)
   }
   addUser(data: any): Observable<any> {
-    const docRef = setDoc(doc(this.db, 'myusers/'+data.id), data)
+    const docRef = setDoc(doc(this.db, 'myusers/' + data.id), data)
     return from(docRef)
   }
   deleteUser(id: string): Observable<void> {
@@ -912,7 +912,7 @@ export class WenService {
   async getallProjetId(): Promise<any> {
     const docRef = doc(this.db, "projet", "7mn80ei1Tryv5M92bJGw");
     const docSnap = await getDoc(docRef);
-    return docSnap.data() 
+    return docSnap.data()
 
     //return collectionData(ClassesCollection, { idField: 'id' }) as Observable<Projet[]>
   }
@@ -1009,78 +1009,70 @@ export class WenService {
     let date1: any = new Date(new Date(sentDate).setHours(0, 0, 0, 0));
     let date2: any = new Date(new Date().setHours(0, 0, 0, 0));
 
-    let time2 = (new Date()).toString().split(' ')[4]
-    const [heure1, min1] = time1.split(":")
-    const [heure2, min2, sec2] = time2.split(":")
+    let time2 = (new Date()).toString().split(' ')[4];//date courante
+    const [heure1, min1] = time1.split(":");
+    const [heure2, min2, sec2] = time2.split(":");
 
-    let conv_heure1 = Number(heure1)
-    let conv_min1 = Number(min1)
-    let conv_heure2 = Number(heure2)
-    let conv_min2 = Number(min2)
+    let conv_heure1 = Number(heure1);
+    let conv_min1 = Number(min1);
+    let conv_heure2 = Number(heure2);
+    let conv_min2 = Number(min2);
 
     if (conv_heure2 >= 16) {
-      conv_heure2 = 16
-      conv_min2 = 0
+      conv_heure2 = 16;
+      conv_min2 = 0;
     }
-
-    let diffDays = 0
-
-    if ((date2 - date1) == 0) {
-
+    let diffDays = 0;
+    if (date2 === date1) {
       if (conv_heure2 < 12) {
-        diffDays = (conv_heure2 - conv_heure1) + (conv_min2 - conv_min1) / 60
+        diffDays = (conv_heure2 - conv_heure1) + (conv_min2 - conv_min1) / 60;
       }
-      if (conv_heure2 == 12) {
-        diffDays = (12 - conv_heure1) - conv_min1 / 60
+      if (conv_heure2 === 12) {
+        diffDays = (12 - conv_heure1) - conv_min1 / 60;
       }
       if (conv_heure2 > 12) {
-        if (date1.getDay() == 6) {
-          diffDays = (12 - conv_heure1) + - conv_min1 / 60
+        if (date1.getDay() === 6) {
+          diffDays = (12 - conv_heure1) - conv_min1 / 60;
         }
         else {
-          if (conv_heure1 == 12) {
-            diffDays = (conv_heure2 - 13) + (conv_min2) / 60
+          if (conv_heure1 === 12) {
+            diffDays = (conv_heure2 - 13) + (conv_min2) / 60;
           }
           if (conv_heure1 > 12) {
-            diffDays = (conv_heure2 - conv_heure1) + (conv_min2 - conv_min1) / 60
+            diffDays = (conv_heure2 - conv_heure1) + (conv_min2 - conv_min1) / 60;
           }
           if (conv_heure1 < 12) {
-            diffDays = (conv_heure2 - conv_heure1 - 1) + (conv_min2 - conv_min1) / 60
+            diffDays = (conv_heure2 - conv_heure1 - 1) + (conv_min2 - conv_min1) / 60;
           }
         }
-
       }
-      var decimal = diffDays - Math.floor(diffDays)
+      var decimal = diffDays - Math.floor(diffDays);
       return Math.floor(diffDays).toString() + 'H' + Math.floor((decimal * 60)).toString() + 'MN';
     }
     else {
-      let nbre_samedi = this.nombrejour(6, sentDate, new Date())
-      let nbre_dim = this.nombrejour(0, sentDate, new Date())
-      let diff1 = 0
+      let nbre_samedi = this.nombrejour(6, sentDate, new Date());
+      let nbre_dim = this.nombrejour(0, sentDate, new Date());
+      let diff1 = 0;
       if (conv_heure1 < 12) {
-        diff1 = ((16 - conv_heure1 - 1) * 60 - conv_min1) / 60
+        diff1 = ((16 - conv_heure1 - 1) * 60 - conv_min1) / 60;
       }
       if (conv_heure1 >= 13) {
-        diff1 = ((16 - conv_heure1) * 60 - conv_min1) / 60
+        diff1 = ((16 - conv_heure1) * 60 - conv_min1) / 60;
       }
-
-      if (conv_heure1 == 12) {
-        diff1 = ((16 - 13) * 60 - conv_min1) / 60
+      if (conv_heure1 === 12) {
+        diff1 = ((16 - 13) * 60 - conv_min1) / 60;
       }
-
-      let diff2 = 0
+      let diff2 = 0;
       if (conv_heure2 < 16) {
-        diff2 = ((conv_heure2 - 7) * 60 + conv_min2) / 60
+        diff2 = ((conv_heure2 - 7) * 60 + conv_min2) / 60;
       }
       if (conv_heure2 >= 16) {
-        diff2 = 8
+        diff2 = 8;
       }
       diffDays = (Math.floor((date2 - date1) / (1000 * 60 * 60 * 24)) - 1) * 8 + diff1 + diff2 - nbre_dim * 8 - nbre_samedi * 3;
-      //return diffDays.toFixed(2);
-      var decimal = diffDays - Math.floor(diffDays)
+      var decimal = diffDays - Math.floor(diffDays);
       return Math.floor(diffDays).toString() + 'H' + Math.floor((decimal * 60)).toString() + 'MN';
     }
-
   }
   calculateDiff2(sentDate1: any, sentDate2: any, time1: string, time2: string) {
     let date1: any = new Date(new Date(sentDate1).setHours(0, 0, 0, 0));
@@ -1994,7 +1986,7 @@ export class WenService {
     for (let i = 2; i <= totalPages; i++) {
       pdfDoc.line(10, 283, 200, 283);
       //pdfDoc.addImage(img, 'png', 180, 3, 15, 10)
-      pdfDoc.setPage(i); 
+      pdfDoc.setPage(i);
       pdfDoc.setFont('Newsreader', 'italic');
       pdfDoc.text(
         `Page ${i - 1} / ${totalPages - 1}`,
@@ -2320,45 +2312,45 @@ export class WenService {
     )
   }
 
-/*   uploadGasoilNumero(enginId: string[]): Observable<any> {
-    return this.getallGasoil().pipe(
-      concatMap(resp => {
-        let resp_classes = this.classementDates(resp)
-        let obs: Observable<any>[] = []
-        var ind = 1;
-        for (let row of resp_classes) {
-          ind++;
-          let numerostr = ind.toString();
-          let compteur = "0";
-          let diff_work = "0";
-          if (enginId.includes(row.id_engin)) {
-            obs.push(this.ModifGasoil(row,
-              numerostr,
-              row.date,
-              row.id_engin,
-              compteur,
-              row.quantite_go,
-              diff_work
-            )
-            )
+  /*   uploadGasoilNumero(enginId: string[]): Observable<any> {
+      return this.getallGasoil().pipe(
+        concatMap(resp => {
+          let resp_classes = this.classementDates(resp)
+          let obs: Observable<any>[] = []
+          var ind = 1;
+          for (let row of resp_classes) {
+            ind++;
+            let numerostr = ind.toString();
+            let compteur = "0";
+            let diff_work = "0";
+            if (enginId.includes(row.id_engin)) {
+              obs.push(this.ModifGasoil(row,
+                numerostr,
+                row.date,
+                row.id_engin,
+                compteur,
+                row.quantite_go,
+                diff_work
+              )
+              )
+            }
+            else {
+              obs.push(this.ModifGasoil(row,
+                numerostr,
+                row.date,
+                "c2Tzeqqm4B6gVljWGEkz",
+                compteur,
+                row.quantite_go,
+                diff_work
+              )
+              )
+  
+            }
           }
-          else {
-            obs.push(this.ModifGasoil(row,
-              numerostr,
-              row.date,
-              "c2Tzeqqm4B6gVljWGEkz",
-              compteur,
-              row.quantite_go,
-              diff_work
-            )
-            )
-
-          }
-        }
-        return forkJoin(obs)
-      })
-    )
-  } */
+          return forkJoin(obs)
+        })
+      )
+    } */
 
 
   uploadSatut(): Observable<any> {

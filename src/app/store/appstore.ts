@@ -634,8 +634,8 @@ export const PannesStore = signalStore(
                 }
             }),
             donnees_PannesById: computed(() => {
-                var ind = store.selectedId
-                let data: Pannes[] = store.pannes_data().filter(x => x.engin_id == ind())
+                var ind = store.selectedId();
+                let data: Pannes[] = store.pannes_data().filter(x => x.engin_id == ind);
                 return data
             }),
             donnees_PannesByEnginsIds: computed(() => {
@@ -647,7 +647,10 @@ export const PannesStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store,
+         monservice = inject(WenService), 
+         compte=inject(CompteStore),
+         snackbar = inject(MatSnackBar)) =>
     (
         {
 
@@ -660,6 +663,10 @@ export const PannesStore = signalStore(
             setEnginsIds(Ids: string[]) {
                 patchState(store, { EnginsIds: Ids })
             },
+            load_compte_pannes()
+            {
+               patchState(store,{pannes_data:compte.pannes()}) 
+            },
             loadPannes: rxMethod<void>(pipe(switchMap(() => {
                 return monservice.getallpannes().pipe(
                     tap((data) => {
@@ -668,7 +675,7 @@ export const PannesStore = signalStore(
                 )
             }
             ))),
-            addPannes: rxMethod<Pannes>(pipe(
+            addPannes: rxMethod<any>(pipe(
                 switchMap((panne) => {
                     return monservice.addpanne(panne).pipe(
                         tap({
@@ -695,7 +702,7 @@ export const PannesStore = signalStore(
                     }
                     ))
                 }))),
-            updatePannes: rxMethod<Pannes>(pipe(
+            updatePannes: rxMethod<any>(pipe(
                 switchMap((panne) => {
                     return monservice.updatePanne(panne).pipe(
                         tap({
