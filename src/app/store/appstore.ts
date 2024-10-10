@@ -257,6 +257,7 @@ const initialCompte: comptes =
     classes_engins: [],
     appro_go: [],
     conso_go: [],
+    pannes:[],
     current_user: undefined,
     selected_engin: '',
     selected_personnel: ''
@@ -3521,13 +3522,24 @@ export const CompteStore = signalStore(
                                 }
                                 )
                             );
+                            let observ_pannes = monservice.getAllPannes().pipe(
+                                tap(resp => {
+                                    patchState(store,
+                                        {
+                                            pannes: resp
+                                        }
+                                    )
+                                }
+                                )
+                            );
                             return forkJoin(
                                 [
                                     observ_engins,
                                     observ_personnel,
                                     observ_classes_engins,
                                     observ_conso_go,
-                                    observ_appro_go
+                                    observ_appro_go,
+                                    observ_pannes
                                 ]
                             )
                         }

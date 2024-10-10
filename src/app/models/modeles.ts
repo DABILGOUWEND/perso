@@ -519,6 +519,7 @@ export interface comptes{
     'classes_engins':classe_engins[],
     'conso_go':Gasoil[],
     'appro_go':appro_gasoil[],
+    'pannes':Pannes[],
     'current_user':Users|undefined,
     'selected_engin':string,
     'selected_personnel':string

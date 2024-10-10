@@ -4,7 +4,7 @@ import { from, Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 import { addDoc, collection, collectionData, deleteDoc, doc, Firestore, setDoc } from '@angular/fire/firestore';
-import { appro_gasoil, classe_engins, Engins, Gasoil, Projet, tab_personnel, tab_ProjetStore } from './models/modeles';
+import { appro_gasoil, classe_engins, Engins, Gasoil, Pannes, Projet, tab_personnel, tab_ProjetStore } from './models/modeles';
 import { response } from 'express';
 
 @Injectable({
@@ -208,10 +208,29 @@ export class TaskService {
   }
 
   //pannes
+  getAllPannes(): Observable<Pannes[]> {
+    const mycollection = collection(this.db, 'comptes/' +
+      this._auth_service.userSignal()?.current_projet_id + '/pannes')
+    let donnees = collectionData(mycollection, { idField: 'id' }) as Observable<Pannes[]>
+    return donnees
+  }
   addpannes(data: any): Observable<string> {
     const EnginsCollection = collection(this.db, 'comptes/' +
       this._auth_service.userSignal()?.current_projet_id + '/pannes');
     const docRef = addDoc(EnginsCollection, data).then(response => response.id)
     return from(docRef)
+  }
+  updatePannes(data: any): Observable<void> {
+    let id = data.id
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.userSignal()?.current_projet_id + '/pannes/' + id)
+    const promise = setDoc(docRef, data)
+    return from(promise)
+  }
+  deletePannes(id: string): Observable<void> {
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.userSignal()?.current_projet_id + '/pannes/' + id)
+    const promise = deleteDoc(docRef)
+    return from(promise)
   }
 }
