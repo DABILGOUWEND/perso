@@ -15,17 +15,17 @@ export class PannesService {
     let h_pannes: any = [];
     donnees.forEach(element => {
       if (engins_id.includes(element.id)) {
-        let filtre1 = this._pannestore.donnees_pannes().filter(x => x.engin_id == element.id)
-        let rep1 = filtre1.find(x => x.situation == 'garage')
+        let filtre1 = this._pannestore.donnees_pannes().filter(x => x.engin_id === element.id);
+        let rep1 = filtre1.find(x => x.situation === 'garage');
         if (rep1) {
-          h_pannes.push(this._app_service.calculateDiff1(this._app_service.convertDate(rep1.debut_panne), rep1.heure_debut))
+          h_pannes.push(this._app_service.calculateDiff1(this._app_service.convertDate(rep1.debut_panne), rep1.heure_debut));
         }
         else {
-          h_pannes.push('')
+          h_pannes.push("");
         }
       }
       else {
-        h_pannes.push(0)
+        h_pannes.push(0);
       }
     });
     return h_pannes

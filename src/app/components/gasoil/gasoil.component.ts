@@ -4,7 +4,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Engins } from '../../models/modeles';
-import { GasoilStore, EnginsStore, ClasseEnginsStore, ApproGasoilStore } from '../../store/appstore';
+import { GasoilStore, EnginsStore, ClasseEnginsStore, ApproGasoilStore, CompteStore } from '../../store/appstore';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
 import { ApprogoComponent } from '../approgo/approgo.component';
@@ -25,6 +25,7 @@ export class GasoilComponent {
   approgo_store = inject(ApproGasoilStore);
   engins_store = inject(EnginsStore);
   classes_store = inject(ClasseEnginsStore);
+  _compte_store = inject(CompteStore);
   _service: WenService = inject(WenService);
   fb = inject(NonNullableFormBuilder);
   _gasoil_service = inject(GasoilService);
@@ -175,16 +176,16 @@ export class GasoilComponent {
       date_fin: new FormControl(new Date(), Validators.required)
     });
     effect(() => {
-      console.log(this.gasoil_store.conso_data())
+      console.log(this._compte_store.conso_go())
     })
   }
   ngOnInit() {
     this.default_date.set(new Date());
     this.madate.set(new Date().toLocaleDateString());
-    this.gasoil_store.load_compte_conso();
-    this.approgo_store.load_compte_appro();
-    this.engins_store.load_compte_engins();
-    this.classes_store.load_compte_classes();
+    this.gasoil_store.loadconso();
+    this.approgo_store.loadappro();
+    this.engins_store.loadengins();
+    this.classes_store.loadclasses();
     this.gasoil_store.setCurrentDate(this.madate());
   }
   addEvent(event: MatDatepickerInputEvent<any>) {

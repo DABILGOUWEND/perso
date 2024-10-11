@@ -21,17 +21,10 @@ export class TaskService {
       this._auth_service.userSignal()?.current_projet_id + '/engins');
     return collectionData(Collection, { idField: 'id' }) as Observable<Engins[]>
   }
-  addEngins(data: any): Observable<void> {
-    let mydata = {
-      "designation": data.designation,
-      "code_parc": data.code_parc,
-      "classe_id": data.classe_id,
-      "utilisateur_id": data.utilisateur_id,
-      "immatriculation": data.immatriculation
-    }
-    const EnginsCollection = doc(this.db, 'comptes/' +
-      this._auth_service.userSignal()?.current_projet_id + '/engins/' + data.id);
-    const docRef = setDoc(EnginsCollection, mydata)
+  addEngins(data: any): Observable<string> {
+    const EnginsCollection = collection(this.db, 'comptes/' +
+      this._auth_service.userSignal()?.current_projet_id + '/engins');
+    const docRef = addDoc(EnginsCollection, data).then(response=>response.id)
     return from(docRef)
   }
   updateEngins(data: any): Observable<void> {
@@ -64,8 +57,6 @@ export class TaskService {
     return collectionData(Collection, { idField: 'id' }) as Observable<tab_personnel[]>
   }
   addPersonnel(data: any): Observable<string> {
-
-
     const Collection = collection(this.db, 'comptes/' +
       this._auth_service.userSignal()?.current_projet_id + '/personnel');
     const docRef = addDoc(Collection, data).then(response => response.id)
@@ -96,7 +87,6 @@ export class TaskService {
     const promise = deleteDoc(docRef)
     return from(promise)
   }
-  //
   //classes_engins
   getallClassesEngins(): Observable<classe_engins[]> {
     const Collection = collection(this.db, 'comptes/' +
@@ -104,11 +94,10 @@ export class TaskService {
     return collectionData(Collection, { idField: 'id' }) as Observable<classe_engins[]>
   }
   addClassesEngins(data: any): Observable<string> {
+
     const Collection = collection(this.db, 'comptes/' +
       this._auth_service.userSignal()?.current_projet_id + '/classes_engins');
-    const docRef = addDoc(Collection, data).then(
-      response => response.id
-    )
+    const docRef = addDoc(Collection, data).then(response => response.id)
     return from(docRef)
   }
   updateClassesEngins(data: any): Observable<any> {
@@ -156,26 +145,26 @@ export class TaskService {
   //gasoil
   getallConsogo(): Observable<Gasoil[]> {
     const mycollection = collection(this.db, 'comptes/' +
-      this._auth_service.userSignal()?.current_projet_id + '/conso_go')
+      this._auth_service.userSignal()?.current_projet_id + '/conso_gasoil')
     let donnees = collectionData(mycollection, { idField: 'id' }) as Observable<Gasoil[]>
     return donnees
   }
   addConsogo(data: any): Observable<string> {
     const EnginsCollection = collection(this.db, 'comptes/' +
-      this._auth_service.userSignal()?.current_projet_id + '/conso_go');
+      this._auth_service.userSignal()?.current_projet_id + '/conso_gasoil');
     const docRef = addDoc(EnginsCollection, data).then(response => response.id)
     return from(docRef)
   }
   updateConsogo(data: any): Observable<void> {
     let id = data.id
     const docRef = doc(this.db, 'comptes/' +
-      this._auth_service.userSignal()?.current_projet_id + '/conso_go/' + id)
+      this._auth_service.userSignal()?.current_projet_id + '/conso_gasoil/' + id)
     const promise = setDoc(docRef, data)
     return from(promise)
   }
   deleteConsogo(id: string): Observable<void> {
     const docRef = doc(this.db, 'comptes/' +
-      this._auth_service.userSignal()?.current_projet_id + '/conso_go/' + id)
+      this._auth_service.userSignal()?.current_projet_id + '/conso_gasoil/' + id)
     const promise = deleteDoc(docRef)
     return from(promise)
   }
@@ -188,9 +177,9 @@ export class TaskService {
     return donnees
   }
   addApproGo(data: any): Observable<string> {
-    const EnginsCollection = collection(this.db, 'comptes/' +
+    const Collection = collection(this.db, 'comptes/' +
       this._auth_service.userSignal()?.current_projet_id + '/appro_go');
-    const docRef = addDoc(EnginsCollection, data).then(response => response.id)
+    const docRef = addDoc(Collection, data).then(response => response.id)
     return from(docRef)
   }
   updateApproGo(data: any): Observable<void> {

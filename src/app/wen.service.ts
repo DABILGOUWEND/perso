@@ -218,9 +218,9 @@ export class WenService {
   }
 
   //*gasoil
-  getallGasoil(): Observable<Gasoil[]> {
+  getallGasoil(): Observable<any[]> {
     const ClassesCollection = collection(this.db, 'basessais')
-    return collectionData(ClassesCollection, { idField: 'id' }) as Observable<Gasoil[]>
+    return collectionData(ClassesCollection, { idField: 'id' }) as Observable<any[]>
   }
   addgasoil(data: any): Observable<string> {
     let mydata =

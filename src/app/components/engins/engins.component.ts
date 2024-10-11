@@ -132,8 +132,6 @@ export class EnginsComponent implements OnInit {
             'classe_id': element.classe_id,
             'utilisateur': utilisat?.nom + ' ' + utilisat?.prenom,
             'utilisateur_id': element.utilisateur_id,
-            'pannes':element.pannes,
-            'gasoil':element.gasoil
           }
         )
       });

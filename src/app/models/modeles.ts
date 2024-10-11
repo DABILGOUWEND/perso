@@ -5,10 +5,7 @@ export interface Engins {
     immatriculation: string,
     utilisateur_id: string,
     classe_id: string,
-    pannes:any[],
-    gasoil:any[]
-
-}
+ }
 
 export interface classe_engins {
     id: string,

@@ -3,7 +3,7 @@ import { ApproGasoilStore, ClasseEnginsStore, CompteStore, EnginsStore, Entrepri
 import { AuthenService } from '../../authen.service';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { Router, RouterOutlet } from '@angular/router';
-import { forkJoin, Observable, tap } from 'rxjs';
+import { concat, forkJoin, Observable, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { v4 as uuid } from 'uuid';
 import { TaskService } from '../../task.service';
@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
   _auth = inject(Auth);
   constructor() {
     effect(() => {
-      console.log(this._gasoil_store.conso_data().filter(x=>x.date==="07/10/2024"))
+      console.log(this._compte_store.engins())
     })
   }
 
@@ -53,11 +53,8 @@ export class HomeComponent implements OnInit {
 
   //methods
   ngOnInit() {
-    //this.selectedOption.set(this._auth_service.userSignal()?.current_projet_id);
-    
+    this._compte_store.loadData();
     if (this._auth_service.userSignal()) {
-      //this._compte_store.loadData();
-      //this._gasoil_store.loadconso2();
     }
   }
   logout() {
@@ -87,69 +84,31 @@ export class HomeComponent implements OnInit {
 
   upload_personnel() {
     let observ: any = [];
-    this._personnel_store.donnees_personnel().forEach(element => {
-      let dates = element.dates;
-      let presence = element.presence;
-      let heureSup = element.heureSup;
-      let heuresNorm = element.heuresN;
-      let Presence = [];
-      for (let key in dates) {
-        Presence.push(
-          {
-
-            'date': dates[key],
-            'presence': presence[key],
-            'heure_normale': heuresNorm[key],
-            'heure_sup': heureSup[key]
-          }
-        )
-      }
-
-      const myId = element.id;
+    this._personnel_store.personnel_data().forEach(element => {
       let mydata = {
         id: element.id,
         nom: element.nom,
         prenom: element.prenom,
-        num_phone1: element.num_phone1 ? element.num_phone1 : "",
-        num_phone2: element.num_phone2 ? element.num_phone2 : "",
-        email: element.email ? element.email : "",
         fonction: element.fonction,
+        num_phone1: element.num_phone1,
+        num_phone2: element.num_phone2,
+        email: element.email,
         num_matricule: element.num_matricule,
-        statut_id: element.statut_id,
-        presence: Presence
-
-      };
-
+        dates: element.dates,
+        heuresN: element.heuresN,
+        heureSup: element.heureSup,
+        presence: element.presence,
+        statut_id: element.statut_id
+      }
       observ.push(
         this._task_service.addPersonnel(mydata)
       )
     });
-    forkJoin(observ).subscribe()
+    concat(observ).subscribe()
   }
   upload_engins() {
     let obsrv: Observable<any>[] = []
     this._engins_store.donnees_engins().forEach((element) => {
-      let pannes = this._pannes_store.pannes_data().filter(x => x.engin_id == element.id);
-      let gasoil = this._gasoil_store.conso_data().filter(x => x.engin_id == element.id);
-      let pannes_engins: any = [];
-      pannes.forEach(element => {
-        pannes_engins.push({
-          'date_panne': element.debut_panne,
-          'date_depanne': element.fin_panne,
-          'motif': element.motif_panne,
-          'heure_panne': element.heure_debut,
-          'heure_depanne': element.heure_fin
-        })
-      });
-      let conso_engins: any = [];
-      gasoil.forEach(element => {
-        conso_engins.push({
-          'date': element.date,
-          'quantite_go': element.quantite_go,
-          'compteur': element.compteur ? element.compteur : null,
-          'diff_work': element.diff_work ? element.diff_work : null
-        })
-      });
       let mydata = {
         "id": element.id,
         "designation": element.designation,
@@ -158,29 +117,66 @@ export class HomeComponent implements OnInit {
         "utilisateur_id": element.utilisateur_id,
         "immatriculation": element.immatriculation
       }
-
       obsrv.push(
         this._task_service.addEngins(mydata)
       )
     })
-    forkJoin(obsrv).subscribe()
+    concat(obsrv).subscribe()
   }
-  upload_gasoil() {
-    let obsrv: Observable<any>[] = []
+  upload_gasoil(): Observable<any> {
+    let obsrv: Observable<any>[] = [];
     let gasoil = this._gasoil_store.conso_data();
-    gasoil.forEach(element => {
-      obsrv.push(
-        this._task_service.addConsogo({
-          'engin_id': element.engin_id,
-          'date': element.date,
-          'quantite_go': element.quantite_go,
-          'compteur': element.compteur ,
-          'diff_work': element.diff_work,
-          'numero': element.numero
-        })
-      )
-    })
-    forkJoin(obsrv).subscribe()
+    gasoil.forEach(
+      (element: any) => {
+        obsrv.push(
+          this._task_service.addConsogo({
+            'engin_id': element.engin_id,
+            'date': element.date,
+            'quantite_go': element.quantite_go,
+            'compteur': element.compteur,
+            'diff_work': element.diff_work,
+            'numero': element.numero,
+          })
+        )
+      })
+    return concat(obsrv);
+  }
+  upload_approgo(): Observable<any> {
+    let obsrv: Observable<any>[] = [];
+    let gasoil = this._appro_go.approgo_data();
+    gasoil.forEach(
+      (element: any) => {
+        obsrv.push(
+          this._task_service.addApproGo({
+            'date': element.date,
+            'quantite': element.quantite,
+            'reception': element.reception
+          })
+        )
+      })
+    return concat(obsrv);
+  }
+  upload_pannes(): Observable<any> {
+    let obsrv: Observable<any>[] = [];
+    let pannes = this._pannes_store.pannes_data();
+    pannes.forEach(
+      (element) => {
+        obsrv.push(
+          this._task_service.addpannes({
+            engin_id: element.engin_id,
+            debut_panne: element.debut_panne,
+            fin_panne: element.fin_panne,
+            heure_debut: element.heure_debut,
+            heure_fin: element.heure_fin,
+            motif_panne: element.motif_panne,
+            situation: element.situation
+          })
+        )
+      })
+    return concat(obsrv);
+  }
+  loadData() {
+    this.upload_gasoil().subscribe()
   }
   upload() {
     let obsrv: Observable<any>[] = []
@@ -202,7 +198,6 @@ export class HomeComponent implements OnInit {
   upload_classe_engins() {
     let obsrv: Observable<any>[] = []
     this._classe_store.classes().forEach((element) => {
-      let myId = uuid();
       let mydata = {
         "id": element.id,
         "designation": element.designation,
@@ -212,7 +207,7 @@ export class HomeComponent implements OnInit {
         this._task_service.addClassesEngins(mydata)
       )
     })
-    forkJoin(obsrv).subscribe()
+    concat(obsrv).subscribe()
   }
   choice_projet(data: any) {
     this._auth_service.userSignal.update((user: any) => (
