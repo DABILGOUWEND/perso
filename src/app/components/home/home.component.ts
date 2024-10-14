@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
   _auth = inject(Auth);
   constructor() {
     effect(() => {
-      console.log(this._compte_store.engins())
+      //console.log(this._gasoil_store.datasource());
     })
   }
 
@@ -53,10 +53,9 @@ export class HomeComponent implements OnInit {
 
   //methods
   ngOnInit() {
-    this._compte_store.loadData();
-    if (this._auth_service.userSignal()) {
-    }
+    this._projet_store.loadProjets();
   }
+ /* 
   logout() {
     this._auth_service.logout().subscribe();
   }
@@ -217,7 +216,7 @@ export class HomeComponent implements OnInit {
     )
     )
     localStorage.setItem('user', JSON.stringify(this._auth_service.userSignal()));
-    this._compte_store.loadData();
-  }
+    this._auth_service.current_projet_id.set(data.value);
+  } */
 
 }

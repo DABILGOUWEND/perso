@@ -371,6 +371,7 @@ export const ClasseEnginsStore = signalStore(
     ),
     withMethods((store,
         monservice = inject(WenService),
+        _taskk_service=inject(TaskService),
         snackbar = inject(MatSnackBar),
         compte = inject(CompteStore)) =>
     (
@@ -382,8 +383,8 @@ export const ClasseEnginsStore = signalStore(
             load_compte_classes() {
                 patchState(store, { classes: compte.classes_engins() })
             },
-            loadclasses: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallClasses().pipe(
+            loadclasses: rxMethod<string>(pipe(switchMap((projet_id) => {
+                return _taskk_service.getallClassesEngins(projet_id).pipe(
                     tap((data) => {
                         patchState(store, { classes: classement_classes(data) })
                     })
@@ -668,8 +669,8 @@ export const PannesStore = signalStore(
             load_compte_pannes() {
                 patchState(store, { pannes_data: compte.pannes() })
             },
-            loadPannes: rxMethod<void>(pipe(switchMap(() => {
-                return task_service.getAllPannes().pipe(
+            loadPannes: rxMethod<string>(pipe(switchMap((projet_id) => {
+                return task_service.getAllPannes(projet_id).pipe(
                     tap((data) => {
                         patchState(store, { pannes_data: classeTabDatePanne(data) })
                     })
@@ -1392,8 +1393,8 @@ export const EnginsStore = signalStore(
             load_compte_engins() {
                 patchState(store, { engins: compte.engins() })
             },
-            loadengins: rxMethod<void>(pipe(switchMap(() => {
-                return task_service.getallEngins().pipe(tap(data => {
+            loadengins: rxMethod<string>(pipe(switchMap((projet_id) => {
+                return task_service.getallEngins(projet_id).pipe(tap(data => {
                     patchState(store, { engins: data })
                 }
                 ))
@@ -1461,7 +1462,7 @@ export const EnginsStore = signalStore(
 export const GasoilStore = signalStore(
     { providedIn: 'root' },
     withState(initialGasoilState),
-    withComputed((store, compte = inject(CompteStore)) => (
+    withComputed((store, engins_store = inject(EnginsStore)) => (
         {
             lastNum: computed(() => {
                 return Math.max(...store.conso_data().map(x => Number(x.numero)))
@@ -1497,15 +1498,16 @@ export const GasoilStore = signalStore(
                 )
             }),
             datasource: computed(() => {
+               
                 let enginId = store.selectedEngin();
                 let classId = store.selectedClass();
-                let engins = compte.engins();
-                let myengins = classId !== '' ? engins
-                    .filter(x => x.classe_id === classId) : engins;
+                let engin_data = engins_store.engins();
+                let myengins = classId != '' ? engin_data
+                    .filter(x => x.classe_id === classId) : engin_data;
                 let enginsClass = myengins.map(x => x.id);
                 let myconso1 = store.conso_data().
                     filter(x => enginsClass.includes(x.engin_id));
-                let myconso2 = enginId !== '' ? myconso1.
+                let myconso2 = enginId != '' ? myconso1.
                     filter(x => x.engin_id === enginId) : myconso1;
                 var madate = store.selectedDate();
                 let donnees_gasoil: Gasoil[];
@@ -1528,7 +1530,7 @@ export const GasoilStore = signalStore(
                 }
                 let donnees: any = [];
                 donnees_gasoil.forEach(element => {
-                    let engin = engins.find(x => x.id == element.engin_id);
+                    let engin = engin_data.find(x => x.id == element.engin_id);
                     donnees.push(
                         {
                             'id': element.id,
@@ -1564,7 +1566,7 @@ export const GasoilStore = signalStore(
                         }]
                     }
                 }
-                console.log(conso)
+                //console.log(conso)
                 return [conso, unique_dates]
             }
             )
@@ -1593,10 +1595,10 @@ export const GasoilStore = signalStore(
                 load_compte_conso() {
                     patchState(store, { conso_data: comptes.conso_go() })
                 },
-                loadconso: rxMethod<void>(pipe(
+                loadconso: rxMethod<string>(pipe(
                     switchMap(
-                        () => {
-                            return task_service.getallConsogo().pipe(
+                        (projet_id) => {
+                            return task_service.getallConsogo(projet_id).pipe(
                                 tap(
                                     data => {
                                         patchState(store, { conso_data: data })
@@ -1695,8 +1697,8 @@ export const ApproGasoilStore = signalStore(
                 patchState(store, { approgo_data: compte.appro_go() })
             },
 
-            loadappro: rxMethod<void>(pipe(switchMap(() => {
-                return task_service.getAllApproGo().pipe(
+            loadappro: rxMethod<string>(pipe(switchMap((projet_id) => {
+                return task_service.getAllApproGo(projet_id).pipe(
                     tap(data => {
                         patchState(store, { approgo_data: classeTabDate(data) })
                     })
@@ -2309,7 +2311,7 @@ export const ConstatStore = signalStore(
 
             min_numero: computed(() => {
                 let devis_id = devis.selectedDevis_id();
-                console.log(devis_id)
+
                 let postes = devis.lignedevis_data().filter(x => x.devis_id == devis_id).map(x => x.id)
                 let constats = store.constat_data().filter(x => postes.includes(x.poste_id));
                 let numeros = constats.map(x => x.numero)
@@ -3433,7 +3435,7 @@ export const CompteStore = signalStore(
                 )
             }
             ,
-            loadData: rxMethod<void>(
+           /*  loadData: rxMethod<void>(
                 pipe(
                     switchMap(
                         () => {
@@ -3516,7 +3518,7 @@ export const CompteStore = signalStore(
                             )
                         }
                     )
-                )),
+                )), */
             addEngins: rxMethod<any>(
                 pipe(
                     switchMap(

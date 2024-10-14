@@ -1,16 +1,45 @@
-<mat-sidenav-container fullscreen>
+<mat-sidenav-container class="example-container">
     <mat-sidenav #sidnav>
         <mat-nav-list (click)="sidnav.close()">
-            <ng-container [ngTemplateOutlet]="nav_liste">
+            <ng-container [ngTemplateOutlet]="nav_liste()">
             </ng-container>
         </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content class="toolbar">
         <mat-toolbar>
-            <ng-container [ngTemplateOutlet]="toolbar">
+            <ng-container [ngTemplateOutlet]="toolbar()">
             </ng-container>
+            <div class="spacer_register">
+                <h1>{{ _auth_service.userSignal()?.email}}</h1>
+                <button mat-icon-button (click)="logout()">
+                    <mat-icon>logout</mat-icon>
+                </button>
+
+            </div>
+
+            <div class="spacer_register">
+                <button mat-raised-button extended type="button">
+                    Register
+                </button>
+            </div>
+            <div class="spacer_user">
+                <mat-form-field>
+                    <mat-label> Choisir projet</mat-label>
+                    <mat-select (selectionChange)="choix_projet($event)">
+                        @for(projet of _auth_service.projets();track projet.id){
+                        <mat-option [value]="projet.id">{{projet.intitule}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="spacer_logo">
+                <div class="logo">
+                    <h3>SOLUBTP </h3>
+                    <h4>By Wen</h4>
+                </div>
+            </div>
         </mat-toolbar>
-        <ng-container [ngTemplateOutlet]="content">
+        <ng-container [ngTemplateOutlet]="content()">
         </ng-container>
     </mat-sidenav-content>
 

@@ -40,7 +40,6 @@ export class ApprogoComponent  implements OnInit{
     })
   }
   ngOnInit() {
-    this.approgo_store.load_compte_appro();
   }
   updateTableData() {
     if (this.formGroup.valid) {

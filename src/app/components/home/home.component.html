@@ -1,40 +1,35 @@
 <app-home-template [nav_liste]="nav_liste" [toolbar]="toolbar" [content]="content">
 </app-home-template>
+
 <ng-template #nav_liste>
-
 </ng-template>
-<ng-template #toolbar>
-    <div class="example-spacer2">
-        <button mat-fab type="button">
-            <mat-icon>home</mat-icon>
-        </button>
-    </div>
-    <span class="example-spacer3"> </span>
-    <div class="spacer_user">
-        <button mat-raised-button extended type="button" (click)="upload_approgo()">
-            essais
-        </button>
-    </div> 
-    <div class="spacer_user">
-        <h1>{{ _auth_service.userSignal()?.email}}</h1>
-        <button mat-raised-button extended type="button" (click)="logout()">
-            déconnexion
-        </button>
-    </div>
-    <div class="spacer_register"  *ngIf="_auth_service.userSignal()?.role==='admin'">
-        <button mat-raised-button extended type="button" (click)="click_register()">
-            Register
-        </button>
-    </div>
-    <div class="spacer_logo">
-        <div class="logo">
-            <h3>SOLUBTP </h3>
-            <h4>By Wen</h4>
-        </div>
-    </div>
 
+<ng-template #toolbar>
+    <span class="example-spacer3"> </span>
 </ng-template>
 <ng-template #content>
+    <mat-card class="example-card" appearance="outlined">
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image"></div>
+          <mat-card-title>Shiba Inu</mat-card-title>
+          <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+        </mat-card-header>
+        <div class="icon-slide-container">
+            <img mat-card-image src="/assets/images/travaux.jpg" alt="Photo of a Shiba Inu">
+        </div>
+        <mat-card-content>
+          <p>
+            The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
+            A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
+            bred for hunting.
+          </p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button>LIKE</button>
+          <button mat-button>SHARE</button>
+        </mat-card-actions>
+      </mat-card>
+<!-- 
     <section>
         <div id="icon-wrapper">
             <a routerLink="/home_travaux">
@@ -44,7 +39,6 @@
                     </div>
                 </div>
             </a>
-
             <a routerLink="/home_gestion">
                 <div class="icons2">
                     <div class="icon-slide-container">
@@ -52,22 +46,6 @@
                     </div>
                 </div>
             </a>
-
-            <a>
-                <div class="icons3">
-                    <div class="icon-slide-container">
-                        <img class="slide-icon" alt="The Kite Map Logo" height="100" src="/assets/images/view-all.jpg">
-                    </div>
-                </div>
-            </a>
-
-            <a>
-                <div class="icons4">
-                    <div class="icon-slide-container">
-                        <img class="slide-icon" alt="The Kite Map Logo" height="100" src="/assets/images/feedback.jpg">
-                    </div>
-                </div>
-            </a>
         </div>
-    </section>
+    </section> -->
 </ng-template>

@@ -4,7 +4,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Engins } from '../../models/modeles';
-import { GasoilStore, EnginsStore, ClasseEnginsStore, ApproGasoilStore, CompteStore } from '../../store/appstore';
+import { GasoilStore, EnginsStore, ClasseEnginsStore, ApproGasoilStore, CompteStore, PannesStore, PersonnelStore, ProjetStore } from '../../store/appstore';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
 import { ApprogoComponent } from '../approgo/approgo.component';
@@ -12,6 +12,7 @@ import { EssaiComponent } from '../essai/essai.component';
 import { WenService } from '../../wen.service';
 import { GasoilModelComponent } from '../gasoil-model/gasoil-model.component';
 import { GasoilService } from '../../services/gasoil.service';
+import { TaskService } from '../../task.service';
 @Component({
   selector: 'app-gasoil',
   standalone: true,
@@ -21,11 +22,15 @@ import { GasoilService } from '../../services/gasoil.service';
 })
 export class GasoilComponent {
   //injections
-  gasoil_store = inject(GasoilStore);
-  approgo_store = inject(ApproGasoilStore);
-  engins_store = inject(EnginsStore);
-  classes_store = inject(ClasseEnginsStore);
+  _engins_store = inject(EnginsStore);
+  _classe_store = inject(ClasseEnginsStore);
+  _personnel_store = inject(PersonnelStore);
+  _projet_store = inject(ProjetStore);
   _compte_store = inject(CompteStore);
+  _task_service = inject(TaskService);
+  _pannes_store = inject(PannesStore);
+  _gasoil_store = inject(GasoilStore);
+  _appro_go = inject(ApproGasoilStore);
   _service: WenService = inject(WenService);
   fb = inject(NonNullableFormBuilder);
   _gasoil_service = inject(GasoilService);
@@ -47,7 +52,7 @@ export class GasoilComponent {
 
   //others variables and consts
   formG2: FormGroup;
-  displayedColumns = {
+  displayedColumns: any = {
     'date': 'DATE',
     'designation': 'DESIGNATION',
     'code_parc': 'CODE PARC',
@@ -73,10 +78,10 @@ export class GasoilComponent {
   //computed signal
   donnees_enginsByclass = computed(() => {
     if (this.selected_classe_id() === "") {
-      return this.engins_store.donnees_engins();
+      return this._engins_store.donnees_engins();
     }
     else {
-      return this.engins_store.donnees_engins().
+      return this._engins_store.donnees_engins().
         filter(x => x.classe_id === this.selected_classe_id());
     }
   }
@@ -143,19 +148,16 @@ export class GasoilComponent {
   })
   classe_select = computed(() => {
     let donnees: any = [];
-    this.classes_store.classes_engins()
-      .forEach(element => {
-        donnees.push(
-          {
-            id: element.id,
-            valeur: element.designation
-          }
-        )
-      })
-    return donnees
+    return this._classe_store.classes_engins().map(x => {
+      return {
+        'id': x.id,
+        'valeur': x.designation
+      }
+    })
+
   })
   total_conso = computed(() => {
-    let go = this.gasoil_store.datasource().map((x: any) => x.quantite_go);
+    let go = this._gasoil_store.datasource().map((x: any) => x.quantite_go);
     return this._service.somme(go)
   });
   table_update_form = this.fb.group({
@@ -176,22 +178,19 @@ export class GasoilComponent {
       date_fin: new FormControl(new Date(), Validators.required)
     });
     effect(() => {
-      console.log(this._compte_store.conso_go())
+      //console.log(this._gasoil_store.datasource())
     })
   }
   ngOnInit() {
     this.default_date.set(new Date());
+
     this.madate.set(new Date().toLocaleDateString());
-    this.gasoil_store.loadconso();
-    this.approgo_store.loadappro();
-    this.engins_store.loadengins();
-    this.classes_store.loadclasses();
-    this.gasoil_store.setCurrentDate(this.madate());
+    this._gasoil_store.setCurrentDate(this.madate());
   }
   addEvent(event: MatDatepickerInputEvent<any>) {
     this.default_date.set(event.value);
     this.madate.set(event.value.toLocaleDateString());
-    this.gasoil_store.filtrebyDate([this.madate()]);
+    this._gasoil_store.filtrebyDate([this.madate()]);
   }
   annuler() {
     this.table_update_form.reset();
@@ -201,19 +200,19 @@ export class GasoilComponent {
     switch (cas) {
       case "date":
         this.date_choice.set("date");
-        this.gasoil_store.filtrebyDate([this.madate()]);
-        this.gasoil_store.setCurrentDate(this.madate());
+        this._gasoil_store.filtrebyDate([this.madate()]);
+        this._gasoil_store.setCurrentDate(this.madate());
         break
       case "idate":
         this.date_choice.set("idate");
         if (this.formG2.valid) {
           let value = this.formG2.value;
-          this.gasoil_store.filtrebyDate([value.date_debut.toLocaleDateString(), value.date_fin.toLocaleDateString()])
+          this._gasoil_store.filtrebyDate([value.date_debut.toLocaleDateString(), value.date_fin.toLocaleDateString()])
         }
         break
       case "tout":
         this.date_choice.set("tout");
-        this.gasoil_store.filtrebyDate([""])
+        this._gasoil_store.filtrebyDate([""])
         break
     }
   }
@@ -221,7 +220,7 @@ export class GasoilComponent {
     if (this.formG2.valid) {
       let value = this.formG2.value;
       if (value.date_debut !== null && value.date_fin !== null) {
-        this.gasoil_store.filtrebyDate(
+        this._gasoil_store.filtrebyDate(
           [value.date_debut.toLocaleDateString(),
           value.date_fin.toLocaleDateString()
           ]
@@ -243,7 +242,7 @@ export class GasoilComponent {
         numero: valeur.numero,
         compteur: valeur.compteur !== null ? valeur.compteur.toString() : "0",
       }
-      this.gasoil_store.updateconso(val_tr)
+      this._gasoil_store.updateconso(val_tr)
     }
     else {
       let val_tr =
@@ -253,14 +252,14 @@ export class GasoilComponent {
         quantite_go: valeur.quantite_go,
         compteur: valeur.compteur !== null ? valeur.compteur.toString() : "0",
         diff_work: 0,
-        numero: (this.gasoil_store.lastNum() + 1)
+        numero: (this._gasoil_store.lastNum() + 1)
       }
-      this.gasoil_store.addconso(val_tr);
+      this._gasoil_store.addconso(val_tr);
     }
   }
   deleteData(id: any) {
     if (confirm('voulez-vous supprimer cet élement?'))
-      this.gasoil_store.removeconso(id)
+      this._gasoil_store.removeconso(id)
   }
   changeSelect(data: any) {
     let controle_name = data[1];
@@ -269,7 +268,7 @@ export class GasoilComponent {
     switch (controle_name) {
       case "classe_id":
         let classe_id = data[0]
-        let tab = this.engins_store.donnees_engins().filter(x => x.classe_id === classe_id).map(x => {
+        let tab = this._engins_store.donnees_engins().filter(x => x.classe_id === classe_id).map(x => {
           return {
             'id': x.id,
             'valeur': x.code_parc
@@ -280,7 +279,7 @@ export class GasoilComponent {
         break
       case "engin_id":
         let id = data[0]
-        let engin = this.engins_store.donnees_engins().find(x => x.id === id);
+        let engin = this._engins_store.donnees_engins().find(x => x.id === id);
         this.selectedEngin.set(engin);
         if (engin)
           this.table_update_form.get("designation")?.setValue(engin?.designation)
@@ -295,7 +294,7 @@ export class GasoilComponent {
       this.table_update_form.get("compteur")?.setValue("0");
     }
     let ind = this.table().findIndex(x => x.control_name === "engin_id")
-    let tab = this.engins_store.donnees_engins().
+    let tab = this._engins_store.donnees_engins().
       filter(x => x.classe_id === row.classe_id).map(x => {
         return {
           'id': x.id,
@@ -318,29 +317,29 @@ export class GasoilComponent {
   }
 
   selectChangeEngin(data: any) {
-    let engin = this.engins_store.donnees_engins().find(x => x.id === data);
+    let engin = this._engins_store.donnees_engins().find(x => x.id === data);
     if (engin) {
       this.selectEnginName.set(engin.designation + " - " + engin.code_parc);
     } else {
       this.selectEnginName.set("");
     }
 
-    this.gasoil_store.filterByEnginId(this.selected_engin_id());
+    this._gasoil_store.filterByEnginId(this.selected_engin_id());
   }
   selectChangeEnginByclass(data: any) {
-    let classe = this.classes_store.classes_engins().find(x => x.id === data)
+    let classe = this._classe_store.classes_engins().find(x => x.id === data)
     if (classe) {
       this.selectClasseName.set(classe.designation);
     }
     else {
       this.selectClasseName.set("");
     }
-    this.gasoil_store.filterByClassId(this.selected_classe_id());
+    this._gasoil_store.filterByClassId(this.selected_classe_id());
   }
   printgasoil() {
     this._gasoil_service.rapport_gasoil(
       this.date_choice(),
-      this.gasoil_store.datasource(),
+      this._gasoil_store.datasource(),
       this.selectClasseName(),
       this.selectEnginName(),
       this.total_conso()

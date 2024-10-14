@@ -175,14 +175,7 @@ export class PointageTrvxEnginsComponent implements OnInit {
   //methods
 
   ngOnInit() {
-    this._pointage_trvx_store.loadPointageTrvx();
-    this._projet_store.loadProjets();
-    this._engins_store.loadengins();
-    this._taches_engins_store.loadTachesEngins();
-    this._classes_engins_store.loadclasses();
-    this._tachesProjetStore.loadTachesProjet();
-    this._taches.loadTaches();
-    this._unites_store.loadUnites();
+
   }
   ajouter(data: any) {
     this.current_row.set([]);

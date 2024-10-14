@@ -41,8 +41,6 @@ export class PannesComponent {
     })
   }
   ngOnInit() {
-    this._enginStore.load_compte_engins();
-    this._pannestore.load_compte_pannes();
     this._enginStore.filterbyDesignation('');
     this._pannestore.setIntervalleDate(['']);
     this._pannestore.setEnginsIds(['']);

@@ -1,9 +1,9 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { AuthenService } from './authen.service';
 import { from, Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
-import { addDoc, collection, collectionData, deleteDoc, doc, Firestore, setDoc } from '@angular/fire/firestore';
+import { addDoc, collection, collectionData, deleteDoc, doc, Firestore, getDoc, setDoc } from '@angular/fire/firestore';
 import { appro_gasoil, classe_engins, Engins, Gasoil, Pannes, Projet, tab_personnel, tab_ProjetStore } from './models/modeles';
 import { response } from 'express';
 
@@ -15,16 +15,20 @@ export class TaskService {
   _auth_service = inject(AuthenService);
   db: Firestore = inject(Firestore);
 
+
+
+
+
   //engins
-  getallEngins(): Observable<Engins[]> {
+  getallEngins(projet_id:string): Observable<Engins[]> {
     const Collection = collection(this.db, 'comptes/' +
-      this._auth_service.userSignal()?.current_projet_id + '/engins');
+      projet_id + '/engins');
     return collectionData(Collection, { idField: 'id' }) as Observable<Engins[]>
   }
   addEngins(data: any): Observable<string> {
     const EnginsCollection = collection(this.db, 'comptes/' +
       this._auth_service.userSignal()?.current_projet_id + '/engins');
-    const docRef = addDoc(EnginsCollection, data).then(response=>response.id)
+    const docRef = addDoc(EnginsCollection, data).then(response => response.id)
     return from(docRef)
   }
   updateEngins(data: any): Observable<void> {
@@ -53,7 +57,7 @@ export class TaskService {
   //personnel
   getallPersonnel(): Observable<tab_personnel[]> {
     const Collection = collection(this.db, 'comptes/' +
-      this._auth_service.userSignal()?.current_projet_id + '/personnel');
+      this._auth_service.current_projet_id()  + '/personnel');
     return collectionData(Collection, { idField: 'id' }) as Observable<tab_personnel[]>
   }
   addPersonnel(data: any): Observable<string> {
@@ -88,9 +92,9 @@ export class TaskService {
     return from(promise)
   }
   //classes_engins
-  getallClassesEngins(): Observable<classe_engins[]> {
+  getallClassesEngins(projet_id:string): Observable<classe_engins[]> {
     const Collection = collection(this.db, 'comptes/' +
-      this._auth_service.userSignal()?.current_projet_id + '/classes_engins');
+      projet_id+ '/classes_engins');
     return collectionData(Collection, { idField: 'id' }) as Observable<classe_engins[]>
   }
   addClassesEngins(data: any): Observable<string> {
@@ -143,9 +147,9 @@ export class TaskService {
   }
 
   //gasoil
-  getallConsogo(): Observable<Gasoil[]> {
+  getallConsogo(projet_id:string): Observable<Gasoil[]> {
     const mycollection = collection(this.db, 'comptes/' +
-      this._auth_service.userSignal()?.current_projet_id + '/conso_gasoil')
+      projet_id  + '/conso_gasoil')
     let donnees = collectionData(mycollection, { idField: 'id' }) as Observable<Gasoil[]>
     return donnees
   }
@@ -170,9 +174,9 @@ export class TaskService {
   }
 
   //appro gasoil
-  getAllApproGo(): Observable<appro_gasoil[]> {
+  getAllApproGo(projet_id:string): Observable<appro_gasoil[]> {
     const mycollection = collection(this.db, 'comptes/' +
-      this._auth_service.userSignal()?.current_projet_id + '/appro_go')
+      projet_id+ '/appro_go')
     let donnees = collectionData(mycollection, { idField: 'id' }) as Observable<appro_gasoil[]>
     return donnees
   }
@@ -197,9 +201,9 @@ export class TaskService {
   }
 
   //pannes
-  getAllPannes(): Observable<Pannes[]> {
+  getAllPannes(projet_id:string): Observable<Pannes[]> {
     const mycollection = collection(this.db, 'comptes/' +
-      this._auth_service.userSignal()?.current_projet_id + '/pannes')
+      projet_id+ '/pannes')
     let donnees = collectionData(mycollection, { idField: 'id' }) as Observable<Pannes[]>
     return donnees
   }
@@ -221,5 +225,10 @@ export class TaskService {
       this._auth_service.userSignal()?.current_projet_id + '/pannes/' + id)
     const promise = deleteDoc(docRef)
     return from(promise)
+  }
+  getallUsersByUid(uid: string): Observable<any> {
+    const docRef = doc(this.db, "myusers", uid);
+    const docSnap = getDoc(docRef);
+    return from(docSnap)
   }
 }

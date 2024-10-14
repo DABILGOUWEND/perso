@@ -1,7 +1,7 @@
 <app-gasoil-model 
-[table]="table" 
+[table]="table()" 
 [table_update_form]="table_update_form" 
-[dataSource]="gasoil_store.datasource"
+[dataSource]="_gasoil_store.datasource()"
     [displayedColumns]="displayedColumns" 
     (newItemEvent)="updateData($event)"
     (RemoveItemEvent)="deleteData($event)"
@@ -67,7 +67,7 @@
                         (selectionChange)="selectChangeEnginByclass($event.value)">
                         <mat-option value="">
                             --toutes les classes</mat-option>
-                        <mat-option *ngFor="let row of classes_store.classes_engins()" [value]="row.id">
+                        <mat-option *ngFor="let row of _classe_store.classes_engins()" [value]="row.id">
                             {{row.designation}}</mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -89,7 +89,7 @@
         </div>
         <div class="table-col3">
             <div class="row1_col3">
-                <h2> Stock gasoil (litre):{{approgo_store.quantite_go()-gasoil_store.quantite_go()-834}}</h2>
+                <h2> Stock gasoil (litre):{{_appro_go.quantite_go()-_gasoil_store.quantite_go()-834}}</h2>
                 <button mat-flat-button color="primary" (click)="open_appro()">
                     Nouvel appro gasoil
                 </button>
@@ -112,8 +112,8 @@
         <h2> {{ 'Consommation GO de ce jour '+ madate() +': ' + total_conso() +' litres'}}</h2>
     </div>
     <div *ngIf="date_choice()=='idate'">
-        <h2> {{ 'Consommation GO entre le '+ gasoil_store.selectedDate()[0] + ' et le '
-            +gasoil_store.selectedDate()[1]+' :'+total_conso()+' litres'}}</h2>
+        <h2> {{ 'Consommation GO entre le '+ _gasoil_store.selectedDate()[0] + ' et le '
+            +_gasoil_store.selectedDate()[1]+' :'+total_conso()+' litres'}}</h2>
     </div>
     <div *ngIf="date_choice()=='tout'">
         <h2> {{ 'Consommation totale de GO : ' + total_conso()+' litres'}}</h2>

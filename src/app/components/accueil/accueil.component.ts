@@ -23,10 +23,7 @@ export class AccueilComponent implements OnInit {
     )
   }
   ngOnInit() {
-    this.gasoil_store.load_compte_conso();
-    this.approgo_store.loadappro();
-    this.travaux_store.loadtravaux();
-    this.travaux_store.filterbyDate('');
+
   }
   chartOptions1 = computed(() => {
     var mydata = this.gasoil_store.historique_consogo()[0]

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, computed,inject } from '@angular/core';
+import { Component, OnInit, ViewChild, computed, inject } from '@angular/core';
 
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { ImportedModule } from '../../modules/imported/imported.module';
@@ -15,7 +15,7 @@ import { SituationPannePipe } from '../../situation-panne.pipe';
 @Component({
   selector: 'app-rapport-panne',
   standalone: true,
-  imports: [ImportedModule,SituationPannePipe],
+  imports: [ImportedModule, SituationPannePipe],
   templateUrl: './rapport-panne.component.html',
   styleUrl: './rapport-panne.component.scss'
 })
@@ -28,24 +28,22 @@ export class RapportPanneComponent implements OnInit {
   datasource = computed(
     () => new MatTableDataSource<Pannes>(this.Pannestore.donnees_pannes()),
   );
-  code_parc=computed(()=>
-  {
-    let code:any=[]
+  code_parc = computed(() => {
+    let code: any = []
     this.Pannestore.donnees_pannes().forEach(element => {
-      let Myengins=this.EnginStore.donnees_engins().find(x=>x.id==element.engin_id)
+      let Myengins = this.EnginStore.donnees_engins().find(x => x.id == element.engin_id)
       code.push(Myengins?.code_parc)
     });
     return code
   })
-  designation_engin=computed(()=>
-    {
-      let code:any=[]
-      this.Pannestore.donnees_pannes().forEach(element => {
-        let Myengins=this.EnginStore.donnees_engins().find(x=>x.id==element.engin_id)
-        code.push(Myengins?.designation)
-      });
-      return code
-    })
+  designation_engin = computed(() => {
+    let code: any = []
+    this.Pannestore.donnees_pannes().forEach(element => {
+      let Myengins = this.EnginStore.donnees_engins().find(x => x.id == element.engin_id)
+      code.push(Myengins?.designation)
+    });
+    return code
+  })
   @ViewChild(MatPaginator) paginator: MatPaginator
   @ViewChild(MatSort) sort: MatSort;
   formG2: FormGroup
@@ -58,28 +56,24 @@ export class RapportPanneComponent implements OnInit {
   engins$: Observable<Engins[]>
   engins_ids: string[] = []
   is_click_choix = false
-  date_choice='tout'
-  default_date:any
+  date_choice = 'tout'
+  default_date: any
 
   floatLabelControl = new FormControl('tout');
   constructor(
     private _fb: FormBuilder
   ) {
     this.formG2 = this._fb.group({
-      date_debut: new FormControl(new Date(),Validators.required),
-      date_fin: new FormControl(new Date(),Validators.required)
+      date_debut: new FormControl(new Date(), Validators.required),
+      date_fin: new FormControl(new Date(), Validators.required)
     })
-
   }
   ngOnInit() {
     this.default_date = new Date()
-    this.Pannestore.loadPannes()
     this.Pannestore.setIntervalleDate([''])
     this.Pannestore.setEnginsIds([''])
 
-    this.EnginStore.loadengins()
     this.EnginStore.filtrebyIds([''])
-    this.ClasseEnginsStore.loadclasses()
   }
   dateRangeChange() {
     if (this.formG2.valid) {
@@ -99,7 +93,7 @@ export class RapportPanneComponent implements OnInit {
   }
   choix_engins() {
     this.Pannestore.setEnginsIds([this.selectedengin])
-  } 
+  }
   click_slider() {
     if (this.is_click_choix) {
       this.Pannestore.setIntervalleDate([''])
@@ -110,25 +104,24 @@ export class RapportPanneComponent implements OnInit {
     let cas = this.floatLabelControl.value
     switch (cas) {
       case 'date':
-        this.date_choice='date'
+        this.date_choice = 'date'
         this.Pannestore.setIntervalleDate([this.default_date.toLocaleDateString()])
         break
       case 'idate':
-        this.date_choice='idate'
-        if(this.formG2.valid)
-          {
-            let value = this.formG2.value
-            this.Pannestore.setIntervalleDate([value.date_debut.toLocaleDateString(), value.date_fin.toLocaleDateString()])
-          }
+        this.date_choice = 'idate'
+        if (this.formG2.valid) {
+          let value = this.formG2.value
+          this.Pannestore.setIntervalleDate([value.date_debut.toLocaleDateString(), value.date_fin.toLocaleDateString()])
+        }
         break
       case 'tout':
-        this.date_choice='tout'
+        this.date_choice = 'tout'
         this.Pannestore.setIntervalleDate([''])
         break
     }
   }
-  addEvent(data:MatDatepickerInputEvent<any>){
-    this.default_date=data.value
+  addEvent(data: MatDatepickerInputEvent<any>) {
+    this.default_date = data.value
     this.Pannestore.setIntervalleDate([data.value.toLocaleDateString()])
   }
 }

@@ -28,7 +28,7 @@ export class TravauxComponent {
   readonly travaux_store = inject(TravauxStore)
   readonly naturetrvx_store = inject(NatureTrvxStore)
   ngOnInit() {
-    this.engins_store.loadengins()
+   
     this.gasoil_store.load_compte_conso()
     this.travaux_store.loadtravaux()
     this.naturetrvx_store.loadnaturetrvx()

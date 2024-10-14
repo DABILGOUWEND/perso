@@ -9,37 +9,41 @@ import { ApprogoComponent } from '../approgo/approgo.component';
 @Component({
   selector: 'app-gasoil-model',
   standalone: true,
-  imports: [ImportedModule, FormSaisiComponent, ModelComponent,ApprogoComponent],
+  imports: [ImportedModule, FormSaisiComponent, ModelComponent, ApprogoComponent],
   templateUrl: './gasoil-model.component.html',
   styleUrl: './gasoil-model.component.scss'
 })
 export class GasoilModelComponent implements OnInit {
-  appro_opened=input.required<boolean>();
-  appro_openedEmit=output();
-  appro_closedEmit=output();
+  appro_opened = input.required<boolean>();
   is_update = signal(false);
-  is_open=signal(false);
-  current_row: WritableSignal<any> = signal([]);
-  @Input() titre: TemplateRef<any>;
-  @Input() conso: TemplateRef<any>;
-  @Input() table_update_form: FormGroup;
-  @Input() table: any;
-  @Input() displayedColumns: any;
-  @Input() dataSource: any;
-  @Output() newItemEvent = new EventEmitter<any>();
-  @Output() RemoveItemEvent = new EventEmitter<any>();
-  @Output() RechercheEvent = new EventEmitter<any>();
-  @Output() AfficheToutEvent = new EventEmitter();
-  @Output() ChangeSelectEvent = new EventEmitter();
-  @Output() PatchEvent = new EventEmitter();
-  @Output() addEvent = new EventEmitter();
-  @Output() printEvent = new EventEmitter();
+  is_open = signal(false);
+  current_row = signal([]);
+
+  titre = input.required<TemplateRef<any>>();
+  conso = input.required<TemplateRef<any>>();
+  table_update_form = input.required<FormGroup>();
+  table = input.required<any>();
+  displayedColumns = input.required<any>();
+
+  dataSource = input<any>({
+    transform: (value: any) => new MatTableDataSource<any>(value)
+  });
+
+  appro_openedEmit = output();
+  appro_closedEmit = output();
+  newItemEvent = output<any[]>();
+  RemoveItemEvent = output<string>();
+  RechercheEvent = output<string>();
+  AfficheToutEvent = output();
+  ChangeSelectEvent = output<any[]>();
+  PatchEvent = output();
+  addEvent = output();
+  printEvent = output();
+
   header_titles: string[] = [];
-  donnees_table = computed(() => {
-    return new MatTableDataSource<any>(this.dataSource())
-  })
+
   ngOnInit() {
-    this.header_titles = Object.keys(this.displayedColumns)
+    this.header_titles = Object.keys(this.displayedColumns())
   }
   modifier(row: any, id: string) {
     this.current_row.update(() => row)
@@ -48,8 +52,8 @@ export class GasoilModelComponent implements OnInit {
     this.PatchEvent.emit(row)
   }
   addNewItem() {
-    if (this.table_update_form.valid) {
-      let valeur = this.table_update_form.value
+    if (this.table_update_form().valid) {
+      let valeur = this.table_update_form().value
       this.newItemEvent.emit([valeur, this.current_row(), this.is_update()])
       this.is_open.set(false)
     }
@@ -84,14 +88,13 @@ export class GasoilModelComponent implements OnInit {
     this.appro_closedEmit.emit();
   }
   ouvrir_appro() {
-   this.appro_openedEmit.emit();
+    this.appro_openedEmit.emit();
   }
 
   printElement() {
     this.printEvent.emit();
   }
-  retourQuitter()
-  {
+  retourQuitter() {
     this.appro_closedEmit.emit()
   }
 }
