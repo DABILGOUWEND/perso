@@ -371,7 +371,7 @@ export const ClasseEnginsStore = signalStore(
     ),
     withMethods((store,
         monservice = inject(WenService),
-        _taskk_service=inject(TaskService),
+        _taskk_service = inject(TaskService),
         snackbar = inject(MatSnackBar),
         compte = inject(CompteStore)) =>
     (
@@ -443,20 +443,22 @@ export const DatesStore = signalStore(
 
         }
     )),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store,
+        monservice = inject(WenService),
+        snackbar = inject(MatSnackBar)
+    ) =>
     (
         {
-            loaddates: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getalldates().pipe(
-                    tap({
-                        next: (data) => {
-                            patchState(store, { dates: data })
-                        },
-                        error: () => {
-                            Showsnackerbaralert('impossible de charger les données', 'fail', snackbar)
-                        }
-                    }))
-            }))),
+            loaddates(data:tab_personnel[]) {
+                let dates =data.map(x => x.dates);  
+                let result:any=[]  
+                dates.forEach(element => {
+                    result=[...result,...element]
+                });
+                let unique_dates = result.filter((value:any, index:any, self:any) => self.indexOf(value) === index)
+                patchState(store,{dates:unique_dates.map((x:any)=>{return {dates:x}})})
+            }
+            ,
             adddates: rxMethod<datesPointages>(pipe(
                 switchMap((dates) => {
                     return monservice.adddates(dates).pipe(
@@ -464,30 +466,14 @@ export const DatesStore = signalStore(
                             next: () => {
                                 const updatedonnes = [...store.dates(), dates]
                                 patchState(store, { dates: updatedonnes })
-                                //Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => { Showsnackerbaralert('échoué', 'fail', snackbar) }
                         }
                         )
                     )
                 })
-            )),
-            removedates: rxMethod<string>(pipe(
-                switchMap((id) => {
-                    return monservice.deletedates(id).pipe(tap({
-                        next: () => {
-                            const updatedonnes = store.dates().filter(x => x.id != id)
-                            patchState(store, { dates: updatedonnes })
-                            //Showsnackerbaralert('élément supprimé', 'pass', snackbar)
-                        }, error: () => {
-                            Showsnackerbaralert('échoué', 'fail', snackbar)
-                        }
-                    }
-
-                    ))
-                }))),
+            ))
         }
     ))
-
 )
 export const SstraitantStore = signalStore(
     { providedIn: 'root' },
@@ -651,7 +637,7 @@ export const PannesStore = signalStore(
     ),
     withMethods((store,
         monservice = inject(WenService),
-        task_service=inject(TaskService),
+        task_service = inject(TaskService),
         compte = inject(CompteStore),
         snackbar = inject(MatSnackBar)) =>
     (
@@ -1263,9 +1249,9 @@ export const PersonnelStore = signalStore(
                     let obs: Observable<any>[] = []
                     let date = store.current_date()
                     for (let row of donnees) {
-                        obs.push(monservice.updatePerson(row, date))
+                        obs.push(task_service.updatePerson(row, date))
                     }
-                    return forkJoin(obs)
+                    return concat(obs)
                 })
             )),
 
@@ -1374,7 +1360,7 @@ export const EnginsStore = signalStore(
     ),
     withMethods((store,
         monservice = inject(WenService),
-        task_service=inject(TaskService),
+        task_service = inject(TaskService),
         compte = inject(CompteStore),
         snackbar = inject(MatSnackBar)) =>
     (
@@ -1498,7 +1484,7 @@ export const GasoilStore = signalStore(
                 )
             }),
             datasource: computed(() => {
-               
+
                 let enginId = store.selectedEngin();
                 let classId = store.selectedClass();
                 let engin_data = engins_store.engins();
@@ -3435,90 +3421,90 @@ export const CompteStore = signalStore(
                 )
             }
             ,
-           /*  loadData: rxMethod<void>(
-                pipe(
-                    switchMap(
-                        () => {
-                            let observ_engins = monservice.getallEngins().pipe(
-                                tap(resp => {
-                                    console.log("ok")
-                                    patchState(store,
-                                        {
-                                            engins: resp.sort((a, b) => {
-                                                return a.designation.localeCompare(b.designation)
-                                            })
-                                        }
-                                    )
-                                }
-                                )
-                            );
-                            let observ_personnel = monservice.getallPersonnel().pipe(
-                                tap(resp => {
-                                    patchState(store,
-                                        {
-                                            personnel: resp.sort((a, b) => {
-                                                return (a.nom + a.prenom).localeCompare(b.nom + b.prenom)
-                                            })
-                                        }
-                                    )
-                                }
-                                )
-                            );
-                            let observ_classes_engins = monservice.getallClassesEngins().pipe(
-                                tap(resp => {
-                                    patchState(store,
-                                        {
-                                            classes_engins: resp.sort((a, b) => {
-                                                return a.designation.localeCompare(b.designation)
-                                            })
-                                        }
-                                    )
-                                }
-                                )
-                            );
-                            let observ_conso_go = monservice.getallConsogo().pipe(
-                                tap(resp => {
-                                    patchState(store,
-                                        {
-                                            conso_go: resp
-                                        }
-                                    )
-                                }
-                                )
-                            );
-                            let observ_appro_go = monservice.getAllApproGo().pipe(
-                                tap(resp => {
-                                    patchState(store,
-                                        {
-                                            appro_go: resp
-                                        }
-                                    )
-                                }
-                                )
-                            );
-                            let observ_pannes = monservice.getAllPannes().pipe(
-                                tap(resp => {
-                                    patchState(store,
-                                        {
-                                            pannes: resp
-                                        }
-                                    )
-                                }
-                                )
-                            );
-                            return concat(
-                                [
-                                    observ_engins,
-                                    observ_personnel,
-                                    observ_classes_engins,
-                                    observ_conso_go,
-                                    observ_appro_go,
-                                    observ_pannes
-                                ]
-                            )
-                        }
-                    )
-                )), */
+            /*  loadData: rxMethod<void>(
+                 pipe(
+                     switchMap(
+                         () => {
+                             let observ_engins = monservice.getallEngins().pipe(
+                                 tap(resp => {
+                                     console.log("ok")
+                                     patchState(store,
+                                         {
+                                             engins: resp.sort((a, b) => {
+                                                 return a.designation.localeCompare(b.designation)
+                                             })
+                                         }
+                                     )
+                                 }
+                                 )
+                             );
+                             let observ_personnel = monservice.getallPersonnel().pipe(
+                                 tap(resp => {
+                                     patchState(store,
+                                         {
+                                             personnel: resp.sort((a, b) => {
+                                                 return (a.nom + a.prenom).localeCompare(b.nom + b.prenom)
+                                             })
+                                         }
+                                     )
+                                 }
+                                 )
+                             );
+                             let observ_classes_engins = monservice.getallClassesEngins().pipe(
+                                 tap(resp => {
+                                     patchState(store,
+                                         {
+                                             classes_engins: resp.sort((a, b) => {
+                                                 return a.designation.localeCompare(b.designation)
+                                             })
+                                         }
+                                     )
+                                 }
+                                 )
+                             );
+                             let observ_conso_go = monservice.getallConsogo().pipe(
+                                 tap(resp => {
+                                     patchState(store,
+                                         {
+                                             conso_go: resp
+                                         }
+                                     )
+                                 }
+                                 )
+                             );
+                             let observ_appro_go = monservice.getAllApproGo().pipe(
+                                 tap(resp => {
+                                     patchState(store,
+                                         {
+                                             appro_go: resp
+                                         }
+                                     )
+                                 }
+                                 )
+                             );
+                             let observ_pannes = monservice.getAllPannes().pipe(
+                                 tap(resp => {
+                                     patchState(store,
+                                         {
+                                             pannes: resp
+                                         }
+                                     )
+                                 }
+                                 )
+                             );
+                             return concat(
+                                 [
+                                     observ_engins,
+                                     observ_personnel,
+                                     observ_classes_engins,
+                                     observ_conso_go,
+                                     observ_appro_go,
+                                     observ_pannes
+                                 ]
+                             )
+                         }
+                     )
+                 )), */
             addEngins: rxMethod<any>(
                 pipe(
                     switchMap(

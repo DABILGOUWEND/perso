@@ -331,7 +331,6 @@ export interface tab_Essais {
     date: string[]
 }
 export interface datesPointages {
-    id: string,
     dates: string
 }
 

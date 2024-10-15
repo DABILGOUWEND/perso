@@ -6,10 +6,19 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { tab_personnel } from '../../models/modeles';
 import { PersonnelStore, DatesStore } from '../../store/appstore';
-import { Task } from '../contrat-sstraitant/contrat-sstraitant.component';
+
 import { WenService } from '../../wen.service';
 import { DateTime, Info, Interval } from 'luxon';
 import { ImportedModule } from '../../modules/imported/imported.module';
+import { ThemePalette } from '@angular/material/core';
+
+export interface Task {
+  name: string;
+  completed: boolean;
+  color: ThemePalette;
+  subtasks?: Task[];
+}
+
 @Component({
   selector: 'app-pointage',
   standalone: true,
@@ -18,29 +27,29 @@ import { ImportedModule } from '../../modules/imported/imported.module';
   styleUrl: './pointage.component.scss'
 })
 export class PointageComponent {
-  nbre_hs = signal(0)
-  nbre_absence = signal(0)
-  formG: FormGroup
-  debut_date = signal('')
-  fin_date = signal('')
-  is_table_being_updated = false
-  is_new_row_being_added = false
-  is_table_list_open = false
-  text1: string = 'text'
-  text2: string = 'select1'
-  text3: string = 'select2'
-  text4: string = 'number'
-  default_date = signal(new Date())
-  selectedData: tab_personnel
-  madate = signal('')
-  ind = signal(0)
-  personnel_data: WritableSignal<any> = signal({
+  nbre_hs = signal(0);
+  nbre_absence = signal(0);
+  formG: FormGroup;
+  debut_date = signal('');
+  fin_date = signal('');
+  is_table_being_updated = false;
+  is_new_row_being_added = false;
+  is_table_list_open = false;
+  text1: string = 'text';
+  text2: string = 'select1';
+  text3: string = 'select2';
+  text4: string = 'number';
+  default_date = signal(new Date());
+  selectedData: tab_personnel;
+  madate = signal('');
+  ind = signal(0);
+  personnel_data= signal({
     nom: '',
     prenom: '',
     fonction: ''
   })
-  readonly personnel_store = inject(PersonnelStore)
-  readonly datesStore = inject(DatesStore)
+ personnel_store = inject(PersonnelStore)
+  datesStore = inject(DatesStore)
   constructor(
     private _service: WenService,
     private _fb: FormBuilder) {
@@ -58,9 +67,9 @@ export class PointageComponent {
   ngOnInit() {
     this.personnel_store.loadPersonnel()
     this.personnel_store.filterbyNomPrenom('')
-    this.datesStore.loaddates()
     this.madate.set(this.default_date().toLocaleDateString())
     this.personnel_store.filtrebyDate(this.madate())
+    this.datesStore.loaddates(this.personnel_store.donnees_personnel())
   }
   //signals
   weekDays: Signal<DateTime[]> = computed(() => {
@@ -150,10 +159,10 @@ export class PointageComponent {
     let a = this.personnel_store.presence()[ind]
     //this.personnel_store.presence().splice(i, 1, !a)
     let index = this.selectedData.dates.indexOf(this.madate(), 0)
-    let presence = row.Presence
+    let presence = row.presence
     let rep = !a
     presence[index] = rep
-    this.selectedData.Presence = presence
+    this.selectedData.presence = presence
     let heurenorm = row.heuresN
     let heuresup = row.heureSup
     if (rep == false) {
@@ -179,13 +188,13 @@ export class PointageComponent {
       let index = this.selectedData.dates.indexOf(this.madate(), 0)
       let heurenorm = this.selectedData.heuresN
       let heuresup = this.selectedData.heureSup
-      let presence = this.selectedData.Presence
+      let presence = this.selectedData.presence
       heurenorm[index] = value.heureNorm
       heuresup[index] = value.heureSup
       presence[index] = this.personnel_store.presence()[this.ind()]
       this.selectedData.heureSup = heuresup
       this.selectedData.heuresN = heurenorm
-      this.selectedData.Presence = presence
+      this.selectedData.presence = presence
       this.personnel_store.ModifPersonnel(this.selectedData)
       this.is_table_being_updated = false
     }
@@ -195,9 +204,8 @@ export class PointageComponent {
     this.madate.set(event.value.toLocaleDateString())
   }
   commencerPoint() {
-    this.datesStore.adddates({ id: '', dates: this.madate() })
-    this.personnel_store.filtrebyDate(this.madate())
     this.personnel_store.initialPersonnel(this.personnel_store.donnees_personnel())
+    this.personnel_store.filtrebyDate(this.madate())
   }
   is_checked2(ind: number) {
     let checked = this.personnel_store.ischecked()[ind]
@@ -230,8 +238,7 @@ export class PointageComponent {
   deletedate(date: string) {
     let filtre = this.datesStore.dates().find(x => x.dates == date)
     if (filtre) {
-      this.datesStore.removedates(filtre?.id)
-      this.personnel_store.removeDate(date)
+      this.personnel_store.removeDate(date);
       this.madate.set(new Date().toLocaleDateString())
     }
   }
@@ -474,14 +481,14 @@ export class PointageComponent {
               heuresnorm.push(0)
             }
             else {
-              if (!person.Presence[ind]) {
+              if (!person.presence[ind]) {
                 this.nbre_absence.set(this.nbre_absence() + 1)
               }
               presence.push({
-                content: person.Presence[ind] ? person.heuresN[ind] : 'A',
+                content: person.presence[ind] ? person.heuresN[ind] : 'A',
                 styles: {
                   halign: 'center',
-                  fillColor: person.Presence[ind] ? [255, 255, 255] : [242, 205, 163],
+                  fillColor: person.presence[ind] ? [255, 255, 255] : [242, 205, 163],
                 }
               })
               heuresnorm.push(person.heuresN[ind])

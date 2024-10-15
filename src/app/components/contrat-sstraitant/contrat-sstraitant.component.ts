@@ -95,7 +95,7 @@ export class ContratSstraitantComponent implements OnInit {
     let rep: any = []
     let data_pjt = this.projet_Store.donnees_projet()
     this.contrat_Store.donnees_contrat().forEach(element => {
-      rep.push(data_pjt.find(x => x.id == element.projet_id)?.descrip_travaux)
+      //rep.push(data_pjt.find(x => x.id == element.projet_id)?.descrip_travaux)
     });
     return rep
   })

@@ -2219,13 +2219,12 @@ export class WenService {
     return from(promise)
   }
   updatePerson(row: tab_personnel, date: string): Observable<void> {
-    let curendate = row.dates[row.dates.length - 1]
     let dates = [...row.dates, date]
     let presence = [...row.presence, true]
     let heureNorm = [...row.heuresN, 8]
     let heureSup = [...row.heureSup, 0]
     const docRef1 = doc(this.db, 'personnel/' + row.id)
-    const docRef = updateDoc(docRef1, { dates: dates, heuresN: heureNorm, heureSup: heureSup, Presence: presence }).then
+    const docRef = updateDoc(docRef1, { dates: dates, heuresN: heureNorm, heureSup: heureSup, presence: presence }).then
       (response => { }
       )
     return from(docRef)

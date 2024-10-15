@@ -3,7 +3,7 @@ import { AuthenService } from './authen.service';
 import { forkJoin, from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
-import { addDoc, collection, collectionData, deleteDoc, doc, Firestore, getDoc, setDoc } from '@angular/fire/firestore';
+import { addDoc, collection, collectionData, deleteDoc, doc, Firestore, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { appro_gasoil, classe_engins, Engins, Gasoil, Pannes, Projet, tab_personnel, tab_ProjetStore, taches_engins } from './models/modeles';
 import { UserStore, EntrepriseStore, GasoilStore, ApproGasoilStore, EnginsStore, PannesStore, ProjetStore, ClasseEnginsStore } from './store/appstore';
 import { environment } from '../environments/environment';
@@ -22,7 +22,7 @@ export class TaskService {
   //engins
   getallEngins(): Observable<Engins[]> {
     if (!environment.production) {
-      return this._http.get<any[]>(this._auth_service.lodal_apiUrl()).pipe(map((resp:any) => resp.engins.map((x:any) => {
+      return this._http.get<any[]>(this._auth_service.lodal_apiUrl()).pipe(map((resp: any) => resp.engins.map((x: any) => {
         return {
           id: x.id.toString(),
           designation: x.designation,
@@ -74,7 +74,7 @@ export class TaskService {
   getallPersonnel(): Observable<tab_personnel[]> {
     if (!environment.production) {
       return this._http.get<any[]>(this._auth_service.lodal_apiUrl()).pipe(
-        map((resp:any) => resp.personnel.map((x:any) => {
+        map((resp: any) => resp.personnel.map((x: any) => {
           return {
             id: x.id.toString(),
             nom: x.nom,
@@ -82,7 +82,7 @@ export class TaskService {
             fonction: x.fonction,
             num_phone1: x.num_phone1,
             num_phone2: x.num_phone2,
-            email:x.email,
+            email: x.email,
             num_matricule: x.num_matricule,
             dates: [],
             heuresN: [],
@@ -93,10 +93,10 @@ export class TaskService {
         }))
       )
     } else {
-    const Collection = collection(this.db, 'comptes/' 
-      +
-      this._auth_service.current_projet_id() + '/personnel');
-    return collectionData(Collection, { idField: 'id' }) as Observable<tab_personnel[]>
+      const Collection = collection(this.db, 'comptes/'
+        +
+        this._auth_service.current_projet_id() + '/personnel');
+      return collectionData(Collection, { idField: 'id' }) as Observable<tab_personnel[]>
     }
   }
   addPersonnel(data: any): Observable<string> {
@@ -125,16 +125,34 @@ export class TaskService {
     return from(promise)
   }
   deletePersonnel(id: string): Observable<any> {
-    const docRef = doc(this.db, 'comptes/' +
-      '' + '/personnel/' + id);
+    const docRef = doc(this.db, 'comptes/'
+      +
+      this._auth_service.current_projet_id() + '/personnel/' + id);
     const promise = deleteDoc(docRef)
     return from(promise)
+  }
+  updatePerson(row: tab_personnel, date: string): Observable<any> {
+    let dates = [...row.dates, date]
+    let presence = [...row.presence, true]
+    let heureNorm = [...row.heuresN, 8]
+    let heureSup = [...row.heureSup, 0]
+    if (!environment.production) {
+      return this._http.put<any>(this._auth_service.lodal_apiUrl() + '/personnel/' + row.id, { dates: dates, heuresN: heureNorm, heureSup: heureSup, presence: presence })
+    }
+    else {
+      const docRef1 = doc(this.db, 'comptes/' + this._auth_service.current_projet_id() + '/personnel/' + row.id)
+      const docRef = updateDoc(docRef1, { dates: dates, heuresN: heureNorm, heureSup: heureSup, presence: presence }).then
+        (response => { }
+        )
+      return from(docRef)
+    }
+
   }
   //classes_engins
   getallClassesEngins(): Observable<classe_engins[]> {
     if (!environment.production) {
       return this._http.get<any[]>(this._auth_service.lodal_apiUrl()).pipe(
-        map((resp:any) => resp.classes_engins.map((x:any) => {
+        map((resp: any) => resp.classes_engins.map((x: any) => {
           return {
             id: x.id.toString(),
             designation: x.designation,
@@ -174,7 +192,7 @@ export class TaskService {
   getallProjets(): Observable<Projet[]> {
     if (!environment.production) {
       return this._http.get<Projet[]>('http://localhost:3000/projets').pipe(
-        map((resp) => resp.map((x:any) => {
+        map((resp) => resp.map((x: any) => {
           return {
             id: x.id.toString(),
             code: x.code,
@@ -221,7 +239,7 @@ export class TaskService {
   getallConsogo(): Observable<Gasoil[]> {
     if (!environment.production) {
       return this._http.get<any[]>(this._auth_service.lodal_apiUrl()).pipe(
-        map((resp:any) => resp.conso_go.map((x:any) => {
+        map((resp: any) => resp.conso_go.map((x: any) => {
           return {
             id: x.id.toString(),
             engin_id: x.engin_id.toString(),
@@ -264,7 +282,7 @@ export class TaskService {
   getAllApproGo(): Observable<appro_gasoil[]> {
     if (!environment.production) {
       return this._http.get<any[]>(this._auth_service.lodal_apiUrl()).pipe(
-        map((resp:any) => resp.appro_go.map((x:any) => {
+        map((resp: any) => resp.appro_go.map((x: any) => {
           return {
             id: x.id.toString(),
             date: x.date,
@@ -304,32 +322,32 @@ export class TaskService {
   getAllPannes(): Observable<Pannes[]> {
     if (!environment.production) {
       return this._http.get<any[]>(this._auth_service.lodal_apiUrl()).pipe(
-        map((resp:any) => resp.pannes.map((x:any) => {
+        map((resp: any) => resp.pannes.map((x: any) => {
           return {
             id: x.id.toString(),
             engin_id: x.engin_id,
             debut_panne: x.debut_panne,
-            fin_panne: x.fin_panne?x.fin_panne:"",
+            fin_panne: x.fin_panne ? x.fin_panne : "",
             heure_debut: x.heure_debut,
-            heure_fin: x.heure_fin?x.heure_fin:"",
+            heure_fin: x.heure_fin ? x.heure_fin : "",
             motif_panne: x.motif_panne,
             situation: x.situation
           }
         }))
       )
-    }else{
+    } else {
       const mycollection = collection(this.db, 'comptes/' +
         this._auth_service.current_projet_id() + '/pannes')
       let donnees = collectionData(mycollection, { idField: 'id' }) as Observable<Pannes[]>
       return donnees
     }
-  
+
   }
   addpannes(data: any): Observable<string> {
-      const EnginsCollection = collection(this.db, 'comptes/' +
-        this._auth_service.current_projet_id() + '/pannes');
-      const docRef = addDoc(EnginsCollection, data).then(response => response.id)
-      return from(docRef)
+    const EnginsCollection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/pannes');
+    const docRef = addDoc(EnginsCollection, data).then(response => response.id)
+    return from(docRef)
   }
   updatePannes(data: any): Observable<void> {
     let id = data.id
@@ -351,7 +369,7 @@ export class TaskService {
   }
 
   loadEnginsJson(): Observable<any> {
-    
+
     return this._http.get<any>(this._auth_service.lodal_apiUrl()).pipe(tap(resp => console.log(resp.conso_go))
     )
   }

@@ -30,6 +30,7 @@ import { HomeMagasinComponent } from './components/home-magasin/home-magasin.com
 import { HomeAdminComponent } from './components/home-admin/home-admin.component';
 import { GestionComponent } from './components/gestion/gestion.component';
 import { gestionGuard } from './gestion.guard';
+import { PointageComponent } from './components/pointage/pointage.component';
 
 export const routes: Routes = [
     {
@@ -87,8 +88,8 @@ export const routes: Routes = [
             }
             ,
             {
-                path: "pointage",
-                component:PersonnelComponent
+                path: "pointages",
+                component:PointageComponent
             }  
         ]
     },
