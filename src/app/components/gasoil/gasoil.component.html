@@ -1,18 +1,8 @@
-<app-gasoil-model 
-[table]="table()" 
-[table_update_form]="table_update_form" 
-[dataSource]="_gasoil_store.datasource()"
-    [displayedColumns]="displayedColumns" 
-    (newItemEvent)="updateData($event)"
-    (RemoveItemEvent)="deleteData($event)"
-     [titre]="titre" 
-     [conso]="conso" 
-     (ChangeSelectEvent)="changeSelect($event)"
-    (PatchEvent)="PatchEventFct($event)" 
-    (addEvent)="addEventFct()" (printEvent)="printgasoil()"
-    [appro_opened]="appro_opened()" 
-    (appro_openedEmit)="open_appro()" 
-    (appro_closedEmit)="close_appro()">
+<app-gasoil-model [table]="table()" [table_update_form]="table_update_form" [dataSource]="_gasoil_store.datasource()"
+    [displayedColumns]="displayedColumns" (newItemEvent)="updateData($event)" (RemoveItemEvent)="deleteData($event)"
+    [titre]="titre" [conso]="conso" (ChangeSelectEvent)="changeSelect($event)" (PatchEvent)="PatchEventFct($event)"
+    (addEvent)="addEventFct()" (printEvent)="printgasoil()" [appro_opened]="appro_opened()"
+    (appro_openedEmit)="open_appro()" (appro_closedEmit)="close_appro()">
 
     <div class="content_soushead" ngProjectAs="courbe">
         <div class="table-col1">
@@ -85,7 +75,8 @@
             </div>
         </div>
         <div class="table-col2">
-            <canvasjs-chart [options]="_gasoil_service.chartOptions()" [styles]="{width: '100%', height:'360px'}"></canvasjs-chart>
+            <canvasjs-chart [options]="_gasoil_service.chartOptions()" [styles]="{
+                width: '100%', height:'360px'}"></canvasjs-chart>
         </div>
         <div class="table-col3">
             <div class="row1_col3">

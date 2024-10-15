@@ -383,8 +383,8 @@ export const ClasseEnginsStore = signalStore(
             load_compte_classes() {
                 patchState(store, { classes: compte.classes_engins() })
             },
-            loadclasses: rxMethod<string>(pipe(switchMap((projet_id) => {
-                return _taskk_service.getallClassesEngins(projet_id).pipe(
+            loadclasses: rxMethod<void>(pipe(switchMap(() => {
+                return _taskk_service.getallClassesEngins().pipe(
                     tap((data) => {
                         patchState(store, { classes: classement_classes(data) })
                     })
@@ -598,7 +598,7 @@ export const PannesStore = signalStore(
                     if (intervale.length == 1) {
                         data = store.pannes_data().filter(
                             x => {
-                                if (x.situation == 'dépanné') {
+                                if (x.situation == 'depanne') {
                                     return (convertDate(x.debut_panne).setHours(0, 0, 0, 0) == convertDate(intervale[0]).setHours(0, 0, 0, 0))
                                 }
                                 else {
@@ -611,7 +611,7 @@ export const PannesStore = signalStore(
                         data = store.pannes_data().filter(
                             x => {
                                 let endDate = x.situation == 'garage' ? new Date((new Date()).setHours(0, 0, 0, 0)) : new Date(convertDate(x.fin_panne).setHours(0, 0, 0, 0))
-                                if (x.situation == 'dépanné') {
+                                if (x.situation == 'depanne') {
                                     let rep = (convertDate(x.debut_panne) >= convertDate(intervale[0]) && convertDate(x.debut_panne) <= convertDate(intervale[1])) ||
                                         (endDate <= new Date(convertDate(intervale[1]).setHours(0, 0, 0, 0)) && endDate >= new Date(convertDate(intervale[0]).setHours(0, 0, 0, 0)))
                                     return rep
@@ -669,8 +669,8 @@ export const PannesStore = signalStore(
             load_compte_pannes() {
                 patchState(store, { pannes_data: compte.pannes() })
             },
-            loadPannes: rxMethod<string>(pipe(switchMap((projet_id) => {
-                return task_service.getAllPannes(projet_id).pipe(
+            loadPannes: rxMethod<void>(pipe(switchMap(() => {
+                return task_service.getAllPannes().pipe(
                     tap((data) => {
                         patchState(store, { pannes_data: classeTabDatePanne(data) })
                     })
@@ -1393,8 +1393,8 @@ export const EnginsStore = signalStore(
             load_compte_engins() {
                 patchState(store, { engins: compte.engins() })
             },
-            loadengins: rxMethod<string>(pipe(switchMap((projet_id) => {
-                return task_service.getallEngins(projet_id).pipe(tap(data => {
+            loadengins: rxMethod<void>(pipe(switchMap(() => {
+                return task_service.getallEngins().pipe(tap(data => {
                     patchState(store, { engins: data })
                 }
                 ))
@@ -1595,10 +1595,10 @@ export const GasoilStore = signalStore(
                 load_compte_conso() {
                     patchState(store, { conso_data: comptes.conso_go() })
                 },
-                loadconso: rxMethod<string>(pipe(
+                loadconso: rxMethod<void>(pipe(
                     switchMap(
-                        (projet_id) => {
-                            return task_service.getallConsogo(projet_id).pipe(
+                        () => {
+                            return task_service.getallConsogo().pipe(
                                 tap(
                                     data => {
                                         patchState(store, { conso_data: data })
@@ -1697,8 +1697,8 @@ export const ApproGasoilStore = signalStore(
                 patchState(store, { approgo_data: compte.appro_go() })
             },
 
-            loadappro: rxMethod<string>(pipe(switchMap((projet_id) => {
-                return task_service.getAllApproGo(projet_id).pipe(
+            loadappro: rxMethod<void>(pipe(switchMap(() => {
+                return task_service.getAllApproGo().pipe(
                     tap(data => {
                         patchState(store, { approgo_data: classeTabDate(data) })
                     })

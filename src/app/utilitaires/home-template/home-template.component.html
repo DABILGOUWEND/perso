@@ -17,19 +17,19 @@
 
             </div>
 
-            <div class="spacer_register">
+           <!--  <div class="spacer_register">
                 <button mat-raised-button extended type="button">
                     Register
                 </button>
-            </div>
+            </div> -->
             <div class="spacer_user">
                 <mat-form-field>
                     <mat-label> Choisir projet</mat-label>
                     <mat-select (selectionChange)="choix_projet($event)">
-                        @for(projet of _auth_service.projets();track projet.id){
+                        @for(projet of projets();track projet.id){
                         <mat-option [value]="projet.id">{{projet.intitule}}</mat-option>
                         }
-                    </mat-select>
+                    </mat-select> 
                 </mat-form-field>
             </div>
             <div class="spacer_logo">

@@ -2702,7 +2702,6 @@ wen-table:make-gold {
 .toolbar {
   border: solid #b0dbdb 2px;
   width: 100%;
-background-color: red;
   mat-toolbar {
     display: flex;
     background-color: rgb(148, 150, 150);
@@ -3119,7 +3118,7 @@ background-color: red;
 }
 
 .spacer_user {
-  flex: 0.2 1 auto;
+  flex: 0.15 1 auto;
   margin-left: 10px;
   text-align: center;
 
@@ -3139,7 +3138,7 @@ background-color: red;
 }
 
 .spacer_register {
-  flex: 0.2 1 auto;
+  flex: 0.15 1 auto;
   margin-left: 10px;
   text-align: center;
 
@@ -3162,7 +3161,7 @@ background-color: red;
 }
 
 .example-spacer3 {
-  flex: 4 1 auto;
+  flex: 5 1 auto;
   padding-top: 10px;
   margin-left: 10px;
 

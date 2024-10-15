@@ -37,7 +37,7 @@ export class PannesComponent {
   ) {
     effect(() => {
       this.engins_panne = this._pannestore.donnees_pannes().map(x => x.engin_id)
-      this.engins_panne_en_cours = this._pannestore.donnees_pannes().filter(x => x.situation == "garage").map(x => x.engin_id)
+      this.engins_panne_en_cours = this._pannestore.donnees_pannes().filter(x => x.situation == "garage").map(x => x.engin_id);
     })
   }
   ngOnInit() {

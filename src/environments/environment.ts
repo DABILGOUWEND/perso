@@ -6,6 +6,8 @@ export const environment = {
         "apiKey": "AIzaSyBsK6a4cgI9g94bdY050vnuI3BP3ejiiXE",
         "authDomain": "mon-projet-35c49.firebaseapp.com",
         "messagingSenderId": "126234609649"
-    }
+    },
+    production: false,
+    apiUrl: "http://localhost:3000/"
 };
 

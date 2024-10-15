@@ -1,4 +1,4 @@
-<app-home-template [nav_liste]="nav_liste" [toolbar]="toolbar" [content]="content">
+<app-home-template [nav_liste]="nav_liste" [toolbar]="toolbar" [content]="content" >
 </app-home-template>
 
 <ng-template #nav_liste>
@@ -8,34 +8,12 @@
     <span class="example-spacer3"> </span>
 </ng-template>
 <ng-template #content>
-    <mat-card class="example-card" appearance="outlined">
-        <mat-card-header>
-          <div mat-card-avatar class="example-header-image"></div>
-          <mat-card-title>Shiba Inu</mat-card-title>
-          <mat-card-subtitle>Dog Breed</mat-card-subtitle>
-        </mat-card-header>
-        <div class="icon-slide-container">
-            <img mat-card-image src="/assets/images/travaux.jpg" alt="Photo of a Shiba Inu">
-        </div>
-        <mat-card-content>
-          <p>
-            The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
-            A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
-            bred for hunting.
-          </p>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-button>LIKE</button>
-          <button mat-button>SHARE</button>
-        </mat-card-actions>
-      </mat-card>
-<!-- 
     <section>
         <div id="icon-wrapper">
             <a routerLink="/home_travaux">
                 <div class="icons">
                     <div class="icon-slide-container">
-                        <img class="slide-icon" alt="travaux" height="100" src="/assets/images/travaux.jpg">
+                        <img class="slide-icon" alt="travaux" height="100" src="/assets/images/view-map.jpg">
                     </div>
                 </div>
             </a>
@@ -47,5 +25,5 @@
                 </div>
             </a>
         </div>
-    </section> -->
+    </section> 
 </ng-template>
