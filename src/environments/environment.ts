@@ -7,7 +7,7 @@ export const environment = {
         "authDomain": "mon-projet-35c49.firebaseapp.com",
         "messagingSenderId": "126234609649"
     },
-    production: false,
-    apiUrl: "http://localhost:3000/"
+    production: true,
+    apiUrl: "http://localhost:3000"
 };
 

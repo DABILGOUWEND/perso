@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, WritableSignal, computed, input, output, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, WritableSignal, computed, inject, input, output, signal } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { FormSaisiComponent } from '../form-saisi/form-saisi.component';
 import { ModelComponent } from '../model/model.component';
 import { ApprogoComponent } from '../approgo/approgo.component';
+import { EnginsStore, GasoilStore } from '../../store/appstore';
 
 @Component({
   selector: 'app-gasoil-model',
@@ -14,6 +15,10 @@ import { ApprogoComponent } from '../approgo/approgo.component';
   styleUrl: './gasoil-model.component.scss'
 })
 export class GasoilModelComponent implements OnInit {
+  _gasoil_store=inject(GasoilStore)
+  _engins_store=inject(EnginsStore)
+  constructor(){
+  }
   appro_opened = input.required<boolean>();
   is_update = signal(false);
   is_open = signal(false);

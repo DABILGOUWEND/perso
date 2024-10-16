@@ -181,7 +181,6 @@ export class GasoilComponent {
       date_fin: new FormControl(new Date(), Validators.required)
     });
     effect(() => {
-      //console.log(this._gasoil_store.datasource())
     })
   }
   ngOnInit() {

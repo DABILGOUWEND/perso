@@ -976,7 +976,8 @@ export const PersonnelStore = signalStore(
             taille: computed(() => store.personnel_data().length),
             donnees_personnel: computed(() => {
                 var mot = store.selectedNom_prenom()
-                if (mot == '') { return classePersonnel(store.personnel_data()) }
+                if (mot == '') { 
+                    return classePersonnel(store.personnel_data()) }
                 else {
                     return classePersonnel(store.personnel_data().filter(x => (x.nom + x.prenom).toLowerCase().includes(mot.toLowerCase())))
                 }
@@ -984,17 +985,17 @@ export const PersonnelStore = signalStore(
             mytasks: computed(() => {
                 let personnel = store.personnel_data();
                 let data: any = [];
-                personnel.forEach(element => {
+                personnel.forEach((element) => {
                     let dates = element.dates;
-                    let presence = element.prenom;
+                    let presence = element.presence;
                     let index = dates.indexOf(store.current_date());
                     if (index > 0) {
                         data.push({
                             name: presence[index] ? "présent" : "absent",
-                            completed: presence[index]
+                            completed: element.presence[index],
                         })
                     }
-                   
+
                 });
                 return {
                     name: 'selectionner tout',
@@ -1263,7 +1264,8 @@ export const PersonnelStore = signalStore(
 
                         obs.push(task_service.ModifPerson(data))
                     }
-                    return forkJoin(obs)
+
+                    return concat(obs)
                 })
             )),
             initialPersonnel: rxMethod<any>(pipe(
@@ -1271,7 +1273,7 @@ export const PersonnelStore = signalStore(
                     let obs: Observable<any>[] = []
                     let date = store.current_date()
                     for (let row of donnees) {
-                        obs.push(task_service.updatePerson(row, date))
+                        obs.push(task_service.updatePerson(row, date));
                     }
                     return concat(obs)
                 })
@@ -1513,8 +1515,7 @@ export const GasoilStore = signalStore(
                 let myengins = classId != '' ? engin_data
                     .filter(x => x.classe_id === classId) : engin_data;
                 let enginsClass = myengins.map(x => x.id);
-                let myconso1 = store.conso_data().
-                    filter(x => enginsClass.includes(x.engin_id));
+                let myconso1 = store.conso_data().filter(x => enginsClass.includes(x.engin_id));
                 let myconso2 = enginId != '' ? myconso1.
                     filter(x => x.engin_id === enginId) : myconso1;
                 var madate = store.selectedDate();
@@ -1524,8 +1525,8 @@ export const GasoilStore = signalStore(
                 }
                 else {
                     if (madate.length === 1) {
-                        donnees_gasoil = classeTabBynumero(myconso2.
-                            filter(x => x.date === madate[0]))
+                        donnees_gasoil = classeTabBynumero(
+                            myconso2.filter(x => x.date === madate[0]))
                     }
                     else {
                         let filtre = myconso2.

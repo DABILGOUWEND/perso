@@ -172,7 +172,7 @@ export class AuthenService {
   lodal_apiUrl=computed(()=>
   {
     let api=environment.apiUrl;
-    return api+this.current_projet_id()
+    return api
   })
 
 

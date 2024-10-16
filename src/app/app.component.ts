@@ -21,7 +21,13 @@ export class AppComponent implements OnInit {
         if (userCredential)
           this._auth_service.handleCreateUser(userCredential);
       })
+   
+effect(() => {
+
   }
+  )
+  }
+
 
   _auth_service = inject(AuthenService);
   _consogo_store = inject(GasoilStore);
@@ -38,21 +44,16 @@ export class AppComponent implements OnInit {
   title = signal('wenbtp');
   ngOnInit() {
     this._auth_service.autoLogin();
-  }
+    this._engins_store.loadengins();
+    this._consogo_store.loadconso();
+    this._approgo_store.loadappro();
+    this._classes_engins_store.loadclasses();
+    this._personnel_store.loadPersonnel();
+    this._pannes_store.loadPannes();
+    this._projet_store.loadProjets();
+    this._gasoil_service.chartOptions().data[0].dataPoints = this._gasoil_store.historique_consogo()[0];
 
-  ef = effect(() => {
-    if (this._auth_service.userSignal()) {
-      let current_projet = this._auth_service.current_projet_id();
-      if (current_projet) {
-        this._consogo_store.loadconso();
-        this._approgo_store.loadappro();
-        this._engins_store.loadengins();
-        this._classes_engins_store.loadclasses();
-        this._personnel_store.loadPersonnel();
-        this._pannes_store.loadPannes();
-        this._projet_store.loadProjets();
-        this._gasoil_service.chartOptions().data[0].dataPoints = this._gasoil_store.historique_consogo()[0];
-      }
-    }
-  })
+  }
+ 
+
 }

@@ -1,4 +1,4 @@
-import { Component, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
+import { Component, Signal, WritableSignal, computed, effect, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatTableDataSource } from '@angular/material/table';
@@ -59,6 +59,9 @@ export class PointageComponent {
     this.formG = _fb.group({
       date_debut: new FormControl(new Date(), Validators.required),
       date_fin: new FormControl(new Date(), Validators.required)
+    })
+
+    effect(()=>{
     })
   }
 
@@ -150,10 +153,10 @@ export class PointageComponent {
     this.selectedData.set(row);
     let a = this.personnel_store.mytasks().subtasks[ind].completed;
     let data = this.selectedData();
+    let rep = !a;
     if (data) {
       let index = data.dates.indexOf(this.madate(), 0);
       let presence = row.presence;
-      let rep = !a;
       presence[index] = rep;
       data.presence = presence;
       let heurenorm = row.heuresN;
@@ -170,7 +173,7 @@ export class PointageComponent {
         data.heuresN = heurenorm;
         data.heureSup = heuresup;
       }
-      this.personnel_store.ModifPersonnel(this.selectedData);
+      this.personnel_store.ModifPersonnel(this.selectedData());
     }
 
   }
@@ -204,6 +207,7 @@ export class PointageComponent {
   }
   commencerPoint() {
     this.personnel_store.initialPersonnel(this.personnel_store.donnees_personnel())
+    this.datesStore.loaddates( this.personnel_store.donnees_personnel())
     this.personnel_store.filtrebyDate(this.madate())
   }
   is_checked2(ind: number) {
