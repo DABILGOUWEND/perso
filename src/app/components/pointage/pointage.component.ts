@@ -12,12 +12,7 @@ import { DateTime, Info, Interval } from 'luxon';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { ThemePalette } from '@angular/material/core';
 
-export interface Task {
-  name: string;
-  completed: boolean;
-  color: ThemePalette;
-  subtasks?: Task[];
-}
+
 
 @Component({
   selector: 'app-pointage',
@@ -29,27 +24,30 @@ export interface Task {
 export class PointageComponent {
   nbre_hs = signal(0);
   nbre_absence = signal(0);
-  formG: FormGroup;
   debut_date = signal('');
   fin_date = signal('');
-  is_table_being_updated = false;
-  is_new_row_being_added = false;
-  is_table_list_open = false;
+  is_table_being_updated = signal(false);
+  is_new_row_being_added = signal(false);
+  is_table_list_open = signal(false);
+  madate = signal('');
+  ind = signal(0);
+
+  formG: FormGroup;
+
   text1: string = 'text';
   text2: string = 'select1';
   text3: string = 'select2';
   text4: string = 'number';
   default_date = signal(new Date());
-  selectedData: tab_personnel;
-  madate = signal('');
-  ind = signal(0);
-  personnel_data= signal({
+  selectedData = signal<tab_personnel | undefined>(undefined);
+
+  personnel_data = signal({
     nom: '',
     prenom: '',
     fonction: ''
   })
- personnel_store = inject(PersonnelStore)
-  datesStore = inject(DatesStore)
+  personnel_store = inject(PersonnelStore);
+  datesStore = inject(DatesStore);
   constructor(
     private _service: WenService,
     private _fb: FormBuilder) {
@@ -65,14 +63,13 @@ export class PointageComponent {
   }
 
   ngOnInit() {
-    this.personnel_store.loadPersonnel()
-    this.personnel_store.filterbyNomPrenom('')
-    this.madate.set(this.default_date().toLocaleDateString())
-    this.personnel_store.filtrebyDate(this.madate())
-    this.datesStore.loaddates(this.personnel_store.donnees_personnel())
+    this.personnel_store.filterbyNomPrenom('');
+    this.madate.set(this.default_date().toLocaleDateString());
+    this.personnel_store.filtrebyDate(this.madate());
+    this.datesStore.loaddates(this.personnel_store.donnees_personnel());
   }
   //signals
-  weekDays: Signal<DateTime[]> = computed(() => {
+  weekDays = computed(() => {
     let star = new Date(this._service.convertDate(this.debut_date()))
     star.setDate(star.getDate() - 1)
     let end = new Date(this._service.convertDate(this.fin_date()))
@@ -112,91 +109,93 @@ export class PointageComponent {
   })
 
   current_date = signal(new Date().toLocaleDateString())
-  task: Task = {
-    name: 'Indeterminate',
-    completed: false,
-    color: 'primary',
-    subtasks: [
-      { name: 'Primary', completed: false, color: 'primary' },
-      { name: 'Accent', completed: false, color: 'accent' },
-      { name: 'Warn', completed: false, color: 'warn' },
-    ],
-  };
-  allComplete: boolean = false;
+
+  allComplete=signal(false)
   selected: boolean[] = []
   table_update_form: FormGroup
   displayedColumns: string[] = ['nom', 'prenom', 'fonction', 'presence', 'nbre_heure', 'heure_sup', 'actions']
   //methods
-
   editperso(row: tab_personnel, index: number) {
-    this.is_table_being_updated = true
-    this.personnel_data().nom = row.nom
-    this.personnel_data().prenom = row.prenom
-    this.personnel_data().fonction = row.fonction
-    this.selectedData = row
-
-    this.ind.set(index)
+    this.is_table_being_updated.set(true);
+    this.personnel_data.update(
+      person =>
+      (
+        {
+          ...person,
+          nom: row.nom,
+          prenom: row.prenom,
+          fonction: row.fonction
+        }
+      )
+    );
+    this.selectedData.set(row);
+    this.ind.set(index);
     this.table_update_form.patchValue({
       heureNorm: this.personnel_store.heures_normale()[index],
       heureSup: this.personnel_store.heures_sup()[index]
     })
   }
-  updateAllComplete() {
-    this.allComplete = this.task.subtasks != null && this.task.subtasks.every(t => t.completed);
-  }
+ 
   someComplete(): boolean {
-    if (this.task.subtasks == null) {
+    if (!this.personnel_store.mytasks().subtasks) {
       return false;
     }
-    return this.task.subtasks.filter(t => t.completed).length > 0 && !this.allComplete;
+    return this.personnel_store.mytasks().subtasks.filter((t:any) => t.completed).length > 0 && !this.allComplete();
   }
   setAll(completed: boolean) {
-    this.allComplete = completed;
-    this.personnel_store.ModifMultiPersonnel(completed)
+    this.allComplete.set(completed);
+    this.personnel_store.ModifMultiPersonnel(completed);
   }
   is_checked(row: tab_personnel, ind: number) {
-    this.selectedData = row
-    let a = this.personnel_store.presence()[ind]
-    //this.personnel_store.presence().splice(i, 1, !a)
-    let index = this.selectedData.dates.indexOf(this.madate(), 0)
-    let presence = row.presence
-    let rep = !a
-    presence[index] = rep
-    this.selectedData.presence = presence
-    let heurenorm = row.heuresN
-    let heuresup = row.heureSup
-    if (rep == false) {
-      heurenorm[index] = 0
-      heuresup[index] = 0
-      this.selectedData.heuresN = heurenorm
-      this.selectedData.heureSup = heuresup
+    this.selectedData.set(row);
+    let a = this.personnel_store.mytasks().subtasks[ind].completed;
+    let data = this.selectedData();
+    if (data) {
+      let index = data.dates.indexOf(this.madate(), 0);
+      let presence = row.presence;
+      let rep = !a;
+      presence[index] = rep;
+      data.presence = presence;
+      let heurenorm = row.heuresN;
+      let heuresup = row.heureSup;
+      if (!rep) {
+        heurenorm[index] = 0;
+        heuresup[index] = 0;
+        data.heuresN = heurenorm;
+        data.heureSup = heuresup;
+      }
+      else {
+        heurenorm[index] = 8;
+        heuresup[index] = 0;
+        data.heuresN = heurenorm;
+        data.heureSup = heuresup;
+      }
+      this.personnel_store.ModifPersonnel(this.selectedData);
     }
-    else {
-      heurenorm[index] = 8
-      heuresup[index] = 0
-      this.selectedData.heuresN = heurenorm
-      this.selectedData.heureSup = heuresup
-    }
-    this.personnel_store.ModifPersonnel(this.selectedData)
+
   }
   annuler() {
-    this.is_table_being_updated = false
+    this.is_table_being_updated.set(false);
   }
   updateTableData() {
     if (this.table_update_form.valid) {
-      let value = this.table_update_form.value
-      let index = this.selectedData.dates.indexOf(this.madate(), 0)
-      let heurenorm = this.selectedData.heuresN
-      let heuresup = this.selectedData.heureSup
-      let presence = this.selectedData.presence
-      heurenorm[index] = value.heureNorm
-      heuresup[index] = value.heureSup
-      presence[index] = this.personnel_store.presence()[this.ind()]
-      this.selectedData.heureSup = heuresup
-      this.selectedData.heuresN = heurenorm
-      this.selectedData.presence = presence
-      this.personnel_store.ModifPersonnel(this.selectedData)
-      this.is_table_being_updated = false
+      let data = this.selectedData();
+      if (data) {
+        let value = this.table_update_form.value;
+        let index = data.dates.indexOf(this.madate(), 0);
+        let heurenorm = data.heuresN;
+        let heuresup = data.heureSup;
+        let presence = data.presence;
+        heurenorm[index] = value.heureNorm;
+        heuresup[index] = value.heureSup;
+        presence[index] = this.personnel_store.presence()[this.ind()];
+        data.heureSup = heuresup;
+        data.heuresN = heurenorm;
+        data.presence = presence;
+        this.personnel_store.ModifPersonnel(this.selectedData());
+        this.is_table_being_updated.set(false);
+      }
+
     }
   }
   addEvent(event: MatDatepickerInputEvent<any>) {
@@ -225,10 +224,10 @@ export class PointageComponent {
     this.personnel_store.reducePerson(row)
   }
   ouvriliste() {
-    this.is_table_list_open = true
+    this.is_table_list_open.set(true);
   }
   Annuler2() {
-    this.is_table_list_open = false
+    this.is_table_list_open.set(false);
   }
   afficher(row: any) {
     this.personnel_store.filtrebyDate(row)
@@ -553,7 +552,7 @@ export class PointageComponent {
       let mystr = splite[ind]
       if (mystr != '') {
         let str = mystr[0].toUpperCase() + mystr.slice(1);
-        ret = ret+' '+str 
+        ret = ret + ' ' + str
       }
 
     }

@@ -93,8 +93,7 @@ export class TaskService {
         }))
       )
     } else {
-      const Collection = collection(this.db, 'comptes/'
-        +
+      const Collection = collection(this.db, 'comptes/' +
         this._auth_service.current_projet_id() + '/personnel');
       return collectionData(Collection, { idField: 'id' }) as Observable<tab_personnel[]>
     }
@@ -120,13 +119,12 @@ export class TaskService {
     };
     let id = data.id
     const docRef = doc(this.db, 'comptes/' +
-      '' + '/personnel/' + id);
+      this._auth_service.current_projet_id() + '/personnel' + id);
     const promise = setDoc(docRef, mydata)
     return from(promise)
   }
   deletePersonnel(id: string): Observable<any> {
-    const docRef = doc(this.db, 'comptes/'
-      +
+    const docRef = doc(this.db, 'comptes/' +
       this._auth_service.current_projet_id() + '/personnel/' + id);
     const promise = deleteDoc(docRef)
     return from(promise)
@@ -137,7 +135,8 @@ export class TaskService {
     let heureNorm = [...row.heuresN, 8]
     let heureSup = [...row.heureSup, 0]
     if (!environment.production) {
-      return this._http.put<any>(this._auth_service.lodal_apiUrl() + '/personnel/' + row.id, { dates: dates, heuresN: heureNorm, heureSup: heureSup, presence: presence })
+      return this._http.put<any>(this._auth_service.lodal_apiUrl() + '/personnel/' + row.id, 
+      { dates: dates, heuresN: heureNorm, heureSup: heureSup, presence: presence })
     }
     else {
       const docRef1 = doc(this.db, 'comptes/' + this._auth_service.current_projet_id() + '/personnel/' + row.id)
@@ -146,7 +145,6 @@ export class TaskService {
         )
       return from(docRef)
     }
-
   }
   //classes_engins
   getallClassesEngins(): Observable<classe_engins[]> {
@@ -372,5 +370,18 @@ export class TaskService {
 
     return this._http.get<any>(this._auth_service.lodal_apiUrl()).pipe(tap(resp => console.log(resp.conso_go))
     )
+  }
+
+  ModifPerson(row: tab_personnel): Observable<void> {
+    let id = row.id
+    let heuresN = row.heuresN
+    let heuresup = row.heureSup
+    let presence = row.presence
+    const docRef1 = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/personnel/' + id)
+    const docRef = updateDoc(docRef1, { heuresN: heuresN, heureSup: heuresup, Presence: presence }).then
+      (response => { }
+      )
+    return from(docRef)
   }
 }

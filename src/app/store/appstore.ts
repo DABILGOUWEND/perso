@@ -22,7 +22,8 @@ import {
     tab_Pannes,
     tab_pointage_travauxStore,
     pointage_travaux,
-    comptes
+    comptes,
+    Task
 } from "../models/modeles"
 import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -449,14 +450,14 @@ export const DatesStore = signalStore(
     ) =>
     (
         {
-            loaddates(data:tab_personnel[]) {
-                let dates =data.map(x => x.dates);  
-                let result:any=[]  
+            loaddates(data: tab_personnel[]) {
+                let dates = data.map(x => x.dates);
+                let result: any = []
                 dates.forEach(element => {
-                    result=[...result,...element]
+                    result = [...result, ...element]
                 });
-                let unique_dates = result.filter((value:any, index:any, self:any) => self.indexOf(value) === index)
-                patchState(store,{dates:unique_dates.map((x:any)=>{return {dates:x}})})
+                let unique_dates = result.filter((value: any, index: any, self: any) => self.indexOf(value) === index)
+                patchState(store, { dates: unique_dates.map((x: any) => { return { dates: x } }) })
             }
             ,
             adddates: rxMethod<datesPointages>(pipe(
@@ -980,6 +981,27 @@ export const PersonnelStore = signalStore(
                     return classePersonnel(store.personnel_data().filter(x => (x.nom + x.prenom).toLowerCase().includes(mot.toLowerCase())))
                 }
             }),
+            mytasks: computed(() => {
+                let personnel = store.personnel_data();
+                let data: any = [];
+                personnel.forEach(element => {
+                    let dates = element.dates;
+                    let presence = element.prenom;
+                    let index = dates.indexOf(store.current_date());
+                    if (index > 0) {
+                        data.push({
+                            name: presence[index] ? "présent" : "absent",
+                            completed: presence[index]
+                        })
+                    }
+                   
+                });
+                return {
+                    name: 'selectionner tout',
+                    completed: false,
+                    subtasks: data,
+                }
+            }),
 
             data_pointage: computed(() => {
                 let donnees = store.personnel_data()
@@ -1195,13 +1217,13 @@ export const PersonnelStore = signalStore(
                 })
             )),
             ModifPersonnel: rxMethod<any>(pipe(
-                switchMap((gasoil) => {
-                    return monservice.ModifPerson(gasoil).pipe(
+                switchMap((person) => {
+                    return task_service.ModifPerson(person).pipe(
                         tap({
                             next: () => {
                                 var data = store.personnel_data()
-                                var index = data.findIndex(x => x.id == gasoil.id)
-                                data[index] = gasoil
+                                var index = data.findIndex(x => x.id == person.id)
+                                data[index] = person
                                 patchState(store, { personnel_data: data })
                                 //Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             },
@@ -1239,7 +1261,7 @@ export const PersonnelStore = signalStore(
                             data.heureSup = heuresup
                         }
 
-                        obs.push(monservice.ModifPerson(data))
+                        obs.push(task_service.ModifPerson(data))
                     }
                     return forkJoin(obs)
                 })

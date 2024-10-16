@@ -5,7 +5,7 @@ export interface Engins {
     immatriculation: string,
     utilisateur_id: string,
     classe_id: string,
- }
+}
 
 export interface classe_engins {
     id: string,
@@ -48,7 +48,7 @@ export interface Gasoil {
     quantite_go: number,
     date: string,
     diff_work: number,
-    numero:number
+    numero: number
 }
 
 export interface appro_gasoil {
@@ -115,14 +115,14 @@ export interface Entreprise {
 }
 export interface Projet {
     id: string
-    code:string,
+    code: string,
     intitule: string
     maitre_ouvrage_id: string,
     maitre_oeuvre_id: string,
-    entreprise_id:string,
+    entreprise_id: string,
     bailleur_id: string,
-    date_debut:string,
-    duree:number
+    date_debut: string,
+    duree: number
 
 }
 export interface Devis {
@@ -346,7 +346,7 @@ export interface Users {
     role: string,
     entreprise_id: string,
     projet_id: string[],
-    current_projet_id:string
+    current_projet_id: string
 }
 export interface tab_userStore {
     users_data: Users[],
@@ -479,12 +479,12 @@ export interface tab_tachesProjetStore {
 }
 export interface Entreprise {
     'id': string,
-    'code':string,
+    'code': string,
     'enseigne': string,
     'adresse': string,
     'telephone': string,
     'email': string,
-    "site_web":string,
+    "site_web": string,
     'ifu': string,
     'rccm': string,
     'signataire': string,
@@ -509,14 +509,19 @@ export interface tab_pointage_travauxStore {
     selectedProjetId: string,
     pointage_mach: pointage_machine[]
 }
-export interface comptes{
-    'engins':Engins[],
-    'personnel':tab_personnel[],
-    'classes_engins':classe_engins[],
-    'conso_go':Gasoil[],
-    'appro_go':appro_gasoil[],
-    'pannes':Pannes[],
-    'current_user':Users|undefined,
-    'selected_engin':string,
-    'selected_personnel':string
+export interface comptes {
+    'engins': Engins[],
+    'personnel': tab_personnel[],
+    'classes_engins': classe_engins[],
+    'conso_go': Gasoil[],
+    'appro_go': appro_gasoil[],
+    'pannes': Pannes[],
+    'current_user': Users | undefined,
+    'selected_engin': string,
+    'selected_personnel': string
+}
+export interface Task {
+    name: string;
+    completed: boolean;
+    subtasks?: Task[];
 }
