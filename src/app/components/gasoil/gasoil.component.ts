@@ -184,7 +184,7 @@ export class GasoilComponent {
   ngOnInit() {
     this.default_date.set(new Date());
     this.madate.set(new Date().toLocaleDateString());
-    this._engins_store.loadengins
+
     this._gasoil_store.loadconso();
     this._appro_go.loadappro();
     this._gasoil_store.setCurrentDate(this.madate());

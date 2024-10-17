@@ -44,6 +44,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this._auth_service.autoLogin();
     this._classes_engins_store.loadclasses(); 
+    this._engins_store.loadengins() ;
 
   }
 

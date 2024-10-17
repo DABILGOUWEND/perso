@@ -65,38 +65,17 @@
                     <div class="titre">
                         <h2>POINTAGES EFFECTUES</h2>
                     </div>
-                    <mat-tree [dataSource]="dataSourceTreeviem()" [treeControl]="treeControl">
-                        <mat-tree-node *matTreeNodeDef="let node;" matTreeNodePadding>
-                            <button mat-icon-button disabled> </button>
-                            <div class="ligne_expand" (click)="afficher(node.name)">
-                                {{node.name}}
-                                <button mat-icon-button (click)="deletedate(node.name)">
-                                    <mat-icon>
-                                        delete
-                                    </mat-icon>
-                                </button>
+                    @for(row of data_expand();track row){
+                        @if(row.children)
+                        {
+                            <div class="sous_titre">
+                                <h3> {{row.name}}</h3>
                             </div>
-                        </mat-tree-node>
-                        <!-- Tree node template for expandable nodes -->
-                        <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
-                            <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
-                                <mat-icon class="mat-icon-rtl-mirror">
-                                    {{treeControl.isExpanded(node) ?
-                                    'expand_more' : 'chevron_right'}}
-                                </mat-icon>
-                            </button>
-                            <div class="example-header">
-                                {{node.name}}
-                                <button mat-icon-button>
-                                    <mat-icon>
-                                        print
-                                    </mat-icon>
-                                </button>
-
-                            </div>
-                        </mat-tree-node>
-
-                    </mat-tree>
+                        }@else {
+                            
+                        }
+                    }
+                 
                 </div>
             </mat-sidenav>
             <mat-sidenav-content class="example-sidenav-content">

@@ -71,7 +71,6 @@ export class PointageComponent implements OnInit {
 
   hasChild = (_: number,
     node: ExampleFlatNode) => node.expandable;
-
   nbre_hs = signal(0);
   nbre_absence = signal(0);
   debut_date = signal('');
@@ -119,7 +118,7 @@ export class PointageComponent implements OnInit {
 
   dataSource = computed(
     () => {
-      let date = this.personnel_store.current_date()
+      let date = this.personnel_store.current_date();
       if (this.datespointage().includes(date)) {
         return new MatTableDataSource<tab_personnel>
           (this.personnel_store.data_pointage())
@@ -130,10 +129,10 @@ export class PointageComponent implements OnInit {
     }
   );
   ischeck = computed(() => {
-    return this.personnel_store.ischecked().includes(true)
+    return this.personnel_store.ischecked().includes(true);
   })
   datespointage = computed(() => {
-    return this.datesStore.donnees_dates().map(x => x.dates)
+    return this.personnel_store.getDates();
   })
 
   datespointageClass = computed(() => {
@@ -147,20 +146,21 @@ export class PointageComponent implements OnInit {
     var fin_date = this.getfin_date(debut_date);
     while (fin_date.getMonth() <= new Date().getMonth()) {
       init++;
-      let dates = this.personnel_store.getDates().filter((x: any) => {
+      let dates =this.personnel_store.getDates().filter((x: any) => {
         return this._service.convertDate(x).getTime() >= this._service.convertDate(debut_date).getTime()
           && this._service.convertDate(x).getTime() <= fin_date.getTime()
-      }).map((x: any) => { return { 'name': x } })
+      })
+      let datesfiltres = this._service.classement(dates).map((x: any) => { return { 'name': x } })
       tab.push({
         'name': 'Du ' + debut_date + ' au ' + fin_date.toLocaleDateString(),
-        'children': dates
+        'children': datesfiltres
       });
       debut_date = '21/' + init + '/2024';
       fin_date = this.getfin_date(debut_date);
 
     }
 
-    return tab;
+    return tab.slice().reverse();
   }
   )
 
@@ -295,7 +295,7 @@ export class PointageComponent implements OnInit {
     this.default_date.set(this._service.convertDate(row))
   }
   deletedate(date: string) {
-    let filtre = this.datesStore.dates().find(x => x.dates == date)
+    let filtre = this.personnel_store.getDates()
     if (filtre) {
       if (confirm('Voulez-vous vraiment supprimer cette date?'))
         this.personnel_store.removeDate(date)

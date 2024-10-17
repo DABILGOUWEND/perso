@@ -34,7 +34,7 @@ import { PointageComponent } from './components/pointage/pointage.component';
 
 export const routes: Routes = [
     {
-        path: "", redirectTo: "/essai2", pathMatch: "full"
+        path: "", redirectTo: "/home", pathMatch: "full"
     },
     {
         path: 'home', component: HomeComponent

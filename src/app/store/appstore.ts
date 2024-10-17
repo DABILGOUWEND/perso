@@ -1017,10 +1017,10 @@ export const PersonnelStore = signalStore(
                 ,
 
             data_pointage: computed(() => {
-                let donnees = store.personnel_data()
-                let data: tab_personnel[] = []
+                let donnees = store.personnel_data();
+                let data: tab_personnel[] = [];
                 donnees.forEach(element => {
-                    let dates = element.dates
+                    let dates = element.dates;
                     if (dates.includes(store.current_date()))
                         data.push(element)
                 });
