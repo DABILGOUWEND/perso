@@ -2208,6 +2208,15 @@ export class WenService {
       return date2.getTime() - date1.getTime()
     });
   }
+  classementCroissant(mytable: string[]) {
+    return mytable.sort((a: string, b: string) => {
+      const [day1, month1, year1] = a.split("/")
+      const [day2, month2, year2] = b.split("/")
+      const date1 = new Date(+year1, +month1 - 1, +day1)
+      const date2 = new Date(+year2, +month2 - 1, +day2)
+      return date1.getTime() - date2.getTime()
+    });
+  }
   getallessais(): Observable<tab_Essais[]> {
     const famCollection = collection(this.db, 'essai')
     return collectionData(famCollection, { idField: 'id' }) as Observable<tab_Essais[]>

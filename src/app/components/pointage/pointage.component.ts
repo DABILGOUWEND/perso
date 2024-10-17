@@ -1,4 +1,4 @@
-import { Component, Signal, WritableSignal, computed, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, Signal, WritableSignal, computed, effect, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatTableDataSource } from '@angular/material/table';
@@ -11,7 +11,19 @@ import { WenService } from '../../wen.service';
 import { DateTime, Info, Interval } from 'luxon';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { ThemePalette } from '@angular/material/core';
+import { FlatTreeControl } from '@angular/cdk/tree';
+import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 
+
+interface Family {
+  name: string;
+  children?: Family[];
+}
+interface ExampleFlatNode {
+  expandable: boolean;
+  name: string;
+  level: number;
+}
 
 
 @Component({
@@ -21,33 +33,10 @@ import { ThemePalette } from '@angular/material/core';
   templateUrl: './pointage.component.html',
   styleUrl: './pointage.component.scss'
 })
-export class PointageComponent {
-  nbre_hs = signal(0);
-  nbre_absence = signal(0);
-  debut_date = signal('');
-  fin_date = signal('');
-  is_table_being_updated = signal(false);
-  is_new_row_being_added = signal(false);
-  is_table_list_open = signal(false);
-  madate = signal('');
-  ind = signal(0);
-
-  formG: FormGroup;
-
-  text1: string = 'text';
-  text2: string = 'select1';
-  text3: string = 'select2';
-  text4: string = 'number';
-  default_date = signal(new Date());
-  selectedData = signal<tab_personnel | undefined>(undefined);
-
-  personnel_data = signal({
-    nom: '',
-    prenom: '',
-    fonction: ''
-  })
+export class PointageComponent implements OnInit {
   personnel_store = inject(PersonnelStore);
   datesStore = inject(DatesStore);
+
   constructor(
     private _service: WenService,
     private _fb: FormBuilder) {
@@ -60,17 +49,58 @@ export class PointageComponent {
       date_debut: new FormControl(new Date(), Validators.required),
       date_fin: new FormControl(new Date(), Validators.required)
     })
-
-    effect(()=>{
-    })
   }
+  treeControl = new FlatTreeControl<ExampleFlatNode>(
+    (node) => node.level,
+    (node) => node.expandable
+  );
+  private _transformer = (node: Family, level: number) => {
+    return {
+      expandable: !!node.children && node.children.length > 0,
+      name: node.name,
+      level: level,
+    };
+  };
 
-  ngOnInit() {
-    this.personnel_store.filterbyNomPrenom('');
-    this.madate.set(this.default_date().toLocaleDateString());
-    this.personnel_store.filtrebyDate(this.madate());
-    this.datesStore.loaddates(this.personnel_store.donnees_personnel());
-  }
+  treeFlattener = new MatTreeFlattener(
+    this._transformer,
+    (node) => node.level,
+    (node) => node.expandable,
+    (node) => node.children
+  );
+
+  hasChild = (_: number,
+    node: ExampleFlatNode) => node.expandable;
+
+  nbre_hs = signal(0);
+  nbre_absence = signal(0);
+  debut_date = signal('');
+  fin_date = signal('');
+  is_table_being_updated = signal(false);
+  is_new_row_being_added = signal(false);
+  is_table_list_open = signal(false);
+  madate = signal('');
+  ind = signal(0);
+  default_date = signal(new Date());
+  selectedData = signal<tab_personnel | undefined>(undefined);
+  personnel_data = signal({
+    nom: '',
+    prenom: '',
+    fonction: ''
+  })
+
+  current_date = signal(new Date().toLocaleDateString())
+  allComplete = signal(false)
+  selected: boolean[] = []
+  table_update_form: FormGroup
+  displayedColumns: string[] = ['nom', 'prenom', 'fonction', 'presence', 'nbre_heure', 'heure_sup', 'actions']
+  formG: FormGroup;
+  text1: string = 'text';
+  text2: string = 'select1';
+  text3: string = 'select2';
+  text4: string = 'number';
+
+  
   //signals
   weekDays = computed(() => {
     let star = new Date(this._service.convertDate(this.debut_date()))
@@ -99,7 +129,6 @@ export class PointageComponent {
       }
     }
   );
-
   ischeck = computed(() => {
     return this.personnel_store.ischecked().includes(true)
   })
@@ -111,13 +140,42 @@ export class PointageComponent {
     return this._service.classement(this.datespointage())
   })
 
-  current_date = signal(new Date().toLocaleDateString())
+  data_expand = computed(() => {
+    let tab: any[] = [];
+    var init = 5;
+    var debut_date = '21/' + init + '/2024';
+    var fin_date = this.getfin_date(debut_date);
+    while (fin_date.getMonth() <= new Date().getMonth()) {
+      init++;
+      let dates = this.personnel_store.getDates().filter((x: any) => {
+        return this._service.convertDate(x).getTime() >= this._service.convertDate(debut_date).getTime()
+          && this._service.convertDate(x).getTime() <= fin_date.getTime()
+      }).map((x: any) => { return { 'name': x } })
+      tab.push({
+        'name': 'Du ' + debut_date + ' au ' + fin_date.toLocaleDateString(),
+        'children': dates
+      });
+      debut_date = '21/' + init + '/2024';
+      fin_date = this.getfin_date(debut_date);
 
-  allComplete=signal(false)
-  selected: boolean[] = []
-  table_update_form: FormGroup
-  displayedColumns: string[] = ['nom', 'prenom', 'fonction', 'presence', 'nbre_heure', 'heure_sup', 'actions']
+    }
+
+    return tab;
+  }
+  )
+
+  dataSourceTreeviem = computed(() => {
+    return new MatTreeFlatDataSource(
+      this.treeControl, this.treeFlattener, this.data_expand());
+  })
+
   //methods
+  ngOnInit() {
+    this.personnel_store.loadPersonnel();
+    this.personnel_store.filterbyNomPrenom('');
+    this.madate.set(this.default_date().toLocaleDateString());
+    this.personnel_store.filtrebyDate(this.madate());
+  }
   editperso(row: tab_personnel, index: number) {
     this.is_table_being_updated.set(true);
     this.personnel_data.update(
@@ -138,12 +196,11 @@ export class PointageComponent {
       heureSup: this.personnel_store.heures_sup()[index]
     })
   }
- 
   someComplete(): boolean {
     if (!this.personnel_store.mytasks().subtasks) {
       return false;
     }
-    return this.personnel_store.mytasks().subtasks.filter((t:any) => t.completed).length > 0 && !this.allComplete();
+    return this.personnel_store.mytasks().subtasks.filter((t: any) => t.completed).length > 0 && !this.allComplete();
   }
   setAll(completed: boolean) {
     this.allComplete.set(completed);
@@ -207,14 +264,13 @@ export class PointageComponent {
   }
   commencerPoint() {
     this.personnel_store.initialPersonnel(this.personnel_store.donnees_personnel())
-    this.datesStore.loaddates( this.personnel_store.donnees_personnel())
+    this.datesStore.loaddates(this.personnel_store.donnees_personnel())
     this.personnel_store.filtrebyDate(this.madate())
   }
   is_checked2(ind: number) {
     let checked = this.personnel_store.ischecked()[ind]
     this.personnel_store.ischecked().splice(ind, 1, !checked)
   }
-
   ajouter() {
     let tab: any = []
     for (let i = 0; i < this.personnel_store.ischecked().length; i++) {
@@ -241,7 +297,8 @@ export class PointageComponent {
   deletedate(date: string) {
     let filtre = this.datesStore.dates().find(x => x.dates == date)
     if (filtre) {
-      this.personnel_store.removeDate(date);
+      if (confirm('Voulez-vous vraiment supprimer cette date?'))
+        this.personnel_store.removeDate(date)
       this.madate.set(new Date().toLocaleDateString())
     }
   }
@@ -279,7 +336,7 @@ export class PointageComponent {
     }
     let headdayweek: any = []
     let headdaynum: any = ['NOM', 'PRENOM', 'FONCTION']
-    console.log(this.weekDays())
+
     for (let row of this.weekDays()) {
       headdayweek.push(Info.weekdays('short')[row.weekday - 1].replace('.', ''))
       headdaynum.push(row.day)
@@ -567,4 +624,13 @@ export class PointageComponent {
     let str = strin[0].toUpperCase() + strin.slice(1);
     return str
   }
+  getfin_date(date: string) {
+    let num_month1 = this._service.convertDate(date).getMonth();
+    let num_month2 = num_month1 == 11 ? 0 : num_month1 + 1;
+    let annee1 = this._service.convertDate(date).getFullYear();
+    let annee2 = num_month1 == 11 ? annee1 + 1 : annee1;
+    return this._service.convertDate('20/' + (num_month2 + 1) + '/' + annee2);
+  }
+
+
 }

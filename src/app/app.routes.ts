@@ -34,7 +34,7 @@ import { PointageComponent } from './components/pointage/pointage.component';
 
 export const routes: Routes = [
     {
-        path: "", redirectTo: "/home", pathMatch: "full"
+        path: "", redirectTo: "/essai2", pathMatch: "full"
     },
     {
         path: 'home', component: HomeComponent
@@ -102,7 +102,7 @@ export const routes: Routes = [
         component: RegisterComponent, canActivate: [adminGuard]
     },
     {
-        path: "essai",
+        path: "essai2",
         component: Essai2Component
     }
 

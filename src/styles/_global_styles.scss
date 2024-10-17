@@ -3694,3 +3694,28 @@ body {
   background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
   background-size: cover;
 }
+.mat-tree {
+  background: transparent;
+}
+
+.mat-tree-node {
+  color: black;
+}
+.ligne_expand{
+  display: flex;
+  button{
+    margin-left: 5px;
+  }
+}
+.ligne_expand:hover {
+  background-color: #d2ccc4;
+  
+}
+.ligne_parent_expand {
+  color: blue;
+  display: flex;
+  button{
+    margin-left: 10px;
+  }
+  
+}

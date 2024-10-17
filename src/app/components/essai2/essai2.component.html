@@ -1,23 +1,37 @@
-<mat-sidenav-container fullscreen>
-    <mat-sidenav #sidnav>
-        <mat-nav-list (click)="sidnav.close()">
+<h1>GeeksforGeeks</h1>
+<h3>MatTree Example</h3>
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+    <mat-tree-node *matTreeNodeDef="let node;" matTreeNodePadding>
 
-        </mat-nav-list>
-    </mat-sidenav>
-    <mat-sidenav-content class="toolbar">
-        <mat-toolbar>
-            <div class="example-spacer2"> menu1</div>
-            <span  class="example-spacer3"> </span>
-            <div class="example-spacer2"> menu1</div>
-            <div class="example-spacer0">
-                <div class="logo">
-                    <h3>SOLUBTP </h3>
-                    <h4>By Wen</h4>
-                </div>
-            </div>
-       
+        <button mat-icon-button disabled> </button>
+        <div class="ligne_expand" (click)="filtre(node.name)">
+            {{node.name}}
+            <button mat-icon-button >
+                <mat-icon>
+                   delete
+                </mat-icon>
+            </button>
+        </div>
 
-        </mat-toolbar>
-    </mat-sidenav-content>
+    </mat-tree-node>
 
-</mat-sidenav-container>
+    <!-- Tree node template for expandable nodes -->
+    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
+        <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+            <mat-icon class="mat-icon-rtl-mirror">
+                {{treeControl.isExpanded(node) ?
+                'expand_more' : 'chevron_right'}}
+            </mat-icon>
+        </button>
+        <div class="ligne_parent_expand" (click)="filtre(node.name)">
+            {{node.name}}
+            <button mat-icon-button >
+                <mat-icon>
+                   print
+                </mat-icon>
+            </button>
+
+        </div>
+    </mat-tree-node>
+
+</mat-tree>

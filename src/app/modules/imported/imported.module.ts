@@ -33,8 +33,7 @@ import { CanvasJSAngularChartsModule } from '@canvasjs/angular-charts';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { QRCodeModule } from 'angularx-qrcode';
 import { QrCodeModule } from 'ng-qrcode';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const MATERIAL_COMPONENTS = [
   CommonModule,

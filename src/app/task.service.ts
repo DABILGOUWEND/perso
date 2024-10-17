@@ -151,6 +151,37 @@ export class TaskService {
       return from(docRef)
     }
   }
+  removePerson(row: tab_personnel, date: string): Observable<void> {
+    let initdate = row.dates
+    let ind = initdate.indexOf(date)
+
+    let initheurenor = row.heuresN
+    let initheuresup = row.heureSup
+    let initpresence = row.presence
+
+    let remdate = initdate.splice(ind, 1)
+    let remheurenom = initheurenor.splice(ind, 1)
+    let remheuresup = initheuresup.splice(ind, 1)
+    let rempresence = initpresence.splice(ind, 1)
+    const docRef1 = doc(this.db,  'comptes/' + this._auth_service.current_projet_id() + '/personnel/' + row.id)
+    const docRef = updateDoc(docRef1, { dates: initdate, heuresN: initheurenor, heureSup: initheuresup, presence: initpresence }).then
+      (response => { }
+      )
+    return from(docRef)
+  }
+  updatePersonInit(row: any): Observable<void> {
+    let curendate = row.dates[row.dates.length - 1]
+    let dates = ['']
+    let presence = [false]
+    let heureNorm = [0]
+    let heureSup = [0]
+    const docRef1 = doc(this.db, 'comptes/' + this._auth_service.current_projet_id() + '/personnel/' + row.id);
+    const docRef = updateDoc(docRef1, { dates: dates, heuresN: heureNorm, heureSup: heureSup, Presence: presence }).then
+      (response => { }
+      )
+    return from(docRef)
+  }
+   
   //classes_engins
   getallClassesEngins(): Observable<classe_engins[]> {
     if (!environment.production) {

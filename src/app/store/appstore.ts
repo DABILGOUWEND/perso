@@ -1003,6 +1003,18 @@ export const PersonnelStore = signalStore(
                     subtasks: data,
                 }
             }),
+            getDates: computed(() => {
+                let personnel = store.personnel_data();
+                let dates = personnel.map(x => x.dates);
+                let result: any = []
+                dates.forEach(element => {
+                    result = [...result, ...element]
+                });
+                let unique_dates = result.filter((value: any, index: any, self: any) => self.indexOf(value) === index);
+                return unique_dates 
+            })
+
+                ,
 
             data_pointage: computed(() => {
                 let donnees = store.personnel_data()
@@ -1192,9 +1204,9 @@ export const PersonnelStore = signalStore(
                     let obs: Observable<any>[] = []
                     for (let row of store.personnel_data()) {
                         if (row.dates.includes(date))
-                            obs.push(monservice.removePerson(row, date))
+                            obs.push(task_service.removePerson(row, date))
                     }
-                    return forkJoin(obs)
+                    return concat(obs)
                 }
                 ))),
             updatePersonnel: rxMethod<tab_personnel>(pipe(
@@ -1282,7 +1294,7 @@ export const PersonnelStore = signalStore(
             reducePerson: rxMethod<any>(pipe(
                 switchMap((personnel) => {
                     let date = store.current_date()
-                    return monservice.removePerson(personnel, date)
+                    return task_service.removePerson(personnel, date)
                 })
             )),
 
@@ -1291,7 +1303,6 @@ export const PersonnelStore = signalStore(
                     return monservice.updatePersonInit(gasoil)
                 })
             )),
-
         }
     ))
 )

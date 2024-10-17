@@ -76,9 +76,7 @@ export class GasoilComponent {
   @ViewChild(MatSort) sort2: MatSort;
 
   //computed signal
- 
 
-  
   donnees_enginsByclass = computed(() => {
     if (this.selected_classe_id() === "") {
       return this._engins_store.donnees_engins();
@@ -186,8 +184,11 @@ export class GasoilComponent {
   ngOnInit() {
     this.default_date.set(new Date());
     this.madate.set(new Date().toLocaleDateString());
+    this._engins_store.loadengins
+    this._gasoil_store.loadconso();
+    this._appro_go.loadappro();
     this._gasoil_store.setCurrentDate(this.madate());
-    
+    this._gasoil_service.chartOptions().data[0].dataPoints = this._gasoil_store.historique_consogo()[0];
   }
   addEvent(event: MatDatepickerInputEvent<any>) {
     this.default_date.set(event.value);
