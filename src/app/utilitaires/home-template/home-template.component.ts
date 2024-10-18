@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, effect, EventEmitter, inject, input, Input, OnInit, Output, TemplateRef } from '@angular/core';
+import { Component, computed, effect, EventEmitter, inject, input, Input, OnInit, Output, signal, TemplateRef } from '@angular/core';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { AuthenService } from '../../authen.service';
 import { TaskService } from '../../task.service';
@@ -21,6 +21,8 @@ export class HomeTemplateComponent implements OnInit{
  content=input.required<TemplateRef<any>>();
  _auth_service=inject(AuthenService);
  _projet_store=inject(ProjetStore);
+
+ selected_projet_id=signal<string | undefined>('');
 
 
  ngOnInit() {

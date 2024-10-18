@@ -2822,13 +2822,13 @@ wen-table:make-gold {
   left: 0px;
   right: 0;
   min-height: 1000px;
-
   .example-sidenav {
     display: block;
     align-items: center;
     justify-content: center;
     margin-left: 10px;
     width: 20%;
+    border: 1px solid rgb(70, 68, 68);
   }
 
   .example-sidenav-content {
@@ -2837,6 +2837,7 @@ wen-table:make-gold {
     justify-content: center;
     width: 80%;
     min-height: 1000px;
+    border: 1px solid rgb(70, 68, 68);
   }
 
   .example-header {
@@ -2848,8 +2849,8 @@ wen-table:make-gold {
     height: 50px;
     background-color: #ded5d0;
     text-align: center;
-    border-bottom: 1px solid rgb(70, 68, 68);
     height: 50px;
+    border-bottom: 1px solid rgb(70, 68, 68);
 
     h2 {
       font-size: 28px;
@@ -2874,7 +2875,7 @@ wen-table:make-gold {
 
 .panneau_lat {
   width: 100%;
-  border: 2px solid gainsboro;
+  border: 2px solid rgb(122, 66, 66);
 
   .titre {
     padding-top: 5px;
@@ -2894,7 +2895,7 @@ wen-table:make-gold {
     display: flex;
     height: 60px;
     border-bottom: 2px solid map-get($wen-colors, divider);
-    
+    background-color: #e7eded;
    h1{
     font-size:16px;
     font-weight:bold;

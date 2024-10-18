@@ -25,7 +25,7 @@
             <div class="spacer_user">
                 <mat-form-field>
                     <mat-label> Choisir projet</mat-label>
-                    <mat-select (selectionChange)="choix_projet($event)">
+                    <mat-select (selectionChange)="choix_projet($event)" [(ngModel)]="_auth_service.current_projet_id">
                         @for(projet of projets();track projet.id){
                         <mat-option [value]="projet.id">{{projet.intitule}}</mat-option>
                         }

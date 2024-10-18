@@ -1,4 +1,4 @@
-<app-home-template [nav_liste]="nav_liste" [toolbar]="toolbar" [content]="content" >
+<app-home-template [nav_liste]="nav_liste" [toolbar]="toolbar" [content]="content">
 </app-home-template>
 
 <ng-template #nav_liste>
@@ -10,20 +10,21 @@
 <ng-template #content>
     <section>
         <div id="icon-wrapper">
-            <a routerLink="/home_travaux">
-                <div class="icons">
-                    <div class="icon-slide-container">
-                        <img class="slide-icon" alt="travaux" height="100" src="/assets/images/view-map.jpg">
-                    </div>
-                </div>
-            </a>
+
             <a routerLink="/home_gestion">
-                <div class="icons2">
+                <div class="icons">
                     <div class="icon-slide-container">
                         <img class="slide-icon" alt="gestion" height="100" src='/assets/images/gestion_chantier.jpg'>
                     </div>
                 </div>
             </a>
+            <a routerLink="/home_travaux">
+                <div class="icons2">
+                    <div class="icon-slide-container">
+                        <img class="slide-icon" alt="travaux" height="100" src="/assets/images/view-map.jpg">
+                    </div>
+                </div>
+            </a>
         </div>
-    </section> 
+    </section>
 </ng-template>

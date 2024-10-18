@@ -1,12 +1,10 @@
 HTML CSSResult Skip Results Iframe
 body{
-  background:#eeeeee;
+  background:#f1a7a7;
 }
 
 section{
     float: left;
-    padding-top: 50px;
-    padding-bottom: 100px;
     width: 100%;
     padding-left:0;
     padding-right:0;
@@ -15,7 +13,6 @@ section{
 #icon-wrapper{
   width:100%;
   float:left;
-  height:300px;
 }
 
 .icons {
@@ -157,7 +154,8 @@ section{
                         
 @media only screen and (max-width: 650px) {
   #icon-wrapper {
-    height: 400px;
+    margin-top: 20px;
+background-color: #eadada;
   }
   #section{
     width: 90%;
