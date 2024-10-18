@@ -2892,15 +2892,18 @@ wen-table:make-gold {
 
   .row_pointage {
     display: flex;
-    height: 50px;
-    padding-top: 20px;
-    padding-left: 10px;
+    height: 60px;
     border-bottom: 2px solid map-get($wen-colors, divider);
-    font-size: 20px;
-    text-align: center;
-
+    
+   h1{
+    font-size:16px;
+    font-weight:bold;
+    margin-left: 20px;
+   }
     button {
       margin-left: 20px;
+      margin-right: 20px;
+      margin-top: 10px;
     }
 
   }
@@ -3073,6 +3076,11 @@ wen-table:make-gold {
 
 
 .row_cat.hide {
+  background-color: red;
+  display: none;
+}
+.row_hide {
+  background-color: red;
   display: none;
 }
 
@@ -3703,8 +3711,15 @@ body {
 }
 .ligne_expand{
   display: flex;
+ margin-left: 50px;
+  h3{
+    font-size: 14px;
+    margin-left: 10px;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
   button{
-    margin-left: 5px;
+    margin-left: 40px;
+    margin-top: 5px;
   }
 }
 .ligne_expand:hover {

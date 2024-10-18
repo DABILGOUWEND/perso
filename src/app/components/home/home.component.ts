@@ -30,18 +30,9 @@ export class HomeComponent implements OnInit {
   _projet_store = inject(ProjetStore);
   _compte_store = inject(CompteStore);
   _task_service = inject(TaskService);
-  _pannes_store = inject(PannesStore);
-  _gasoil_store = inject(GasoilStore);
-  _appro_go = inject(ApproGasoilStore);
   _service = inject(WenService);
   selectedOption = signal<string | undefined>('');
   _auth = inject(Auth);
-  constructor() {
-    effect(() => {
-
-    })
-  }
-
 
   //methods
   ngOnInit() {

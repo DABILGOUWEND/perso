@@ -20,7 +20,6 @@ export class HomeTemplateComponent implements OnInit{
  toolbar=input.required<TemplateRef<any>>();
  content=input.required<TemplateRef<any>>();
  _auth_service=inject(AuthenService);
- _task_service=inject(TaskService);
  _projet_store=inject(ProjetStore);
 
 
@@ -36,7 +35,7 @@ export class HomeTemplateComponent implements OnInit{
   this._auth_service.logout().subscribe()
  }
 
-
+//computed properties
  projets = computed(() => {
   return this._projet_store.donnees_projet().filter(x => {
     return this._auth_service.userSignal()?.projet_id.includes(x.id)

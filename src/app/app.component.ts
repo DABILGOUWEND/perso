@@ -32,12 +32,8 @@ export class AppComponent implements OnInit {
   _approgo_store = inject(ApproGasoilStore);
   _engins_store = inject(EnginsStore);
   _classes_engins_store = inject(ClasseEnginsStore);
-  _pannes_store = inject(PannesStore);
-  _personnel_store = inject(PersonnelStore);
   _projet_store = inject(ProjetStore);
   _task_service = inject(TaskService);
-  _gasoil_service = inject(GasoilService);
-  _gasoil_store = inject(GasoilStore)
   _date_store = inject(DatesStore)
   _auth = inject(Auth);
   title = signal('wenbtp');
@@ -45,8 +41,6 @@ export class AppComponent implements OnInit {
     this._auth_service.autoLogin();
     this._classes_engins_store.loadclasses(); 
     this._engins_store.loadengins() ;
-
+    this._projet_store.loadProjets();
   }
-
-
 }

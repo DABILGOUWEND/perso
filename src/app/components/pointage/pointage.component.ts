@@ -14,18 +14,6 @@ import { ThemePalette } from '@angular/material/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 
-
-interface Family {
-  name: string;
-  children?: Family[];
-}
-interface ExampleFlatNode {
-  expandable: boolean;
-  name: string;
-  level: number;
-}
-
-
 @Component({
   selector: 'app-pointage',
   standalone: true,
@@ -34,8 +22,9 @@ interface ExampleFlatNode {
   styleUrl: './pointage.component.scss'
 })
 export class PointageComponent implements OnInit {
+
   personnel_store = inject(PersonnelStore);
-  datesStore = inject(DatesStore);
+
 
   constructor(
     private _service: WenService,
@@ -50,27 +39,9 @@ export class PointageComponent implements OnInit {
       date_fin: new FormControl(new Date(), Validators.required)
     })
   }
-  treeControl = new FlatTreeControl<ExampleFlatNode>(
-    (node) => node.level,
-    (node) => node.expandable
-  );
-  private _transformer = (node: Family, level: number) => {
-    return {
-      expandable: !!node.children && node.children.length > 0,
-      name: node.name,
-      level: level,
-    };
-  };
-
-  treeFlattener = new MatTreeFlattener(
-    this._transformer,
-    (node) => node.level,
-    (node) => node.expandable,
-    (node) => node.children
-  );
-
-  hasChild = (_: number,
-    node: ExampleFlatNode) => node.expandable;
+    //signals
+  tab_expander=signal<boolean[]>([]);
+  current_expanded=signal(false);
   nbre_hs = signal(0);
   nbre_absence = signal(0);
   debut_date = signal('');
@@ -87,20 +58,15 @@ export class PointageComponent implements OnInit {
     prenom: '',
     fonction: ''
   })
-
   current_date = signal(new Date().toLocaleDateString())
   allComplete = signal(false)
-  selected: boolean[] = []
-  table_update_form: FormGroup
-  displayedColumns: string[] = ['nom', 'prenom', 'fonction', 'presence', 'nbre_heure', 'heure_sup', 'actions']
+
+  table_update_form: FormGroup;
   formG: FormGroup;
-  text1: string = 'text';
-  text2: string = 'select1';
-  text3: string = 'select2';
-  text4: string = 'number';
+  displayedColumns: string[] = ['nom', 'prenom', 'fonction', 'presence', 'nbre_heure', 'heure_sup', 'actions']
 
   
-  //signals
+//computed signals
   weekDays = computed(() => {
     let star = new Date(this._service.convertDate(this.debut_date()))
     star.setDate(star.getDate() - 1)
@@ -128,9 +94,7 @@ export class PointageComponent implements OnInit {
       }
     }
   );
-  ischeck = computed(() => {
-    return this.personnel_store.ischecked().includes(true);
-  })
+ 
   datespointage = computed(() => {
     return this.personnel_store.getDates();
   })
@@ -153,28 +117,24 @@ export class PointageComponent implements OnInit {
       let datesfiltres = this._service.classement(dates).map((x: any) => { return { 'name': x } })
       tab.push({
         'name': 'Du ' + debut_date + ' au ' + fin_date.toLocaleDateString(),
-        'children': datesfiltres
+        'children': datesfiltres,
+        'debut' : debut_date,
+        'fin' : fin_date.toLocaleDateString()
       });
       debut_date = '21/' + init + '/2024';
       fin_date = this.getfin_date(debut_date);
 
     }
-
     return tab.slice().reverse();
   }
   )
 
-  dataSourceTreeviem = computed(() => {
-    return new MatTreeFlatDataSource(
-      this.treeControl, this.treeFlattener, this.data_expand());
-  })
-
-  //methods
+ //methods
   ngOnInit() {
     this.personnel_store.loadPersonnel();
-    this.personnel_store.filterbyNomPrenom('');
     this.madate.set(this.default_date().toLocaleDateString());
     this.personnel_store.filtrebyDate(this.madate());
+    this.tab_expander.set(new Array(this.data_expand().length).fill(true))
   }
   editperso(row: tab_personnel, index: number) {
     this.is_table_being_updated.set(true);
@@ -264,7 +224,6 @@ export class PointageComponent implements OnInit {
   }
   commencerPoint() {
     this.personnel_store.initialPersonnel(this.personnel_store.donnees_personnel())
-    this.datesStore.loaddates(this.personnel_store.donnees_personnel())
     this.personnel_store.filtrebyDate(this.madate())
   }
   is_checked2(ind: number) {
@@ -311,7 +270,6 @@ export class PointageComponent implements OnInit {
       }
     }
   }
-
   impression() {
     let datas = this.creation_table()
     let months: any[] = []
@@ -375,7 +333,7 @@ export class PointageComponent implements OnInit {
       putOnlyUsedFonts: true,
     });
     var img = new Image()
-    img.src = '/assets/images/CGE.jpg'
+    img.src = 'assets/images/CGE.jpg'
     doc.addImage(img, 'jpg', 360, 20, 30, 20)
     doc.setFont('Newsreader');
     doc.text("CGE BTP ", 25, 30)
@@ -501,7 +459,16 @@ export class PointageComponent implements OnInit {
         }
       }])
       for (let person of personnel_bystatut) {
-        let dates = person.dates
+        let dates_pointage = this.personnel_store.getDates().
+        filter((x:any)=>{
+          return this._service.convertDate(x).getTime()>=this._service.convertDate(this.debut_date()).getTime()&&
+          this._service.convertDate(x).getTime()<=this._service.convertDate(this.fin_date()).getTime()
+        })
+        let rep=person.dates.every((x:any)=>!dates_pointage.includes(x))
+        if(!rep)
+        {
+          let dates = person.dates
+
         let presence: any[] = []
         let heuressup: any[] = []
         let heuresnorm: any[] = []
@@ -600,6 +567,10 @@ export class PointageComponent implements OnInit {
         })
         this.nbre_hs.set(this.nbre_hs() + hs)
         tab_person.push(presence)
+
+        }
+
+        
       }
 
     }
@@ -631,6 +602,14 @@ export class PointageComponent implements OnInit {
     let annee2 = num_month1 == 11 ? annee1 + 1 : annee1;
     return this._service.convertDate('20/' + (num_month2 + 1) + '/' + annee2);
   }
-
-
+  expander(index:number)
+  {
+    var rep=this.tab_expander()[index];
+    this.tab_expander.update((tab)=>tab.map((x,i)=>i==index?!rep:x))
+  }
+  print(index:number) {
+    this.debut_date.set(this.data_expand()[index].debut);
+    this.fin_date.set(this.data_expand()[index].fin);
+    this.impression();
+  }
 }

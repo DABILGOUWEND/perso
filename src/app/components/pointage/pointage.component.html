@@ -65,17 +65,26 @@
                     <div class="titre">
                         <h2>POINTAGES EFFECTUES</h2>
                     </div>
-                    @for(row of data_expand();track row){
-                        @if(row.children)
-                        {
-                            <div class="sous_titre">
-                                <h3> {{row.name}}</h3>
-                            </div>
-                        }@else {
-                            
-                        }
+                    @for(node of data_expand();track node; let index = $index){
+                    <div class="row_pointage">
+                        <button mat-icon-button (click)="expander(index)">
+                            @if(tab_expander()[index]){
+                            <mat-icon>keyboard_arrow_down</mat-icon>
+                            }@else {
+                            <mat-icon>keyboard_arrow_up</mat-icon>
+                            }
+                        </button>
+                        <h1>{{node.name}}</h1>
+                        <button mat-icon-button (click)="print(index)">  <mat-icon>print</mat-icon></button>
+                    </div>
+                    @for(row of node.children;track row){
+                    <div   (click)="afficher(row.name)" [ngClass]="{'row_hide':tab_expander()[index] ,'ligne_expand':!tab_expander()[index]}">
+                        <h3> {{row.name}}  </h3><button mat-icon-button  (click)="deletedate(row.name)"><mat-icon> delete</mat-icon> </button>
+                    </div>
+
                     }
-                 
+                    }
+
                 </div>
             </mat-sidenav>
             <mat-sidenav-content class="example-sidenav-content">
