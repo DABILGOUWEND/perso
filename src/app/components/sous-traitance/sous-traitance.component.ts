@@ -24,6 +24,17 @@ import { AuthenService } from '../../authen.service';
   styleUrl: './sous-traitance.component.scss'
 })
 export class SousTraitanceComponent implements OnInit {
+  
+  ngOnInit(): void {
+    this.Devis_Store.loadDevis()
+    this.LigneDevis_Store.loadLigneDevis()
+    this.SousTraitance_Store.loadSstraitants()
+    this.table_update_form.valueChanges.subscribe(x => {
+      this.quantite.set(x.quantite)
+      this.prix.set(x.prix_u)
+    })
+  }
+  
   //injections
   Devis_Store = inject(DevisStore)
   LigneDevis_Store = inject(LigneDevisStore)
@@ -130,16 +141,6 @@ export class SousTraitanceComponent implements OnInit {
 
 
 
-  ngOnInit(): void {
-    this.Devis_Store.loadDevis()
-    this.LigneDevis_Store.loadLigneDevis()
-    this.SousTraitance_Store.loadSstraitants()
-    this.Projet_Store.loadProjets()
-    this.table_update_form.valueChanges.subscribe(x => {
-      this.quantite.set(x.quantite)
-      this.prix.set(x.prix_u)
-    })
-  }
   constructor(private fb: FormBuilder) {
     this.table_update_form = this.fb.group({
       id: new FormControl(''),

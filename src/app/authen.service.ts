@@ -110,7 +110,8 @@ export class AuthenService {
       role: '',
       entreprise_id: '',
       projet_id: [''],
-      current_projet_id: ''
+      current_projet_id: '',
+      username: ''
     }
     this.userSignal.set(new_user);
     localStorage.setItem('user', JSON.stringify(this.userSignal()));
@@ -126,6 +127,7 @@ export class AuthenService {
                 {
                   ...user,
                   'role': data.role,
+                  'username': data.username,
                   'entreprise_id': data.entreprise_id,
                   'projet_id': data.projet_id,
                   'current_projet_id': data.projet_id[0]
@@ -134,6 +136,7 @@ export class AuthenService {
             )
             localStorage.setItem('user', JSON.stringify(this.userSignal()));
             this.current_projet_id.set(data.projet_id[0]);
+
           }
         )
       ).subscribe() 
@@ -191,4 +194,7 @@ export class AuthenService {
     const docSnap = getDoc(docRef);
     return from(docSnap)
   }
+
+  //projets
+  
 }

@@ -357,7 +357,8 @@ export interface Users {
     role: string,
     entreprise_id: string,
     projet_id: string[],
-    current_projet_id: string
+    current_projet_id: string,
+    username: string
 }
 export interface tab_userStore {
     users_data: Users[],

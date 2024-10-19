@@ -51,19 +51,19 @@ export const routes: Routes = [
         children: [
             {
                 path: "devis",
-                component: EnginsComponent
+                component: SousTraitanceComponent
             },
             {
-                path: "budget",
+                path: "constats",
                 component: EnginsComponent
             }
             ,
             {
-                path: "constats",
+                path: "attachements",
                 component: EnginsComponent
             }  ,
             {
-                path: "factures",
+                path: "decomptes",
                 component: EnginsComponent
             }
            

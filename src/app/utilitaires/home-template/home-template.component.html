@@ -10,7 +10,7 @@
             <ng-container [ngTemplateOutlet]="toolbar()">
             </ng-container>
             <div class="spacer_register">
-                <h1>{{ _auth_service.userSignal()?.email}}</h1>
+                <h1>{{ _auth_service.userSignal()?.username}}</h1>
                 <button mat-icon-button (click)="logout()">
                     <mat-icon>logout</mat-icon>
                 </button>
