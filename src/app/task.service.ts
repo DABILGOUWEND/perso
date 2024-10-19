@@ -3,8 +3,9 @@ import { AuthenService } from './authen.service';
 import { forkJoin, from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { addDoc, collection, collectionData, deleteDoc, doc, Firestore, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
-import { appro_gasoil, classe_engins, Engins, Gasoil, Pannes, Projet, tab_personnel, tab_ProjetStore, taches_engins } from './models/modeles';
+import { appro_gasoil, classe_engins, Constats, Devis, Engins, Gasoil, Ligne_devis, ModelAttachement, ModelDecompte, Pannes, Projet, sous_traitant, tab_personnel, tab_ProjetStore, taches, taches_engins, unites } from './models/modeles';
 import { environment } from '../environments/environment';
+import { response } from 'express';
 
 
 @Injectable({
@@ -43,27 +44,20 @@ export class TaskService {
   }
   addEngins(data: any): Observable<string> {
     const EnginsCollection = collection(this.db, 'comptes/' +
-      '' + '/engins');
+      this._auth_service.current_projet_id() + '/engins');
     const docRef = addDoc(EnginsCollection, data).then(response => response.id)
     return from(docRef)
   }
   updateEngins(data: any): Observable<void> {
-    let mydata = {
-      designation: data.designation,
-      code_parc: data.code_parc,
-      immatriculation: data.immatriculation,
-      classe_id: data.classe_id,
-      utilisateur_id: data.utilisateur_id,
-    }
     let id = data.id
     const docRef = doc(this.db, 'comptes/' +
-      '""' + '/engins/' + id);
-    const promise = setDoc(docRef, mydata)
+      this._auth_service.current_projet_id() + '/engins' + id);
+    const promise = setDoc(docRef, data)
     return from(promise)
   }
   deleteEngins(id: string): Observable<any> {
     const docRef = doc(this.db, 'comptes/' +
-      '' + '/engins/' + id);
+      this._auth_service.current_projet_id() + '/engins' + id);
     const promise = deleteDoc(docRef)
     return from(promise)
   }
@@ -103,22 +97,10 @@ export class TaskService {
     return from(docRef)
   }
   updatePersonnel(data: any): Observable<any> {
-    let mydata = {
-      nom: data.nom,
-      prenom: data.prenom,
-      num_phone1: data.num_phone1,
-      num_phone2: data.num_phone2,
-      email: data.email,
-      fonction: data.fonction,
-      num_matricule: data.num_matricule,
-      statut_id: data.statut_id,
-      presence: data.presence
-
-    };
     let id = data.id
     const docRef = doc(this.db, 'comptes/' +
-      this._auth_service.current_projet_id() + '/personnel' + id);
-    const promise = setDoc(docRef, mydata)
+      this._auth_service.current_projet_id() + '/personnel/' + id);
+    const promise = setDoc(docRef, data)
     return from(promise)
   }
   deletePersonnel(id: string): Observable<any> {
@@ -137,9 +119,9 @@ export class TaskService {
     row.presence = presence;
     row.heureSup = heureSup;
     row.heuresN = heureNorm;
-    myrow=row;
+    myrow = row;
     if (!environment.production) {
-      let promise = this._http.put<void>(this._auth_service.lodal_apiUrl() + '/personnel/' + row.id,myrow,
+      let promise = this._http.put<void>(this._auth_service.lodal_apiUrl() + '/personnel/' + row.id, myrow,
         { headers: new HttpHeaders({ 'Content-type': 'application/json' }) });
       return promise
     }
@@ -163,7 +145,7 @@ export class TaskService {
     let remheurenom = initheurenor.splice(ind, 1)
     let remheuresup = initheuresup.splice(ind, 1)
     let rempresence = initpresence.splice(ind, 1)
-    const docRef1 = doc(this.db,  'comptes/' + this._auth_service.current_projet_id() + '/personnel/' + row.id)
+    const docRef1 = doc(this.db, 'comptes/' + this._auth_service.current_projet_id() + '/personnel/' + row.id)
     const docRef = updateDoc(docRef1, { dates: initdate, heuresN: initheurenor, heureSup: initheuresup, presence: initpresence }).then
       (response => { }
       )
@@ -181,7 +163,19 @@ export class TaskService {
       )
     return from(docRef)
   }
-   
+  ModifPerson(row: tab_personnel): Observable<void> {
+    let id = row.id
+    let heuresN = row.heuresN
+    let heuresup = row.heureSup
+    let presence = row.presence
+    const docRef1 = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/personnel/' + id)
+    const docRef = updateDoc(docRef1, { heuresN: heuresN, heureSup: heuresup, presence: presence }).then
+      (response => { }
+      )
+    return from(docRef)
+  }
+
   //classes_engins
   getallClassesEngins(): Observable<classe_engins[]> {
     if (!environment.production) {
@@ -202,7 +196,6 @@ export class TaskService {
 
   }
   addClassesEngins(data: any): Observable<string> {
-
     const Collection = collection(this.db, 'comptes/' +
       this._auth_service.current_projet_id() + '/classes_engins');
     const docRef = addDoc(Collection, data).then(response => response.id)
@@ -211,13 +204,13 @@ export class TaskService {
   updateClassesEngins(data: any): Observable<any> {
     let id = data.id
     const docRef = doc(this.db, 'comptes/' +
-      '' + '/classes_engins/' + id);
+      this._auth_service.current_projet_id() + '/classes_engins/' + id);
     const promise = setDoc(docRef, data)
     return from(promise)
   }
   deleteClassesEngins(id: string): Observable<any> {
     const docRef = doc(this.db, 'comptes/' +
-      '' + '/classes_engins/' + id);
+      this._auth_service.current_projet_id() + '/classes_engins/' + id);
     const promise = deleteDoc(docRef)
     return from(promise)
   }
@@ -241,14 +234,13 @@ export class TaskService {
         }))
       )
     } else {
-      const Collection = collection(this.db, 'projet');
+      const Collection = collection(this.db, '/projet');
       return collectionData(Collection, { idField: 'id' }) as Observable<Projet[]>
     }
 
   }
   addProjets(data: any): Observable<string> {
-    const EnginsCollection = collection(this.db, 'comptes/' +
-      this._auth_service.current_projet_id() + '/projet');
+    const EnginsCollection = collection(this.db, '/projet');
     const docRef = addDoc(EnginsCollection, data).then
       (response =>
         response.id
@@ -257,14 +249,12 @@ export class TaskService {
   }
   updateProjets(data: any): Observable<any> {
     let id = data.id
-    const docRef = doc(this.db, 'comptes/' +
-      '' + '/projet');
+    const docRef = doc(this.db, '/projet/' + id);
     const promise = setDoc(docRef, data)
     return from(promise)
   }
   deleteProjets(id: string): Observable<any> {
-    const docRef = doc(this.db, 'comptes/' +
-      '' + '/projet/' + id);
+    const docRef = doc(this.db, '/projet/' + id);
     const promise = deleteDoc(docRef)
     return from(promise)
   }
@@ -294,20 +284,20 @@ export class TaskService {
   }
   addConsogo(data: any): Observable<string> {
     const EnginsCollection = collection(this.db, 'comptes/' +
-      '' + '/conso_gasoil');
+      this._auth_service.current_projet_id() + '/conso_gasoil');
     const docRef = addDoc(EnginsCollection, data).then(response => response.id)
     return from(docRef)
   }
   updateConsogo(data: any): Observable<void> {
     let id = data.id
     const docRef = doc(this.db, 'comptes/' +
-      '' + '/conso_gasoil/' + id)
+      this._auth_service.current_projet_id() + '/conso_gasoil' + id)
     const promise = setDoc(docRef, data)
     return from(promise)
   }
   deleteConsogo(id: string): Observable<void> {
     const docRef = doc(this.db, 'comptes/' +
-      '' + '/conso_gasoil/' + id)
+      this._auth_service.current_projet_id() + '/conso_gasoil' + id)
     const promise = deleteDoc(docRef)
     return from(promise)
   }
@@ -340,14 +330,12 @@ export class TaskService {
   }
   updateApproGo(data: any): Observable<void> {
     let id = data.id
-    const docRef = doc(this.db, 'comptes/' +
-      '' + '/appro_go/' + id)
+    const docRef = doc(this.db, this._auth_service.current_projet_id() + '/appro_go/'+ id)
     const promise = setDoc(docRef, data)
     return from(promise)
   }
   deleteApproGo(id: string): Observable<void> {
-    const docRef = doc(this.db, 'comptes/' +
-      '' + '/appro_go/' + id)
+    const docRef = doc(this.db, this._auth_service.current_projet_id() + '/appro_go/'+ id);
     const promise = deleteDoc(docRef)
     return from(promise)
   }
@@ -386,38 +374,246 @@ export class TaskService {
   updatePannes(data: any): Observable<void> {
     let id = data.id
     const docRef = doc(this.db, 'comptes/' +
-      '' + '/pannes/' + id)
+      this._auth_service.current_projet_id() + '/pannes' + id)
     const promise = setDoc(docRef, data)
     return from(promise)
   }
   deletePannes(id: string): Observable<void> {
     const docRef = doc(this.db, 'comptes/' +
-      '' + '/pannes/' + id)
+      this._auth_service.current_projet_id() + '/pannes' + id)
     const promise = deleteDoc(docRef)
     return from(promise)
   }
-  getallUsersByUid(uid: string): Observable<any> {
-    const docRef = doc(this.db, "myusers", uid);
-    const docSnap = getDoc(docRef);
-    return from(docSnap)
+
+
+ 
+  //DEVIS
+  getallDevis(): Observable<Devis[]> {
+    const DevisCollection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/devis')
+    return collectionData(DevisCollection, { idField: 'id' }) as Observable<Devis[]>
   }
-
-  loadEnginsJson(): Observable<any> {
-
-    return this._http.get<any>(this._auth_service.lodal_apiUrl()).pipe(tap(resp => console.log(resp.conso_go))
-    )
-  }
-
-  ModifPerson(row: tab_personnel): Observable<void> {
-    let id = row.id
-    let heuresN = row.heuresN
-    let heuresup = row.heureSup
-    let presence = row.presence
-    const docRef1 = doc(this.db, 'comptes/' +
-      this._auth_service.current_projet_id() + '/personnel/' + id)
-    const docRef = updateDoc(docRef1, { heuresN: heuresN, heureSup: heuresup, presence: presence }).then
-      (response => { }
-      )
+  addDevis(data: any): Observable<string> {
+    const devcollection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/devis')
+    const docRef = addDoc(devcollection, data).then(response => response.id)
     return from(docRef)
+  }
+  updateDevis(data: any): Observable<void> {
+    let id = data.id
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/devis/' + id)
+    const promise = setDoc(docRef, data)
+    return from(promise)
+  }
+  deleteDevis(id: string): Observable<void> {
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/devis/' + id)
+    const promise = deleteDoc(docRef)
+    return from(promise)
+  }
+
+  //CONSTATS
+  getallConstats(): Observable<Constats[]> {
+    const ConstatsCollection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/constats')
+    return collectionData(ConstatsCollection, { idField: 'id' }) as Observable<Constats[]>
+  }
+  addConstats(data: any): Observable<string> {
+    const constcollection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/constats')
+    const docRef = addDoc(constcollection, data).then(response => response.id)
+    return from(docRef)
+  }
+  updateConstat(data: any): Observable<void> {
+    let id = data.id
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/constats/' + id)
+    const promise = setDoc(docRef, data)
+    return from(promise)
+  }
+  deleteConstat(id: string): Observable<void> {
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/constats/' + id)
+    const promise = deleteDoc(docRef)
+    return from(promise)
+  }
+
+  //LIGNES DEVIS
+  getallLigneDevis(): Observable<Ligne_devis[]> {
+    const LDevisCollection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/lignes_devis')
+    return collectionData(LDevisCollection, { idField: 'id' }) as Observable<Ligne_devis[]>
+  }
+  addLigneDevis(data: any): Observable<string> {
+    const LdevisCollection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/lignes_devis')
+    const docRef = addDoc(LdevisCollection, data).then(response => response.id)
+    return from(docRef)
+  }
+  updateLigneDevis(data: any): Observable<void> {
+    let id = data.id
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/lignes_devis/' + id)
+    const promise = setDoc(docRef, data)
+    return from(promise)
+  }
+  deleteLigneDevis(id: string): Observable<void> {
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/lignes_devis/' + id)
+    const promise = deleteDoc(docRef)
+    return from(promise)
+  }
+  //ATTACHEMENTS
+  getallAttachements(): Observable<ModelAttachement[]> {
+    const AttachCollection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/attachements')
+    return collectionData(AttachCollection, { idField: 'id' }) as Observable<ModelAttachement[]>
+  }
+  addAttachement(data: any): Observable<string> {
+    const attach_collection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/attachements')
+    const docRef = addDoc(attach_collection, data).then(response => response.id)
+    return from(docRef)
+  }
+  updateAttachement(data: any): Observable<void> {
+    let id = data.id
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/attachements/' + id)
+    const promise = setDoc(docRef, data)
+    return from(promise)
+  }
+  deleteAttachement(id: string): Observable<void> {
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/attachements/' + id)
+    const promise = deleteDoc(docRef)
+    return from(promise)
+  }
+
+  //DECOMPTES
+  getAllDecompte(): Observable<ModelDecompte[]> {
+    const Collection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/decomptes')
+    return collectionData(Collection, { idField: 'id' }) as Observable<ModelDecompte[]>
+  }
+  addDecomptes(data: any): Observable<string> {
+    const Collection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/decomptes')
+    const docRef = addDoc(Collection, data).then(response => response.id)
+    return from(docRef)
+  }
+  updateDecompte(data: any): Observable<void> {
+    let id = data.id
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/decomptes/' + id)
+    const promise = setDoc(docRef, data)
+    return from(promise)
+  }
+  deleteDecompte(id: string): Observable<void> {
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/decomptes/' + id)
+    const promise = deleteDoc(docRef)
+    return from(promise)
+  }
+
+  //TACHES
+  getAllTaches(): Observable<taches[]> {
+    const Collection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/taches')
+    return collectionData(Collection, { idField: 'id' }) as Observable<taches[]>
+  }
+  addTaches(data: any): Observable<string> {
+    const Collection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/taches')
+    const docRef = addDoc(Collection, data).then(response => response.id)
+    return from(docRef)
+  }
+  updateTaches(data: any): Observable<void> {
+    let id = data.id
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/taches/' + id)
+    const promise = setDoc(docRef, data)
+    return from(promise)
+  }
+  deleteTaches(id: string): Observable<void> {
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/taches/' + id)
+    const promise = deleteDoc(docRef)
+    return from(promise)
+  }
+
+  //unites
+  getAllUnites(): Observable<unites[]> {
+    const unites_ollection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/unites')
+    return collectionData(unites_ollection, { idField: 'id' }) as Observable<unites[]>
+  }
+  addUnites(data: any): Observable<string> {
+    const UnitesCollection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/unites')
+    const docRef = addDoc(UnitesCollection, data).then(response => response.id);
+    return from(docRef)
+  }
+  deleteUnite(id: string): Observable<void> {
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/unites/' + id)
+    const promise = deleteDoc(docRef)
+    return from(promise)
+  }
+  updateUnite(data: any): Observable<void> {
+    let id = data.id
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/unites/' + id)
+    const promise = setDoc(docRef, data)
+    return from(promise)
+  }
+
+  //ss traitances
+  getAllSstraitance(): Observable<sous_traitant[]> {
+    const sstce_collection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/sous_traitants')
+    return collectionData(sstce_collection, { idField: 'id' }) as Observable<sous_traitant[]>
+  }
+  addSstraitance(data: any): Observable<string> {
+    const mcollection = collection(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/sous_traitants')
+    const docRef = addDoc(mcollection, data).then(response => response.id)
+    return from(docRef)
+  }
+  deleteSstraitance(id: string): Observable<void> {
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/sous_traitants/' + id)
+    const promise = deleteDoc(docRef)
+    return from(promise)
+  }
+  updatSstraitance(data: any): Observable<void> {
+    let id = data.id
+    const docRef = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/sous_traitants/' + id)
+    const promise = setDoc(docRef, data)
+    return from(promise)
+  }
+
+
+  //modeles 
+  getallModels(path_string:string): Observable<any[]> {
+    const my_collection = collection(this.db, path_string);
+    return collectionData(my_collection, { idField: 'id' }) as Observable<any[]>;
+  }
+  addModel(path_string:string,data:any): Observable<string> {
+    const my_collection = collection(this.db, path_string);
+    const docRef = addDoc(my_collection, data).then(response => response.id);
+    return from(docRef);
+  }
+  updateModel(path_string:string,data: any): Observable<void> {
+    let id = data.id;
+    const docRef = doc(this.db, path_string+'/' + id);
+    const promise = setDoc(docRef, data);
+    return from(promise);
+  }
+  deleteModel(path_string:string,id: string): Observable<void> {
+    const docRef = doc(this.db, path_string+'/' + id);
+    const promise = deleteDoc(docRef);
+    return from(promise);
   }
 }

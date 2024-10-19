@@ -4,6 +4,7 @@ import { ImportedModule } from '../../modules/imported/imported.module';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
 import { ClasseEnginsStore, CompteStore, EnginsStore, PersonnelStore, StatutStore } from '../../store/appstore';
 import { EssaiComponent } from '../essai/essai.component';
+import { AuthenService } from '../../authen.service';
 
 
 @Component({
@@ -14,17 +15,23 @@ import { EssaiComponent } from '../essai/essai.component';
   styleUrl: './engins.component.scss'
 })
 export class EnginsComponent implements OnInit {
-  constructor()
-  {
-    effect(()=>{
-     // console.log(this._compte_store.donnees_engins())
+  constructor() {
+    effect(() => {
+      console.log(this._auth_service.current_projet_id() );
     })
+   }
+  ngOnInit() {
+    this.EnginsStore.setPathString('comptes/' + this._auth_service.current_projet_id() + '/engins');
+    this.EnginsStore.loadengins();
+    this.personnel_store.loadPersonnel();
+    this.classeEngins_store.loadclasses();
   }
   EnginsStore = inject(EnginsStore);
   personnel_store = inject(PersonnelStore);
   classeEngins_store = inject(ClasseEnginsStore);
-  statut_store = inject(StatutStore);
-  _compte_store = inject(CompteStore);
+  //statut_store = inject(StatutStore);
+  _auth_service = inject(AuthenService);
+
   fb = inject(NonNullableFormBuilder);
   table_update_form = this.fb.group({
     id: new FormControl(''),
@@ -88,7 +95,7 @@ export class EnginsComponent implements OnInit {
 
   classe_select = computed(() => {
     let donnees: any = []
-    this._compte_store.classes_engins()
+    this.classeEngins_store.classes_engins()
       .forEach(element => {
         donnees.push(
           {
@@ -102,7 +109,7 @@ export class EnginsComponent implements OnInit {
   })
   utilisateur_select = computed(() => {
     let donnees: any = []
-    this._compte_store.donnees_personnel()
+    this.personnel_store.donnees_personnel()
       .forEach(element => {
         donnees.push(
           {
@@ -118,10 +125,10 @@ export class EnginsComponent implements OnInit {
     () => {
       
       let donnees: any = []
-      this._compte_store.donnees_engins().forEach(element => {
+      this.EnginsStore.donnees_engins().forEach(element => {
         
-        let classe = this._compte_store.donnees_classesEngins().find(x => x.id == element.classe_id)
-        let utilisat = this._compte_store.donnees_personnel().find(x => x.id == element.utilisateur_id)
+        let classe = this.classeEngins_store.classes_engins().find(x => x.id == element.classe_id)
+        let utilisat = this.personnel_store.donnees_personnel().find(x => x.id == element.utilisateur_id)
         donnees.push(
           {
             'id': element.id,
@@ -138,8 +145,7 @@ export class EnginsComponent implements OnInit {
       return donnees
     }
   )
-  ngOnInit() {
-  }
+ 
   updateData(data: any) {
     let valeur = data[0]
     let current_row = data[1]
@@ -157,7 +163,7 @@ export class EnginsComponent implements OnInit {
         pannes:current_row.pannes,
         gasoil:current_row.gasoil,
       }
-      this._compte_store.updateEnginsCompte(mydata);
+      this.EnginsStore.updateEngin(mydata);
     }
     else {
       mydata = {
@@ -169,18 +175,18 @@ export class EnginsComponent implements OnInit {
         pannes:[],
         gasoil:[]
       }
-      this._compte_store.addEngins(mydata);
+      this.EnginsStore.addEngin(mydata);
     }
   }
   deleteData(id: any) {
     if (confirm('voulez-vous supprimer cet élement?'))
-      this._compte_store.deleteEnginCompte(id);
+      this.EnginsStore.deleteEngin(id);
   }
   recherche(word: any) {
-    this._compte_store.filterEngin(word);
+    this.EnginsStore.filterbyDesignation(word);
   }
   afficheTout() {
-    this._compte_store.filterEngin('');
+    this.EnginsStore.filterbyDesignation('');
   }
   PatchEventFct(row: any) {
     this.table_update_form.patchValue(

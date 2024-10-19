@@ -26,6 +26,8 @@ import { HomeAdminComponent } from './components/home-admin/home-admin.component
 import { GestionComponent } from './components/gestion/gestion.component';
 import { gestionGuard } from './gestion.guard';
 import { PointageComponent } from './components/pointage/pointage.component';
+import { SousTraitanceComponent } from './components/sous-traitance/sous-traitance.component';
+import { TelechargerComponent } from './components/telecharger/telecharger.component';
 
 export const routes: Routes = [
     {
@@ -64,6 +66,7 @@ export const routes: Routes = [
                 path: "factures",
                 component: EnginsComponent
             }
+           
         ]
     },
     {
@@ -100,6 +103,22 @@ export const routes: Routes = [
         path: "essai2",
         component: Essai2Component
     }
+    ,
+    {
+        path: "sous_traitance",
+        component: SousTraitanceComponent
+    }
+    ,
+    {
+        path: "telecharger",
+        component: TelechargerComponent
+    }
+    ,
+    {
+        path: "engins",
+        component: EnginsComponent
+    }
+
 
 
 ];

@@ -39,8 +39,8 @@ export class AppComponent implements OnInit {
   title = signal('wenbtp');
   ngOnInit() {
     this._auth_service.autoLogin();
-    this._classes_engins_store.loadclasses(); 
+/*     this._classes_engins_store.loadclasses(); 
     this._engins_store.loadengins() ;
-    this._projet_store.loadProjets();
+    this._projet_store.loadProjets(); */
   }
 }

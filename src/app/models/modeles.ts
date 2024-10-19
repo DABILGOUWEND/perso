@@ -181,6 +181,7 @@ export interface gasoilStore {
     date_jour: string,
     selectedEngin: string,
     selectedClass: string,
+    path_string: string
 }
 
 export interface Tab_personnelStore {
@@ -190,7 +191,8 @@ export interface Tab_personnelStore {
     selectedNom_prenom: string,
     message: string,
     current_date: string,
-    click: number[]
+    click: number[],
+    path_string: string
 }
 
 export interface PointageStore {
@@ -201,12 +203,15 @@ export interface PointageStore {
 
 export interface ApprogoStore {
     approgo_data: appro_gasoil[],
-    err: string | null
+    err: string | null,
+    path_string: string,
+
 }
 export interface Tab_classeEnginsStore {
     classes: classe_engins[],
     message: string,
-    selectedId: string
+    selectedId: string,
+    path_string: string
 }
 export interface Tab_EnginsStore {
     engins: Engins[],
@@ -214,19 +219,24 @@ export interface Tab_EnginsStore {
     selectedId: string,
     selectedIds: string[],
     selectedClasseId: string,
-    selectedDesignation: string
+    selectedDesignation: string,
+    path_string: string
 }
 export interface tab_ProjetStore {
     projets_data: Projet[],
     err: string | null,
     selectedId: string,
-    message: string
+    message: string;
+    path_string: string
+
+
 }
 export interface tab_SoustraitantStore {
     sstraitant_data: sous_traitant[],
     err: string | null,
     selectedId: string,
     message: string,
+    path_string: string
 }
 
 export interface tab_PannesStore {
@@ -235,7 +245,8 @@ export interface tab_PannesStore {
     selectedId: string,
     message: string,
     intervalleDate: string[],
-    EnginsIds: string[]
+    EnginsIds: string[],
+    path_string: string
 }
 export interface tab_ressources {
     id: string,
@@ -369,11 +380,15 @@ export interface tab_DevisStore {
     message: string,
     selectedEntreprise_id: string,
     selectedProjet_id: string,
+    path_string: string
+
+
 }
 export interface tab_LigneDevisStore {
     lignedevis_data: Ligne_devis[],
     message: string,
     selectedDevis_id: string,
+    path_string: string
 }
 export interface Constats {
     id: string,
@@ -383,14 +398,16 @@ export interface Constats {
     rang: number,
     quantite_mois: number,
     description: string,
-    decompte_id: string
+    decompte_id: string,
+    devis_id: string
 }
 export interface tab_constatStore {
     constat_data: Constats[],
     message: string,
     selected_poste_id: string,
     selected_devis_id: string,
-    selected_dp: number
+    selected_dp: number,
+    path_string: string
 }
 export interface ModelAttachement {
     id: string,
@@ -402,7 +419,8 @@ export interface tab_AttachementStore {
     attachement_data: ModelAttachement[],
     message: string,
     selected_devis_id: string,
-    selected_num: number
+    selected_num: number,
+    path_string: string
 }
 export interface ModelDecompte {
     id: string,
@@ -419,6 +437,7 @@ export interface tab_DecompteStore {
     message: string,
     selected_attach_id: string,
     selected_num: number,
+    path_string: string
 }
 export interface taches {
     'id': string,
@@ -430,7 +449,8 @@ export interface taches {
 export interface tab_tachesStore {
     taches_data: taches[],
     selected_type: string,
-    message: string
+    message: string,
+    path_string: string
 }
 export interface pointage_machine {
     'id': string,
@@ -447,7 +467,8 @@ export interface unites {
 
 export interface tab_unitesStore {
     unites_data: unites[],
-    message: string
+    message: string,
+    path_string: string
 }
 export interface taches_engins {
     'id': string,
@@ -458,6 +479,7 @@ export interface tab_tachesEnginsStore {
     taches_data: taches_engins[],
     message: string,
     selectedId: string,
+    path_string: string
 }
 export interface taches_projet {
     'id': string,

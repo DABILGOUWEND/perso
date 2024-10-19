@@ -36,6 +36,7 @@ export class HomeComponent implements OnInit {
 
   //methods
   ngOnInit() {
+    this._projet_store.loadProjets();
   }
   /* 
    logout() {

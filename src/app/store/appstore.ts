@@ -40,7 +40,8 @@ const initialGasoilState: gasoilStore = {
     message: '',
     date_jour: '',
     selectedEngin: "",
-    selectedClass: ''
+    selectedClass: '',
+    path_string: ''
 }
 
 ///projet
@@ -49,7 +50,8 @@ const initialProjetState: tab_ProjetStore =
     projets_data: [],
     err: null,
     selectedId: '',
-    message: ''
+    message: '',
+    path_string: ''
 }
 //devis
 const initialDevisState: tab_DevisStore =
@@ -57,19 +59,22 @@ const initialDevisState: tab_DevisStore =
     devis_data: [],
     message: '',
     selectedEntreprise_id: '',
-    selectedProjet_id: ''
+    selectedProjet_id: '',
+    path_string: ''
 }
 //ligne devis
 const initialLigneDevisState: tab_LigneDevisStore =
 {
     lignedevis_data: [],
     message: '',
-    selectedDevis_id: ''
+    selectedDevis_id: '',
+    path_string: ''
 }
 
 const initialApprogoState: ApprogoStore = {
     approgo_data: [],
-    err: null
+    err: null,
+    path_string: ''
 }
 const initialEnginState: Tab_EnginsStore = {
     engins: [],
@@ -77,12 +82,14 @@ const initialEnginState: Tab_EnginsStore = {
     selectedId: '',
     selectedClasseId: '',
     selectedDesignation: '',
-    selectedIds: ['']
+    selectedIds: [''],
+    path_string: ''
 }
 const initialClassesE: Tab_classeEnginsStore = {
     classes: [],
     message: '',
-    selectedId: ''
+    selectedId: '',
+    path_string: ''
 }
 const initialPersonnelState: Tab_personnelStore = {
     personnel_data: [],
@@ -91,7 +98,8 @@ const initialPersonnelState: Tab_personnelStore = {
     selectedNom_prenom: '',
     message: '',
     current_date: '',
-    click: [-1]
+    click: [-1],
+    path_string: ''
 
 
 }
@@ -100,7 +108,8 @@ const initialSstraitantState: tab_SoustraitantStore =
     sstraitant_data: [],
     err: '',
     selectedId: '',
-    message: ''
+    message: '',
+    path_string: ''
 }
 const initialPannesState: tab_PannesStore =
 {
@@ -109,7 +118,8 @@ const initialPannesState: tab_PannesStore =
     selectedId: '',
     message: '',
     intervalleDate: [''],
-    EnginsIds: ['']
+    EnginsIds: [''],
+    path_string: ''
 }
 const initialResourcesState: tab_ressourcesStore = {
     ressources_data: [],
@@ -194,39 +204,45 @@ const initialConstatState: tab_constatStore =
     message: '',
     selected_poste_id: '',
     selected_devis_id: '',
-    selected_dp: 0
+    selected_dp: 0,
+    path_string: ''
 }
 const initialAttachementState: tab_AttachementStore =
 {
     attachement_data: [],
     message: '',
     selected_devis_id: '',
-    selected_num: 0
+    selected_num: 0,
+    path_string: ''
 }
 const initialDecompteState: tab_DecompteStore =
 {
     decompte_data: [],
     message: '',
     selected_attach_id: '',
-    selected_num: 0
+    selected_num: 0,
+    path_string: ''
 }
 const initialTachesState: tab_tachesStore =
 {
     message: '',
     taches_data: [],
-    selected_type: ''
+    selected_type: '',
+    path_string: ''
 }
 
 const initialUnitesState: tab_unitesStore =
 {
     message: '',
-    unites_data: []
+    unites_data: [],
+    path_string: ''
 }
 const initialTacheEnginsState: tab_tachesEnginsStore =
 {
     selectedId: '',
     message: '',
-    taches_data: []
+    taches_data: [],
+    path_string: ''
 }
 const initialEntrepriseState: tab_EntrepriseStore =
 {
@@ -264,6 +280,72 @@ const initialCompte: comptes =
     selected_engin: '',
     selected_personnel: ''
 }
+/*************************** */
+export const UserStore = signalStore(
+    { providedIn: 'root' },
+    withState(initialUserState),
+    withComputed((store) => (
+        {
+            taille: computed(() => store.users_data().length),
+            users: computed(() => {
+                return store.users_data()
+            }),
+            getUrl: computed(() => store.url())
+            ,
+            getNivo: computed(() => store.nivo_requis())
+        }
+    )
+    ),
+    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar), _auth = inject(Auth)) =>
+    (
+        {
+            setUrl(url: string) {
+                patchState(store, { url: url })
+            },
+            setNivo(nivo: number) {
+                patchState(store, { nivo_requis: nivo })
+            },
+
+            loadUsers: rxMethod<void>(pipe(switchMap(() => {
+                return monservice.getallUsers().pipe(
+                    tap((data) => {
+                        patchState(store, { users_data: data })
+                    })
+                )
+            }
+            ))),
+            loadUser: rxMethod<void>(pipe(switchMap(() => {
+                let myuser$ = user(_auth);
+                return myuser$.pipe(
+                    tap((data: any) => {
+                        let filtre = store.users_data().find(x => x.uid == data.uid);
+                        patchState(store, { user: data })
+                    })
+                )
+            }
+            ))),
+
+            removeUser: rxMethod<string>(pipe(
+                switchMap((id) => {
+                    return monservice.deleteUser(id).pipe(tap(
+                        {
+                            next: () => {
+                                const updatedonnes = store.users_data().filter(x => x.uid != id)
+                                patchState(store, { users_data: updatedonnes })
+                                Showsnackerbaralert('élément supprimé', 'pass', snackbar)
+                            },
+                            error: () => {
+                                patchState(store, { message: 'echoué' });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+
+                    ))
+                }))),
+
+        }
+    ))
+)
 export const ProjetStore = signalStore(
     { providedIn: 'root' },
     withState(initialProjetState),
@@ -281,7 +363,7 @@ export const ProjetStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(TaskService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store, _task_service = inject(TaskService), snackbar = inject(MatSnackBar)) =>
     (
         {
 
@@ -289,7 +371,7 @@ export const ProjetStore = signalStore(
                 patchState(store, { selectedId: id })
             },
             loadProjets: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallProjets().pipe(
+                return _task_service.getallProjets().pipe(
                     tap((data) => {
                         patchState(store, { projets_data: classeProjet(data) })
                     })
@@ -298,11 +380,9 @@ export const ProjetStore = signalStore(
             ))),
             addProjet: rxMethod<Projet>(pipe(
                 switchMap((projet) => {
-                    return monservice.addProjets(projet).pipe(
+                    return _task_service.addProjets(projet).pipe(
                         tap({
                             next: () => {
-                                const updatedonnes = [...store.projets_data(), projet]
-                                patchState(store, { projets_data: updatedonnes })
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => {
                                 patchState(store, { message: 'echoué' });
@@ -315,10 +395,8 @@ export const ProjetStore = signalStore(
             )),
             removeProjet: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteProjets(id).pipe(tap({
+                    return _task_service.deleteProjets(id).pipe(tap({
                         next: () => {
-                            const updatedonnes = store.projets_data().filter(x => x.id != id)
-                            patchState(store, { projets_data: updatedonnes })
                             Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                         },
                         error: () => {
@@ -331,15 +409,183 @@ export const ProjetStore = signalStore(
                 }))),
             updateProjet: rxMethod<Projet>(pipe(
                 switchMap((projet) => {
-                    return monservice.updateProjets(projet).pipe(
+                    return _task_service.updateProjets(projet).pipe(
                         tap({
                             next: () => {
-                                var data = store.projets_data()
-                                var index = data.findIndex(x => x.id == projet.id)
-                                data[index] = projet
-                                patchState(store, { projets_data: data })
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }, error: () => {
+                                patchState(store, { message: 'echoué' });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+
+        }
+    ))
+)
+export const EnginsStore = signalStore(
+    { providedIn: 'root' },
+    withState(initialEnginState),
+    withComputed((
+        store,
+        classe_store = inject(ClasseEnginsStore),
+        monservice = inject(PersonnelStore),
+
+    ) => (
+        {
+            taille: computed(() => store.engins().length),
+            donnees_engins: computed(() => {
+                var mot = store.selectedDesignation()
+                if (mot == '') { return classeEngins(store.engins()) }
+                else {
+                    return classeEngins(store.engins().filter(x => (x.designation).toLowerCase().includes(mot.toLowerCase())))
+                }
+
+            }),
+            donnees_utilisateur: computed(() => {
+                var mot = store.selectedDesignation()
+                let donnee = []
+                if (mot == '') { donnee = classeEngins(store.engins()) }
+                else {
+                    donnee = classeEngins(store.engins().filter(x => (x.designation).toLowerCase().includes(mot.toLowerCase())))
+                }
+
+                let data = monservice.donnees_personnel()
+                let onedata = donnee.map(x => x.utilisateur_id)
+                var mydata: string[] = []
+                onedata.forEach(element => {
+                    let trouv = data.find(x => x.id == element)
+                    if (trouv) {
+                        mydata.push(trouv.nom + ' ' + trouv.prenom)
+                    }
+                    else {
+                        mydata.push('')
+                    }
+                });
+                return mydata
+            }),
+            donnees_classes: computed(() => {
+                var mot = store.selectedDesignation()
+                let donnee = []
+                if (mot == '') { donnee = classeEngins(store.engins()) }
+                else {
+                    donnee = classeEngins(store.engins().filter(x => (x.designation).toLowerCase().includes(mot.toLowerCase())))
+                }
+                let data = classe_store.classes_engins()
+                let onedata = donnee.map(x => x.classe_id)
+                var mydata: string[] = []
+                onedata.forEach(element => {
+                    let trouv = data.find(x => x.id == element)
+                    if (trouv) {
+                        mydata.push(trouv.designation)
+                    }
+                    else {
+                        mydata.push('')
+                    }
+                });
+                return mydata
+
+            }),
+            donnees_enginsById: computed(() => {
+                var ind = store.selectedId
+                let data: Engins | undefined = store.engins().find(x => x.id == ind())
+                return data
+            }),
+            donnees_enginsByIds: computed(() => {
+                var ind = store.selectedIds
+                if (ind()[0] == '') {
+                    return store.engins()
+                }
+                else {
+                    let data: Engins[] = store.engins().filter(x => ind().includes(x.id))
+                    return data
+                }
+
+            }),
+
+            donnees_enginsByClasse: computed(() => {
+                var ind = store.selectedClasseId
+                return store.engins().filter(x => x.classe_id == ind())
+            })
+        }
+    )
+    ),
+    withMethods((
+        store,
+        _task_service = inject(TaskService),
+        compte = inject(CompteStore),
+        snackbar = inject(MatSnackBar)) =>
+    (
+        {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            }
+            ,
+            filtrebyId(id: string) {
+                patchState(store, { selectedId: id })
+            },
+            filtrebyIds(ids: string[]) {
+                patchState(store, { selectedIds: ids })
+            },
+            filtrebyClasseId(id: string | undefined) {
+                patchState(store, { selectedClasseId: id })
+            },
+            filterbyDesignation(mot: string) { patchState(store, { selectedDesignation: mot }) },
+            load_compte_engins() {
+                patchState(store, { engins: compte.engins() })
+            },
+            loadengins: rxMethod<void>(pipe(switchMap(() => {
+                return _task_service.getallModels(store.path_string()).pipe(
+                    tap((data) => {
+                        patchState(store, { engins: data })
+                    })
+                )
+            }
+            )))
+            ,
+            addEngin: rxMethod<Engins>(pipe(
+                switchMap((engin) => {
+                    return _task_service.addModel(store.path_string(), engin).pipe(
+                        tap({
+                            next: (resp) => {
+                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
+                            },
+                            error: (err) => {
+                                patchState(store, { message: 'echoué' });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+            deleteEngin: rxMethod<string>(pipe(
+                switchMap((id) => {
+                    return _task_service.deleteModel(store.path_string(), id).pipe(tap({
+                        next: () => {
+            
+                            Showsnackerbaralert('élément supprimé', 'pass', snackbar)
+                        }, error: (err) => {
+                            patchState(store, { message: 'echoué' });
+                            Showsnackerbaralert('échoué', 'fail', snackbar)
+                        }
+                    }
+
+                    ))
+                }))),
+            updateEngin: rxMethod<Engins>(pipe(
+                switchMap((engin) => {
+                    return _task_service.updateModel(store.path_string(), engin).pipe(
+                        tap({
+                            next: () => {
+                               
+                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                            }
+                            ,
+                            error: (err) => {
                                 patchState(store, { message: 'echoué' });
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
                             }
@@ -377,157 +623,681 @@ export const ClasseEnginsStore = signalStore(
         compte = inject(CompteStore)) =>
     (
         {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
 
             filtrebyId(id: string) {
                 patchState(store, { selectedId: id })
             },
-            load_compte_classes() {
-                patchState(store, { classes: compte.classes_engins() })
-            },
             loadclasses: rxMethod<void>(pipe(switchMap(() => {
-                return _taskk_service.getallClassesEngins().pipe(
+                return _taskk_service.getallModels(store.path_string()).pipe(
                     tap((data) => {
                         patchState(store, { classes: classement_classes(data) })
                     })
                 )
             }
             ))),
-            /* 
-            addengins: rxMethod<classe_engins(pipe(
-                switchMap((engin) => {
-                    return monservice.(engin).pipe(
-                        tap(() => {
-                            const updatedonnes = [...store.engins(), engin]
-                            patchState(store, { engins: updatedonnes })
-                        }
-                        )
-                    )
-                })
-            )), */
-            /*  removeclasse: rxMethod<string>(pipe(
-                 switchMap((id) => {
-                     return monservice.delete(id).pipe(tap(
-                         () => {
-                             const updatedonnes = store.engins().filter(x => x.id != id)
-                             patchState(store, { engins: updatedonnes })
-                         }
-                     ))
-                 }))), */
-            /*     updatec: rxMethod<Engins>(pipe(
-                    switchMap((engin) => {
-                        return monservice.updateEngin(engin).pipe(
-                            tap(() => {
-                                var data = store.engins()
-                                var index = data.findIndex(x => x.id == engin.id)
-                                data[index] = engin
-                                patchState(store, { engins: data })
-                            }
-                            )
-                        )
-                    })
-                )), */
 
-        }
-    ))
-)
-export const DatesStore = signalStore(
-    { providedIn: 'root' },
-    withState(initialDatesState),
-    withComputed((store) => (
-        {
-            taille: computed(() => {
-                return store.dates().length
-            }),
-            donnees_dates: computed(() => {
-                return store.dates()
-            })
-
-        }
-    )),
-    withMethods((store,
-        monservice = inject(WenService),
-        snackbar = inject(MatSnackBar)
-    ) =>
-    (
-        {
-            loaddates(data: tab_personnel[]) {
-                let dates = data.map(x => x.dates);
-                let result: any = []
-                dates.forEach(element => {
-                    result = [...result, ...element]
-                });
-                let unique_dates = result.filter((value: any, index: any, self: any) => self.indexOf(value) === index)
-                patchState(store, { dates: unique_dates.map((x: any) => { return { dates: x } }) })
-            }
-            ,
-            adddates: rxMethod<datesPointages>(pipe(
-                switchMap((dates) => {
-                    return monservice.adddates(dates).pipe(
+            addClasse: rxMethod<any>(pipe(
+                switchMap((classe) => {
+                    return _taskk_service.addModel(store.path_string(), classe).pipe(
                         tap({
-                            next: () => {
-                                const updatedonnes = [...store.dates(), dates]
-                                patchState(store, { dates: updatedonnes })
-                            }, error: () => { Showsnackerbaralert('échoué', 'fail', snackbar) }
-                        }
-                        )
-                    )
-                })
-            ))
-        }
-    ))
-)
-export const SstraitantStore = signalStore(
-    { providedIn: 'root' },
-    withState(initialSstraitantState),
-    withComputed((store) => (
-        {
-            taille: computed(() => store.sstraitant_data().length),
-            donnees_sstraitant: computed(() => {
-                return classeSstraitant(store.sstraitant_data())
-            }),
-            donnees_sstraitantById: computed(() => {
-                var ind = store.selectedId
-                let data: sous_traitant | undefined = store.sstraitant_data().find(x => x.id == ind())
-                return data
-            })
-        }
-    )
-    ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
-    (
-        {
-
-            filtrebyId(id: string) {
-                patchState(store, { selectedId: id })
-            },
-            loadSstraitants: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallSsouTraitants().pipe(
-                    tap((data) => {
-                        patchState(store, { sstraitant_data: classeSstraitant(data) })
-                    })
-                )
-            }
-            ))),
-            addSstraitant: rxMethod<sous_traitant>(pipe(
-                switchMap((sstraitant) => {
-                    return monservice.addSoustraitant(sstraitant).pipe(
-                        tap({
-                            next: () => {
-                                const updatedonnes = [...store.sstraitant_data(), sstraitant]
-                                patchState(store, { sstraitant_data: updatedonnes })
+                            next: (resp) => {
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
-                            }, error: () => { Showsnackerbaralert('échoué', 'fail', snackbar) }
+                            },
+                            error: (err) => {
+                                patchState(store, { message: 'echoué' });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
                         }
                         )
                     )
                 })
             )),
-            removeSstraitant: rxMethod<string>(pipe(
+            deleteClasse: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteSoutraitant(id).pipe(tap({
+                    return _taskk_service.deleteModel(store.path_string(), id).pipe(
+                        tap({
+                            next: (resp) => {
+                                Showsnackerbaralert('supprimé!', 'pass', snackbar)
+                            },
+                            error: (err) => {
+                                patchState(store, { message: 'echoué' });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                }))),
+            updateClasses: rxMethod<any>(pipe(
+                switchMap((classe) => {
+                    return _taskk_service.updateModel(store.path_string(), classe).pipe(
+                        tap({
+                            next: (resp) => {
+                                Showsnackerbaralert('Modifié avec succes', 'pass', snackbar)
+                            },
+                            error: (err) => {
+                                patchState(store, { message: 'echoué' });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            ))
+
+        }
+    ))
+)
+export const PersonnelStore = signalStore(
+    { providedIn: 'root' },
+    withState(initialPersonnelState),
+    withComputed((store, dates = inject(DatesStore)) => (
+        {
+            taille: computed(() => store.personnel_data().length),
+            donnees_personnel: computed(() => {
+                var mot = store.selectedNom_prenom()
+                if (mot == '') {
+                    return classePersonnel(store.personnel_data())
+                }
+                else {
+                    return classePersonnel(store.personnel_data().filter(x => (x.nom + x.prenom).toLowerCase().includes(mot.toLowerCase())))
+                }
+            }),
+            mytasks: computed(() => {
+                let personnel = store.personnel_data();
+                let data: any = [];
+                personnel.forEach((element) => {
+                    let dates = element.dates;
+                    let presence = element.presence;
+                    let index = dates.indexOf(store.current_date());
+                    if (index > 0) {
+                        data.push({
+                            name: presence[index] ? "présent" : "absent",
+                            completed: element.presence[index],
+                        })
+                    }
+
+                });
+                return {
+                    name: 'selectionner tout',
+                    completed: false,
+                    subtasks: data,
+                }
+            }),
+            getDates: computed(() => {
+                let personnel = store.personnel_data();
+                let dates = personnel.map(x => x.dates);
+                let result: any = []
+                dates.forEach(element => {
+                    result = [...result, ...element]
+                });
+                let unique_dates = result.filter((value: any, index: any, self: any) => self.indexOf(value) === index);
+                return unique_dates
+            })
+
+            ,
+
+            data_pointage: computed(() => {
+                let donnees = store.personnel_data();
+                let data: tab_personnel[] = [];
+                donnees.forEach(element => {
+                    let dates = element.dates;
+                    if (dates.includes(store.current_date()))
+                        data.push(element)
+                });
+                return data
+            }),
+            donnees_personnelById: computed(() => {
+                var ind = store.selectedId
+                let data: tab_personnel | undefined = store.personnel_data().find(x => x.id == ind())
+                return data
+            }),
+            rechercheDate: computed(() => {
+                let date = store.current_date()
+                let data: tab_personnel[] = []
+                store.personnel_data().forEach(element => {
+                    let mydates = element.dates
+                    let ind = mydates.lastIndexOf(date)
+                    if (ind != -1)
+                        data.push(element)
+                });
+                return data
+            }),
+            heures_normale: computed(() => {
+                let date = store.current_date()
+                let filtre = store.personnel_data().filter(x => x.dates.includes(date))
+                let data: any = []
+                filtre.forEach(element => {
+                    let mydates = element.dates
+                    let heureN = element.heuresN
+                    let ind = mydates.lastIndexOf(date)
+                    if (ind != -1) {
+                        data.push(heureN[ind])
+                    }
+                    else {
+                        data.push(0)
+                    }
+                });
+                return data
+            }),
+            heures_sup: computed(() => {
+                let date = store.current_date()
+                let filtre = store.personnel_data().filter(x => x.dates.includes(date))
+                let data: any = []
+                filtre.forEach(element => {
+                    let mydates = element.dates
+                    let heureS = element.heureSup
+                    let ind = mydates.lastIndexOf(date)
+                    if (ind != -1) {
+                        data.push(heureS[ind])
+                    }
+                    else {
+                        data.push(0)
+                    }
+                });
+                return data
+            }),
+            no_pointage: computed(() => {
+                let data: any = []
+                let date = store.current_date()
+                let mydata = store.personnel_data().filter(x => !x.dates.includes(date))
+                mydata.forEach(element => {
+                    data.push({
+                        names: element
+                    })
+                });
+                return data
+            }),
+            ischecked: computed(() => {
+                let data: any = []
+                let date = store.current_date()
+                let names = store.personnel_data().filter(x => !x.dates.includes(date))
+                names.forEach(element => {
+                    data.push(false
+                    )
+                });
+                return data
+            }),
+            presence: computed(() => {
+                let date = store.current_date()
+                let data: any = []
+                let filtre = store.personnel_data().filter(x => x.dates.includes(date))
+                filtre.forEach(element => {
+                    let mydates = element.dates
+                    let presence = element.presence
+                    let ind = mydates.lastIndexOf(date)
+                    if (ind != -1) {
+                        data.push(presence[ind])
+                    }
+                    else {
+                        data.push(true)
+                    }
+                });
+                return data
+            }),
+            is_present: computed(() => {
+                let date = store.current_date()
+                let data: any = []
+                let filtre = store.personnel_data().filter(x => x.dates.includes(date))
+                filtre.forEach(element => {
+                    let mydates = element.dates
+                    let presence = element.presence
+                    let ind = mydates.indexOf(date, 0)
+                    if (ind != -1) {
+                        if (presence[ind]) {
+                            data.push('présent')
+                        }
+                        else {
+                            data.push('absent')
+                        }
+                    }
+                    else {
+                        data.push('absent')
+                    }
+                });
+                return data
+            })
+
+        }
+    )
+    ),
+    withMethods((store,
+        task_service = inject(TaskService),
+        snackbar = inject(MatSnackBar)) =>
+    (
+        {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
+            filtrebyId(id: string) {
+                patchState(store, { selectedId: id })
+            },
+            filtrebyDate(date: string) {
+                patchState(store, { current_date: date })
+            },
+            setClick(types: number[]) {
+                patchState(store, { click: types })
+            },
+
+            filterbyNomPrenom(mot: string) { patchState(store, { selectedNom_prenom: mot }) },
+
+            loadPersonnel: rxMethod<void>(pipe(switchMap(() => {
+                return task_service.getallPersonnel().pipe(
+                    tap(data => {
+                        patchState(store, { personnel_data: classePersonnel(data) })
+                    })
+                )
+            }
+            ))),
+            addPersonnel: rxMethod<any>(pipe(
+                switchMap((personnel) => {
+                    return task_service.addPersonnel(personnel).pipe(
+                        tap({
+                            next: () => {
+                                const updatedonnes = [...store.personnel_data(), personnel]
+                                patchState(store, { personnel_data: updatedonnes })
+                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
+                            },
+                            error: () => {
+                                patchState(store, { message: 'echoué' });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+            removePersonnel: rxMethod<string>(pipe(
+                switchMap((id) => {
+                    return task_service.deletePersonnel(id).pipe(tap({
                         next: () => {
-                            const updatedonnes = store.sstraitant_data().filter(x => x.id != id)
-                            patchState(store, { sstraitant_data: updatedonnes })
+                            const updatedonnes = store.personnel_data().filter(x => x.id != id)
+                            patchState(store, { personnel_data: updatedonnes })
+                            Showsnackerbaralert('élément supprimé', 'pass', snackbar)
+                        },
+                        error: () => {
+                            patchState(store, { message: 'echoué' });
+                            Showsnackerbaralert('échoué', 'fail', snackbar)
+                        }
+                    }
+                    ))
+                }))),
+            removeDate: rxMethod<string>(pipe(
+                switchMap((date) => {
+                    let obs: Observable<any>[] = []
+                    for (let row of store.personnel_data()) {
+                        if (row.dates.includes(date))
+                            obs.push(task_service.removePerson(row, date))
+                    }
+                    return concat(obs)
+                }
+                ))),
+            updatePersonnel: rxMethod<tab_personnel>(pipe(
+                switchMap((personnel) => {
+                    return task_service.updatePersonnel(personnel).pipe(
+                        tap({
+                            next: () => {
+                                var data = store.personnel_data()
+                                var index = data.findIndex(x => x.id == personnel.id)
+                                data[index] = personnel
+                                patchState(store, { personnel_data: data })
+                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                            },
+                            error: () => {
+                                patchState(store, { message: 'echoué' });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+            ModifPersonnel: rxMethod<any>(pipe(
+                switchMap((person) => {
+                    return task_service.ModifPerson(person).pipe(
+                        tap({
+                            next: () => {
+                                var data = store.personnel_data()
+                                var index = data.findIndex(x => x.id == person.id)
+                                data[index] = person
+                                patchState(store, { personnel_data: data })
+                                //Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                            },
+                            error: () => {
+                                //patchState(store, { message: 'echoué' });
+                                //Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+            ModifMultiPersonnel: rxMethod<boolean>(pipe(
+                switchMap((completed) => {
+                    let filtre = store.personnel_data().filter(x => x.dates.includes(store.current_date()))
+                    let obs: Observable<any>[] = []
+                    for (let row of filtre) {
+                        let data = row
+                        let index = data.dates.indexOf(store.current_date(), 0)
+                        let presence = data.presence
+                        presence[index] = completed
+                        data.presence = presence
+                        let heurenorm = data.heuresN
+                        let heuresup = data.heureSup
+                        if (!completed) {
+                            heurenorm[index] = 0
+                            heuresup[index] = 0
+                            data.heuresN = heurenorm
+                            data.heureSup = heuresup
+                        }
+                        else {
+                            heurenorm[index] = 8
+                            heuresup[index] = 0
+                            data.heuresN = heurenorm
+                            data.heureSup = heuresup
+                        }
+
+                        obs.push(task_service.ModifPerson(data))
+                    }
+
+                    return concat(obs)
+                })
+            )),
+            initialPersonnel: rxMethod<any>(pipe(
+                switchMap((donnees) => {
+                    let obs: Observable<any>[] = []
+                    let date = store.current_date()
+                    for (let row of donnees) {
+                        obs.push(task_service.updatePerson(row, date));
+                    }
+                    return concat(obs)
+                })
+            )),
+
+            reducePerson: rxMethod<any>(pipe(
+                switchMap((personnel) => {
+                    let date = store.current_date()
+                    return task_service.removePerson(personnel, date)
+                })
+            )),
+
+            initialAll: rxMethod<any>(pipe(
+                switchMap((gasoil) => {
+                    return task_service.updatePersonInit(gasoil)
+                })
+            )),
+        }
+    ))
+)
+export const GasoilStore = signalStore(
+    { providedIn: 'root' },
+    withState(initialGasoilState),
+    withComputed((store, engins_store = inject(EnginsStore)) => (
+        {
+            lastNum: computed(() => {
+                return Math.max(...store.conso_data().map(x => Number(x.numero)))
+            }),
+            taille: computed(() => store.conso_data().length),
+            quantite_go: computed(() => {
+                let data = store.conso_data().map(x => x.quantite_go);
+                return somme(data)
+            }),
+            conso_jour: computed(() => {
+                let madate = store.selectedDate();
+                if (madate[0] == '') {
+                    return somme(store.conso_data().filter(x => {
+                        return convertDate(x.date).setHours(0, 0, 0, 0) == convertDate(store.date_jour()).setHours(0, 0, 0, 0)
+                    }).map(x => x.quantite_go));
+                }
+                else {
+                    return somme(store.conso_data().filter(x => {
+                        return convertDate(x.date).setHours(0, 0, 0, 0) == convertDate(madate[0]).setHours(0, 0, 0, 0)
+                    }).map(x => x.quantite_go));
+                }
+            }
+            ),
+            date_du_jour: computed(() => {
+                return store.date_jour()
+            }),
+            conso_intervalle: computed(() => {
+                let madate = store.selectedDate();
+                return somme(store.conso_data().filter(x => {
+                    return convertDate(x.date).setHours(0, 0, 0, 0) >= convertDate(madate[0]).setHours(0, 0, 0, 0) &&
+                        convertDate(x.date).setHours(0, 0, 0, 0) <= convertDate(madate[1]).setHours(0, 0, 0, 0)
+                }).map(x => x.quantite_go)
+                )
+            }),
+            datasource: computed(() => {
+
+                let enginId = store.selectedEngin();
+                let classId = store.selectedClass();
+                let engin_data = engins_store.engins();
+                let myengins = classId != '' ? engin_data
+                    .filter(x => x.classe_id === classId) : engin_data;
+                let enginsClass = myengins.map(x => x.id);
+                let myconso1 = store.conso_data().filter(x => enginsClass.includes(x.engin_id));
+                let myconso2 = enginId != '' ? myconso1.
+                    filter(x => x.engin_id === enginId) : myconso1;
+                var madate = store.selectedDate();
+                let donnees_gasoil: Gasoil[];
+                if (madate[0] === '') {
+                    donnees_gasoil = myconso2;
+                }
+                else {
+                    if (madate.length === 1) {
+                        donnees_gasoil = classeTabBynumero(
+                            myconso2.filter(x => x.date === madate[0]))
+                    }
+                    else {
+                        let filtre = myconso2.
+                            filter(x => {
+                                return convertDate(x.date).setHours(0, 0, 0, 0) >= convertDate(madate[0]).setHours(0, 0, 0, 0) &&
+                                    convertDate(x.date).setHours(0, 0, 0, 0) <= convertDate(madate[1]).setHours(0, 0, 0, 0)
+                            })
+                        donnees_gasoil = filtre;
+                    }
+                }
+                let donnees: any = [];
+                donnees_gasoil.forEach(element => {
+                    let engin = engin_data.find(x => x.id == element.engin_id);
+                    donnees.push(
+                        {
+                            'id': element.id,
+                            'situation_cp': 'ok',
+                            'designation': engin?.designation,
+                            'engin_id': element.engin_id,
+                            'classe_id': engin?.classe_id,
+                            'code_parc': engin?.code_parc,
+                            'compteur': element.compteur,
+                            'quantite_go': element.quantite_go,
+                            'date': element.date,
+                            'numero': element.numero,
+                            'diff_work': element.diff_work
+                        }
+                    )
+                })
+                return classeTabDate(donnees).sort((a: any, b: any) =>
+                    b.numero - a.numero
+                );
+            }),
+            historique_consogo: computed(() => {
+                let unique_dates = classement(store.conso_data().map(x => x.date).filter((value, index, self) => self.indexOf(value) === index))
+
+                let conso: any = [];
+                for (let i = 0; i <= 9; i++) {
+                    let row = unique_dates[i];
+                    let filtres = store.conso_data().filter(x => x.date === row);
+                    if (row) {
+                        let som = somme(filtres.map(x => x.quantite_go));
+                        conso = [...conso, {
+                            x: convertDate(row),
+                            y: som
+                        }]
+                    }
+                }
+                //console.log(conso)
+                return [conso, unique_dates]
+            }
+            )
+        })),
+    withMethods(
+        (
+            store,
+            task_service = inject(TaskService),
+            snackbar = inject(MatSnackBar),
+            comptes = inject(CompteStore)) => ({
+                setPathString(path: string) {
+                    patchState(store, { path_string: path })
+                },
+                filtrebyDate(date: string[]) {
+                    patchState(store, { selectedDate: date })
+                }
+                ,
+                setCurrentDate(date: string) {
+                    patchState(store, { date_jour: date })
+                },
+                filterByEnginId(enginId: string) {
+                    patchState(store, { selectedEngin: enginId })
+                },
+                filterByClassId(classId: string) {
+                    patchState(store, { selectedClass: classId })
+
+                }
+                ,
+                load_compte_conso() {
+                    patchState(store, { conso_data: comptes.conso_go() })
+                },
+                loadconso: rxMethod<void>(pipe(
+                    switchMap(
+                        () => {
+                            return task_service.getallModels(store.path_string(),).pipe(
+                                tap(
+                                    data => {
+                                        patchState(store, { conso_data: data })
+                                    }
+                                )
+                            )
+                        }
+                    )
+                )
+                )
+                ,
+                addconso: rxMethod<any>(pipe(
+                    switchMap((gasoil) => {
+                        return task_service.addModel(store.path_string(), gasoil).pipe(
+                            tap({
+                                next: () => {
+                                    Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
+                                },
+                                error: () => {
+                                    patchState(store, { message: 'echoué' });
+                                    Showsnackerbaralert('échoué', 'fail', snackbar)
+                                }
+                            }
+                            )
+                        )
+                    })
+                )),
+                removeconso: rxMethod<string>(pipe(
+                    switchMap((id) => {
+                        return task_service.deleteModel(store.path_string(), id).pipe(tap(
+                            {
+                                next: () => {
+
+                                    Showsnackerbaralert('élément supprimé', 'pass', snackbar)
+                                },
+                                error: () => {
+                                    patchState(store, { message: 'echoué' });
+                                    Showsnackerbaralert('échoué', 'fail', snackbar)
+                                }
+                            }
+
+                        ))
+                    }))),
+                updateconso: rxMethod<any>(pipe(
+                    switchMap((gasoil) => {
+                        return task_service.updateModel(store.path_string(), gasoil).pipe(
+                            tap({
+                                next: () => {
+                                    Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                                },
+                                error: () => {
+                                    patchState(store, { message: 'echoué' });
+                                    Showsnackerbaralert('échoué', 'fail', snackbar)
+                                }
+                            }
+                            )
+                        )
+                    })
+                ))
+            }
+        ))
+)
+export const ApproGasoilStore = signalStore(
+    { providedIn: 'root' },
+    withState(initialApprogoState),
+    withComputed((store) => (
+        {
+            taille: computed(() => store.approgo_data().length),
+            quantite_go: computed(() => {
+                var data = store.approgo_data().map(x => x.quantite)
+                return somme(data)
+            }),
+            datasource: computed(() => { return classeTabDate(store.approgo_data()) })
+        }
+    )
+    ),
+    withMethods((store,
+        monservice = inject(WenService),
+        task_service = inject(TaskService),
+        compte = inject(CompteStore),
+        snackbar = inject(MatSnackBar)) =>
+    (
+        {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
+            filtrebyDate(date: string) {
+                var data = store.approgo_data().filter(x => x.date == date)
+                patchState(store, { approgo_data: classeTabDate(data) })
+            }
+            ,
+            load_compte_appro() {
+                patchState(store, { approgo_data: compte.appro_go() })
+            },
+
+            loadappro: rxMethod<void>(pipe(switchMap(() => {
+                return task_service.getAllApproGo().pipe(
+                    tap(data => {
+                        patchState(store, { approgo_data: classeTabDate(data) })
+                    })
+                )
+            }
+            ))),
+            addappro: rxMethod<appro_gasoil>(pipe(
+                switchMap((appro) => {
+                    return task_service.addApproGo(appro).pipe(
+                        tap({
+                            next: () => {
+                                const updatedonnes = [...store.approgo_data(), appro]
+                                patchState(store, { approgo_data: updatedonnes })
+                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
+                            }, error: () => {
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+            removeappro: rxMethod<string>(pipe(
+                switchMap((id) => {
+                    return task_service.deleteApproGo(id).pipe(tap({
+                        next: () => {
+                            const updatedonnes = store.approgo_data().filter(x => x.id != id)
+                            patchState(store, { approgo_data: updatedonnes })
                             Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                         }, error: () => {
                             Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -536,18 +1306,17 @@ export const SstraitantStore = signalStore(
 
                     ))
                 }))),
-            updateSstraitant: rxMethod<sous_traitant>(pipe(
-                switchMap((sstraitant) => {
-                    return monservice.updateProjet(sstraitant).pipe(
+            updateappro: rxMethod<appro_gasoil>(pipe(
+                switchMap((appro) => {
+                    return task_service.updateApproGo(appro).pipe(
                         tap({
                             next: () => {
-                                var data = store.sstraitant_data()
-                                var index = data.findIndex(x => x.id == sstraitant.id)
-                                data[index] = sstraitant
-                                patchState(store, { sstraitant_data: data })
-                                Showsnackerbaralert('modifié avec succès', 'pass', snackbar)
-                            },
-                            error: () => {
+                                var data = store.approgo_data()
+                                var index = data.findIndex(x => x.id == appro.id)
+                                data[index] = appro
+                                patchState(store, { approgo_data: data })
+                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                            }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
                             }
                         }
@@ -643,6 +1412,9 @@ export const PannesStore = signalStore(
         snackbar = inject(MatSnackBar)) =>
     (
         {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
 
             filtrebyId(id: string) {
                 patchState(store, { selectedId: id })
@@ -657,7 +1429,7 @@ export const PannesStore = signalStore(
                 patchState(store, { pannes_data: compte.pannes() })
             },
             loadPannes: rxMethod<void>(pipe(switchMap(() => {
-                return task_service.getAllPannes().pipe(
+                return task_service.getallModels(store.path_string()).pipe(
                     tap((data) => {
                         patchState(store, { pannes_data: classeTabDatePanne(data) })
                     })
@@ -666,11 +1438,9 @@ export const PannesStore = signalStore(
             ))),
             addPannes: rxMethod<any>(pipe(
                 switchMap((panne) => {
-                    return task_service.addpannes(panne).pipe(
+                    return task_service.addModel(store.path_string(), panne).pipe(
                         tap({
                             next: () => {
-                                const updatedonnes = [...store.donnees_pannes(), panne]
-                                patchState(store, { pannes_data: updatedonnes })
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => { Showsnackerbaralert('échoué', 'fail', snackbar) }
                         }
@@ -680,10 +1450,8 @@ export const PannesStore = signalStore(
             )),
             removePannes: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return task_service.deletePannes(id).pipe(tap({
+                    return task_service.deleteModel(store.path_string(), id).pipe(tap({
                         next: () => {
-                            const updatedonnes = store.pannes_data().filter(x => x.id != id)
-                            patchState(store, { pannes_data: updatedonnes })
                             Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                         }, error: () => {
                             Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -693,13 +1461,9 @@ export const PannesStore = signalStore(
                 }))),
             updatePannes: rxMethod<any>(pipe(
                 switchMap((panne) => {
-                    return task_service.updatePannes(panne).pipe(
+                    return task_service.updateModel(store.path_string(), panne).pipe(
                         tap({
                             next: () => {
-                                var data = store.pannes_data()
-                                var index = data.findIndex(x => x.id == panne.id)
-                                data[index] = panne
-                                patchState(store, { pannes_data: data })
                                 Showsnackerbaralert('modifié avec succès', 'pass', snackbar)
                             },
                             error: () => {
@@ -967,881 +1731,6 @@ export const NatureTrvxStore = signalStore(
         }
     ))
 )
-
-export const PersonnelStore = signalStore(
-    { providedIn: 'root' },
-    withState(initialPersonnelState),
-    withComputed((store, dates = inject(DatesStore)) => (
-        {
-            taille: computed(() => store.personnel_data().length),
-            donnees_personnel: computed(() => {
-                var mot = store.selectedNom_prenom()
-                if (mot == '') { 
-                    return classePersonnel(store.personnel_data()) }
-                else {
-                    return classePersonnel(store.personnel_data().filter(x => (x.nom + x.prenom).toLowerCase().includes(mot.toLowerCase())))
-                }
-            }),
-            mytasks: computed(() => {
-                let personnel = store.personnel_data();
-                let data: any = [];
-                personnel.forEach((element) => {
-                    let dates = element.dates;
-                    let presence = element.presence;
-                    let index = dates.indexOf(store.current_date());
-                    if (index > 0) {
-                        data.push({
-                            name: presence[index] ? "présent" : "absent",
-                            completed: element.presence[index],
-                        })
-                    }
-
-                });
-                return {
-                    name: 'selectionner tout',
-                    completed: false,
-                    subtasks: data,
-                }
-            }),
-            getDates: computed(() => {
-                let personnel = store.personnel_data();
-                let dates = personnel.map(x => x.dates);
-                let result: any = []
-                dates.forEach(element => {
-                    result = [...result, ...element]
-                });
-                let unique_dates = result.filter((value: any, index: any, self: any) => self.indexOf(value) === index);
-                return unique_dates 
-            })
-
-                ,
-
-            data_pointage: computed(() => {
-                let donnees = store.personnel_data();
-                let data: tab_personnel[] = [];
-                donnees.forEach(element => {
-                    let dates = element.dates;
-                    if (dates.includes(store.current_date()))
-                        data.push(element)
-                });
-                return data
-            }),
-            donnees_personnelById: computed(() => {
-                var ind = store.selectedId
-                let data: tab_personnel | undefined = store.personnel_data().find(x => x.id == ind())
-                return data
-            }),
-            rechercheDate: computed(() => {
-                let date = store.current_date()
-                let data: tab_personnel[] = []
-                store.personnel_data().forEach(element => {
-                    let mydates = element.dates
-                    let ind = mydates.lastIndexOf(date)
-                    if (ind != -1)
-                        data.push(element)
-                });
-                return data
-            }),
-            heures_normale: computed(() => {
-                let date = store.current_date()
-                let filtre = store.personnel_data().filter(x => x.dates.includes(date))
-                let data: any = []
-                filtre.forEach(element => {
-                    let mydates = element.dates
-                    let heureN = element.heuresN
-                    let ind = mydates.lastIndexOf(date)
-                    if (ind != -1) {
-                        data.push(heureN[ind])
-                    }
-                    else {
-                        data.push(0)
-                    }
-                });
-                return data
-            }),
-            heures_sup: computed(() => {
-                let date = store.current_date()
-                let filtre = store.personnel_data().filter(x => x.dates.includes(date))
-                let data: any = []
-                filtre.forEach(element => {
-                    let mydates = element.dates
-                    let heureS = element.heureSup
-                    let ind = mydates.lastIndexOf(date)
-                    if (ind != -1) {
-                        data.push(heureS[ind])
-                    }
-                    else {
-                        data.push(0)
-                    }
-                });
-                return data
-            }),
-            no_pointage: computed(() => {
-                let data: any = []
-                let date = store.current_date()
-                let mydata = store.personnel_data().filter(x => !x.dates.includes(date))
-                mydata.forEach(element => {
-                    data.push({
-                        names: element
-                    })
-                });
-                return data
-            }),
-            ischecked: computed(() => {
-                let data: any = []
-                let date = store.current_date()
-                let names = store.personnel_data().filter(x => !x.dates.includes(date))
-                names.forEach(element => {
-                    data.push(false
-                    )
-                });
-                return data
-            }),
-            presence: computed(() => {
-                let date = store.current_date()
-                let data: any = []
-                let filtre = store.personnel_data().filter(x => x.dates.includes(date))
-                filtre.forEach(element => {
-                    let mydates = element.dates
-                    let presence = element.presence
-                    let ind = mydates.lastIndexOf(date)
-                    if (ind != -1) {
-                        data.push(presence[ind])
-                    }
-                    else {
-                        data.push(true)
-                    }
-                });
-                return data
-            }),
-            is_present: computed(() => {
-                let date = store.current_date()
-                let data: any = []
-                let filtre = store.personnel_data().filter(x => x.dates.includes(date))
-                filtre.forEach(element => {
-                    let mydates = element.dates
-                    let presence = element.presence
-                    let ind = mydates.indexOf(date, 0)
-                    if (ind != -1) {
-                        if (presence[ind]) {
-                            data.push('présent')
-                        }
-                        else {
-                            data.push('absent')
-                        }
-                    }
-                    else {
-                        data.push('absent')
-                    }
-                });
-                return data
-            })
-
-        }
-    )
-    ),
-    withMethods((store,
-        monservice = inject(WenService),
-        task_service = inject(TaskService),
-        snackbar = inject(MatSnackBar)) =>
-    (
-        {
-            filtrebyId(id: string) {
-                patchState(store, { selectedId: id })
-            },
-            filtrebyDate(date: string) {
-                patchState(store, { current_date: date })
-            },
-            setClick(types: number[]) {
-                patchState(store, { click: types })
-            },
-
-            filterbyNomPrenom(mot: string) { patchState(store, { selectedNom_prenom: mot }) },
-
-            loadPersonnel: rxMethod<void>(pipe(switchMap(() => {
-                return task_service.getallPersonnel().pipe(
-                    tap(data => {
-                        patchState(store, { personnel_data: classePersonnel(data) })
-                    })
-                )
-            }
-            ))),
-            addPersonnel: rxMethod<any>(pipe(
-                switchMap((personnel) => {
-                    return task_service.addPersonnel(personnel).pipe(
-                        tap({
-                            next: () => {
-                                const updatedonnes = [...store.personnel_data(), personnel]
-                                patchState(store, { personnel_data: updatedonnes })
-                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
-                            },
-                            error: () => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            )),
-            removePersonnel: rxMethod<string>(pipe(
-                switchMap((id) => {
-                    return task_service.deletePersonnel(id).pipe(tap({
-                        next: () => {
-                            const updatedonnes = store.personnel_data().filter(x => x.id != id)
-                            patchState(store, { personnel_data: updatedonnes })
-                            Showsnackerbaralert('élément supprimé', 'pass', snackbar)
-                        },
-                        error: () => {
-                            patchState(store, { message: 'echoué' });
-                            Showsnackerbaralert('échoué', 'fail', snackbar)
-                        }
-                    }
-                    ))
-                }))),
-            removeDate: rxMethod<string>(pipe(
-                switchMap((date) => {
-                    let obs: Observable<any>[] = []
-                    for (let row of store.personnel_data()) {
-                        if (row.dates.includes(date))
-                            obs.push(task_service.removePerson(row, date))
-                    }
-                    return concat(obs)
-                }
-                ))),
-            updatePersonnel: rxMethod<tab_personnel>(pipe(
-                switchMap((personnel) => {
-                    return monservice.updatePersonnel(personnel).pipe(
-                        tap({
-                            next: () => {
-                                var data = store.personnel_data()
-                                var index = data.findIndex(x => x.id == personnel.id)
-                                data[index] = personnel
-                                patchState(store, { personnel_data: data })
-                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
-                            },
-                            error: () => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            )),
-            ModifPersonnel: rxMethod<any>(pipe(
-                switchMap((person) => {
-                    return task_service.ModifPerson(person).pipe(
-                        tap({
-                            next: () => {
-                                var data = store.personnel_data()
-                                var index = data.findIndex(x => x.id == person.id)
-                                data[index] = person
-                                patchState(store, { personnel_data: data })
-                                //Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
-                            },
-                            error: () => {
-                                //patchState(store, { message: 'echoué' });
-                                //Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            )),
-            ModifMultiPersonnel: rxMethod<boolean>(pipe(
-                switchMap((completed) => {
-                    let filtre = store.personnel_data().filter(x => x.dates.includes(store.current_date()))
-                    let obs: Observable<any>[] = []
-                    for (let row of filtre) {
-                        let data = row
-                        let index = data.dates.indexOf(store.current_date(), 0)
-                        let presence = data.presence
-                        presence[index] = completed
-                        data.presence = presence
-                        let heurenorm = data.heuresN
-                        let heuresup = data.heureSup
-                        if (!completed) {
-                            heurenorm[index] = 0
-                            heuresup[index] = 0
-                            data.heuresN = heurenorm
-                            data.heureSup = heuresup
-                        }
-                        else {
-                            heurenorm[index] = 8
-                            heuresup[index] = 0
-                            data.heuresN = heurenorm
-                            data.heureSup = heuresup
-                        }
-
-                        obs.push(task_service.ModifPerson(data))
-                    }
-
-                    return concat(obs)
-                })
-            )),
-            initialPersonnel: rxMethod<any>(pipe(
-                switchMap((donnees) => {
-                    let obs: Observable<any>[] = []
-                    let date = store.current_date()
-                    for (let row of donnees) {
-                        obs.push(task_service.updatePerson(row, date));
-                    }
-                    return concat(obs)
-                })
-            )),
-
-            reducePerson: rxMethod<any>(pipe(
-                switchMap((personnel) => {
-                    let date = store.current_date()
-                    return task_service.removePerson(personnel, date)
-                })
-            )),
-
-            initialAll: rxMethod<any>(pipe(
-                switchMap((gasoil) => {
-                    return monservice.updatePersonInit(gasoil)
-                })
-            )),
-        }
-    ))
-)
-export const EnginsStore = signalStore(
-    { providedIn: 'root' },
-    withState(initialEnginState),
-    withComputed((
-        store,
-        classe_store = inject(ClasseEnginsStore),
-        monservice = inject(PersonnelStore),
-
-    ) => (
-        {
-            taille: computed(() => store.engins().length),
-            donnees_engins: computed(() => {
-                var mot = store.selectedDesignation()
-                if (mot == '') { return classeEngins(store.engins()) }
-                else {
-                    return classeEngins(store.engins().filter(x => (x.designation).toLowerCase().includes(mot.toLowerCase())))
-                }
-
-            }),
-            donnees_utilisateur: computed(() => {
-                var mot = store.selectedDesignation()
-                let donnee = []
-                if (mot == '') { donnee = classeEngins(store.engins()) }
-                else {
-                    donnee = classeEngins(store.engins().filter(x => (x.designation).toLowerCase().includes(mot.toLowerCase())))
-                }
-
-                let data = monservice.donnees_personnel()
-                let onedata = donnee.map(x => x.utilisateur_id)
-                var mydata: string[] = []
-                onedata.forEach(element => {
-                    let trouv = data.find(x => x.id == element)
-                    if (trouv) {
-                        mydata.push(trouv.nom + ' ' + trouv.prenom)
-                    }
-                    else {
-                        mydata.push('')
-                    }
-                });
-                return mydata
-            }),
-            donnees_classes: computed(() => {
-                var mot = store.selectedDesignation()
-                let donnee = []
-                if (mot == '') { donnee = classeEngins(store.engins()) }
-                else {
-                    donnee = classeEngins(store.engins().filter(x => (x.designation).toLowerCase().includes(mot.toLowerCase())))
-                }
-                let data = classe_store.classes_engins()
-                let onedata = donnee.map(x => x.classe_id)
-                var mydata: string[] = []
-                onedata.forEach(element => {
-                    let trouv = data.find(x => x.id == element)
-                    if (trouv) {
-                        mydata.push(trouv.designation)
-                    }
-                    else {
-                        mydata.push('')
-                    }
-                });
-                return mydata
-
-            }),
-            donnees_enginsById: computed(() => {
-                var ind = store.selectedId
-                let data: Engins | undefined = store.engins().find(x => x.id == ind())
-                return data
-            }),
-            donnees_enginsByIds: computed(() => {
-                var ind = store.selectedIds
-                if (ind()[0] == '') {
-                    return store.engins()
-                }
-                else {
-                    let data: Engins[] = store.engins().filter(x => ind().includes(x.id))
-                    return data
-                }
-
-            }),
-
-            donnees_enginsByClasse: computed(() => {
-                var ind = store.selectedClasseId
-                return store.engins().filter(x => x.classe_id == ind())
-            })
-        }
-    )
-    ),
-    withMethods((store,
-        monservice = inject(WenService),
-        task_service = inject(TaskService),
-        compte = inject(CompteStore),
-        snackbar = inject(MatSnackBar)) =>
-    (
-        {
-
-            filtrebyId(id: string) {
-                patchState(store, { selectedId: id })
-            },
-            filtrebyIds(ids: string[]) {
-                patchState(store, { selectedIds: ids })
-            },
-            filtrebyClasseId(id: string | undefined) {
-                patchState(store, { selectedClasseId: id })
-            },
-            filterbyDesignation(mot: string) { patchState(store, { selectedDesignation: mot }) },
-            load_compte_engins() {
-                patchState(store, { engins: compte.engins() })
-            },
-            loadengins: rxMethod<void>(pipe(switchMap(() => {
-                return task_service.getallEngins().pipe(tap(data => {
-                    patchState(store, { engins: data })
-                }
-                ))
-            }
-            )))
-            ,
-            addengins: rxMethod<Engins>(pipe(
-                switchMap((engin) => {
-                    return task_service.addEngins(engin).pipe(
-                        tap({
-                            next: (resp) => {
-                                const updatedonnes = [...store.engins(), engin]
-                                patchState(store, { engins: updatedonnes, message: 'ajouté avec succes' })
-                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
-                            },
-                            error: (err) => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            )),
-            removeengin: rxMethod<string>(pipe(
-                switchMap((id) => {
-                    return task_service.deleteEngins(id).pipe(tap({
-                        next: () => {
-                            const updatedonnes = store.engins().filter(x => x.id != id)
-                            patchState(store, { engins: updatedonnes })
-                            Showsnackerbaralert('élément supprimé', 'pass', snackbar)
-                        }, error: (err) => {
-                            patchState(store, { message: 'echoué' });
-                            Showsnackerbaralert('échoué', 'fail', snackbar)
-                        }
-                    }
-
-                    ))
-                }))),
-            updateengins: rxMethod<Engins>(pipe(
-                switchMap((engin) => {
-                    return task_service.updateEngins(engin).pipe(
-                        tap({
-                            next: () => {
-                                var data = store.engins()
-                                var index = data.findIndex(x => x.id == engin.id)
-                                data[index] = engin
-                                patchState(store, { engins: data })
-                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
-                            }
-                            ,
-                            error: (err) => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            )),
-
-        }
-    ))
-)
-export const GasoilStore = signalStore(
-    { providedIn: 'root' },
-    withState(initialGasoilState),
-    withComputed((store, engins_store = inject(EnginsStore)) => (
-        {
-            lastNum: computed(() => {
-                return Math.max(...store.conso_data().map(x => Number(x.numero)))
-            }),
-            taille: computed(() => store.conso_data().length),
-            quantite_go: computed(() => {
-                let data = store.conso_data().map(x => x.quantite_go);
-                return somme(data)
-            }),
-            conso_jour: computed(() => {
-                let madate = store.selectedDate();
-                if (madate[0] == '') {
-                    return somme(store.conso_data().filter(x => {
-                        return convertDate(x.date).setHours(0, 0, 0, 0) == convertDate(store.date_jour()).setHours(0, 0, 0, 0)
-                    }).map(x => x.quantite_go));
-                }
-                else {
-                    return somme(store.conso_data().filter(x => {
-                        return convertDate(x.date).setHours(0, 0, 0, 0) == convertDate(madate[0]).setHours(0, 0, 0, 0)
-                    }).map(x => x.quantite_go));
-                }
-            }
-            ),
-            date_du_jour: computed(() => {
-                return store.date_jour()
-            }),
-            conso_intervalle: computed(() => {
-                let madate = store.selectedDate();
-                return somme(store.conso_data().filter(x => {
-                    return convertDate(x.date).setHours(0, 0, 0, 0) >= convertDate(madate[0]).setHours(0, 0, 0, 0) &&
-                        convertDate(x.date).setHours(0, 0, 0, 0) <= convertDate(madate[1]).setHours(0, 0, 0, 0)
-                }).map(x => x.quantite_go)
-                )
-            }),
-            datasource: computed(() => {
-
-                let enginId = store.selectedEngin();
-                let classId = store.selectedClass();
-                let engin_data = engins_store.engins();
-                let myengins = classId != '' ? engin_data
-                    .filter(x => x.classe_id === classId) : engin_data;
-                let enginsClass = myengins.map(x => x.id);
-                let myconso1 = store.conso_data().filter(x => enginsClass.includes(x.engin_id));
-                let myconso2 = enginId != '' ? myconso1.
-                    filter(x => x.engin_id === enginId) : myconso1;
-                var madate = store.selectedDate();
-                let donnees_gasoil: Gasoil[];
-                if (madate[0] === '') {
-                    donnees_gasoil = myconso2;
-                }
-                else {
-                    if (madate.length === 1) {
-                        donnees_gasoil = classeTabBynumero(
-                            myconso2.filter(x => x.date === madate[0]))
-                    }
-                    else {
-                        let filtre = myconso2.
-                            filter(x => {
-                                return convertDate(x.date).setHours(0, 0, 0, 0) >= convertDate(madate[0]).setHours(0, 0, 0, 0) &&
-                                    convertDate(x.date).setHours(0, 0, 0, 0) <= convertDate(madate[1]).setHours(0, 0, 0, 0)
-                            })
-                        donnees_gasoil = filtre;
-                    }
-                }
-                let donnees: any = [];
-                donnees_gasoil.forEach(element => {
-                    let engin = engin_data.find(x => x.id == element.engin_id);
-                    donnees.push(
-                        {
-                            'id': element.id,
-                            'situation_cp': 'ok',
-                            'designation': engin?.designation,
-                            'engin_id': element.engin_id,
-                            'classe_id': engin?.classe_id,
-                            'code_parc': engin?.code_parc,
-                            'compteur': element.compteur,
-                            'quantite_go': element.quantite_go,
-                            'date': element.date,
-                            'numero': element.numero,
-                            'diff_work': element.diff_work
-                        }
-                    )
-                })
-                return classeTabDate(donnees).sort((a: any, b: any) =>
-                    b.numero - a.numero
-                );
-            }),
-            historique_consogo: computed(() => {
-                let unique_dates = classement(store.conso_data().map(x => x.date).filter((value, index, self) => self.indexOf(value) === index))
-
-                let conso: any = [];
-                for (let i = 0; i <= 9; i++) {
-                    let row = unique_dates[i];
-                    let filtres = store.conso_data().filter(x => x.date === row);
-                    if (row) {
-                        let som = somme(filtres.map(x => x.quantite_go));
-                        conso = [...conso, {
-                            x: convertDate(row),
-                            y: som
-                        }]
-                    }
-                }
-                //console.log(conso)
-                return [conso, unique_dates]
-            }
-            )
-        })),
-    withMethods(
-        (store,
-            monservice = inject(WenService),
-            task_service = inject(TaskService),
-            snackbar = inject(MatSnackBar),
-            comptes = inject(CompteStore)) => ({
-                filtrebyDate(date: string[]) {
-                    patchState(store, { selectedDate: date })
-                }
-                ,
-                setCurrentDate(date: string) {
-                    patchState(store, { date_jour: date })
-                },
-                filterByEnginId(enginId: string) {
-                    patchState(store, { selectedEngin: enginId })
-                },
-                filterByClassId(classId: string) {
-                    patchState(store, { selectedClass: classId })
-
-                }
-                ,
-                load_compte_conso() {
-                    patchState(store, { conso_data: comptes.conso_go() })
-                },
-                loadconso: rxMethod<void>(pipe(
-                    switchMap(
-                        () => {
-                            return task_service.getallConsogo().pipe(
-                                tap(
-                                    data => {
-                                        patchState(store, { conso_data: data })
-                                    }
-                                )
-                            )
-                        }
-                    )
-                )
-                )
-                ,
-                addconso: rxMethod<any>(pipe(
-                    switchMap((gasoil) => {
-                        return task_service.addConsogo(gasoil).pipe(
-                            tap({
-                                next: () => {
-                                    Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
-                                },
-                                error: () => {
-                                    patchState(store, { message: 'echoué' });
-                                    Showsnackerbaralert('échoué', 'fail', snackbar)
-                                }
-                            }
-                            )
-                        )
-                    })
-                )),
-                removeconso: rxMethod<string>(pipe(
-                    switchMap((id) => {
-                        return task_service.deleteConsogo(id).pipe(tap(
-                            {
-                                next: () => {
-                                    const updatedonnes = store.conso_data().filter(x => x.id != id)
-                                    patchState(store, { conso_data: updatedonnes })
-                                    Showsnackerbaralert('élément supprimé', 'pass', snackbar)
-                                },
-                                error: () => {
-                                    patchState(store, { message: 'echoué' });
-                                    Showsnackerbaralert('échoué', 'fail', snackbar)
-                                }
-                            }
-
-                        ))
-                    }))),
-                updateconso: rxMethod<any>(pipe(
-                    switchMap((gasoil) => {
-                        return task_service.updateConsogo(gasoil).pipe(
-                            tap({
-                                next: () => {
-                                    var data = store.conso_data()
-                                    var index = data.findIndex(x => x.id == gasoil.id)
-                                    data[index] = gasoil
-                                    patchState(store, { conso_data: data })
-                                    Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
-                                },
-                                error: () => {
-                                    patchState(store, { message: 'echoué' });
-                                    Showsnackerbaralert('échoué', 'fail', snackbar)
-                                }
-                            }
-                            )
-                        )
-                    })
-                ))
-            }
-        ))
-)
-export const ApproGasoilStore = signalStore(
-    { providedIn: 'root' },
-    withState(initialApprogoState),
-    withComputed((store) => (
-        {
-            taille: computed(() => store.approgo_data().length),
-            quantite_go: computed(() => {
-                var data = store.approgo_data().map(x => x.quantite)
-                return somme(data)
-            }),
-            datasource: computed(() => { return classeTabDate(store.approgo_data()) })
-        }
-    )
-    ),
-    withMethods((store,
-        monservice = inject(WenService),
-        task_service = inject(TaskService),
-        compte = inject(CompteStore),
-        snackbar = inject(MatSnackBar)) =>
-    (
-        {
-
-            filtrebyDate(date: string) {
-                var data = store.approgo_data().filter(x => x.date == date)
-                patchState(store, { approgo_data: classeTabDate(data) })
-            }
-            ,
-            load_compte_appro() {
-                patchState(store, { approgo_data: compte.appro_go() })
-            },
-
-            loadappro: rxMethod<void>(pipe(switchMap(() => {
-                return task_service.getAllApproGo().pipe(
-                    tap(data => {
-                        patchState(store, { approgo_data: classeTabDate(data) })
-                    })
-                )
-            }
-            ))),
-            addappro: rxMethod<appro_gasoil>(pipe(
-                switchMap((appro) => {
-                    return task_service.addApproGo(appro).pipe(
-                        tap({
-                            next: () => {
-                                const updatedonnes = [...store.approgo_data(), appro]
-                                patchState(store, { approgo_data: updatedonnes })
-                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
-                            }, error: () => {
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            )),
-            removeappro: rxMethod<string>(pipe(
-                switchMap((id) => {
-                    return task_service.deleteApproGo(id).pipe(tap({
-                        next: () => {
-                            const updatedonnes = store.approgo_data().filter(x => x.id != id)
-                            patchState(store, { approgo_data: updatedonnes })
-                            Showsnackerbaralert('élément supprimé', 'pass', snackbar)
-                        }, error: () => {
-                            Showsnackerbaralert('échoué', 'fail', snackbar)
-                        }
-                    }
-
-                    ))
-                }))),
-            updateappro: rxMethod<appro_gasoil>(pipe(
-                switchMap((appro) => {
-                    return task_service.updateApproGo(appro).pipe(
-                        tap({
-                            next: () => {
-                                var data = store.approgo_data()
-                                var index = data.findIndex(x => x.id == appro.id)
-                                data[index] = appro
-                                patchState(store, { approgo_data: data })
-                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
-                            }, error: () => {
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-                        )
-                    )
-                })
-            )),
-
-        }
-    ))
-)
-export const UserStore = signalStore(
-    { providedIn: 'root' },
-    withState(initialUserState),
-    withComputed((store) => (
-        {
-            taille: computed(() => store.users_data().length),
-            users: computed(() => {
-                return store.users_data()
-            }),
-            getUrl: computed(() => store.url())
-            ,
-            getNivo: computed(() => store.nivo_requis())
-        }
-    )
-    ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar), _auth = inject(Auth)) =>
-    (
-        {
-            setUrl(url: string) {
-                patchState(store, { url: url })
-            },
-            setNivo(nivo: number) {
-                patchState(store, { nivo_requis: nivo })
-            },
-
-            loadUsers: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallUsers().pipe(
-                    tap((data) => {
-                        patchState(store, { users_data: data })
-                    })
-                )
-            }
-            ))),
-            loadUser: rxMethod<void>(pipe(switchMap(() => {
-                let myuser$ = user(_auth);
-                return myuser$.pipe(
-                    tap((data: any) => {
-                        let filtre = store.users_data().find(x => x.uid == data.uid);
-                        patchState(store, { user: data })
-                    })
-                )
-            }
-            ))),
-
-            removeUser: rxMethod<string>(pipe(
-                switchMap((id) => {
-                    return monservice.deleteUser(id).pipe(tap(
-                        {
-                            next: () => {
-                                const updatedonnes = store.users_data().filter(x => x.uid != id)
-                                patchState(store, { users_data: updatedonnes })
-                                Showsnackerbaralert('élément supprimé', 'pass', snackbar)
-                            },
-                            error: () => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
-                        }
-
-                    ))
-                }))),
-
-        }
-    ))
-)
 export const TravauxStore = signalStore(
     { providedIn: 'root' },
     withState(initialTravauxStore),
@@ -1985,7 +1874,6 @@ export const TravauxStore = signalStore(
         }
     ))
 )
-
 export const StatutStore = signalStore(
     { providedIn: 'root' },
     withState(initialStatutState),
@@ -2018,7 +1906,7 @@ export const StatutStore = signalStore(
     ))
 
 )
-
+///**************** */
 export const DevisStore = signalStore(
     { providedIn: 'root' },
     withState(initialDevisState),
@@ -2053,10 +1941,16 @@ export const DevisStore = signalStore(
 
         }
     )),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store,
+        monservice = inject(WenService),
+        _task_service = inject(TaskService),
+        snackbar = inject(MatSnackBar)) =>
     (
 
         {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
             filtrebyProjet(projet_id: string) {
                 patchState(store, { selectedProjet_id: projet_id })
             },
@@ -2064,7 +1958,7 @@ export const DevisStore = signalStore(
                 patchState(store, { selectedEntreprise_id: entreprise_id })
             },
             loadDevis: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallDevis().pipe(
+                return _task_service.getallModels(store.path_string()).pipe(
                     tap({
                         next: (statut) => {
                             patchState(store, { devis_data: statut })
@@ -2077,11 +1971,9 @@ export const DevisStore = signalStore(
             ,
             addDevis: rxMethod<Devis>(pipe(
                 switchMap((devis) => {
-                    return monservice.addDevis(devis).pipe(
+                    return _task_service.addModel(store.path_string(), devis).pipe(
                         tap({
                             next: () => {
-                                const updatedonnes = [...store.devis_data(), devis]
-                                patchState(store, { devis_data: updatedonnes })
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2093,10 +1985,8 @@ export const DevisStore = signalStore(
             )),
             removeDevis: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteDevis(id).pipe(tap({
+                    return _task_service.deleteModel(store.path_string(), id).pipe(tap({
                         next: () => {
-                            const updatedonnes = store.devis_data().filter(x => x.id != id)
-                            patchState(store, { devis_data: updatedonnes })
                             Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                         }, error: () => {
                             Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2107,13 +1997,9 @@ export const DevisStore = signalStore(
                 }))),
             updateDevis: rxMethod<Devis>(pipe(
                 switchMap((devis) => {
-                    return monservice.updateDevis(devis).pipe(
+                    return _task_service.updateModel(store.path_string(), devis).pipe(
                         tap({
                             next: () => {
-                                var data = store.devis_data()
-                                var index = data.findIndex(x => x.id == devis.id)
-                                data[index] = devis
-                                patchState(store, { devis_data: data })
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2211,15 +2097,22 @@ export const LigneDevisStore = signalStore(
             })
         }
     )),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((
+        store,
+        monservice = inject(WenService),
+        _task_service = inject(TaskService),
+        snackbar = inject(MatSnackBar)
+    ) =>
     (
         {
-
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
             filtrebyDevis(devis_id: string) {
                 patchState(store, { selectedDevis_id: devis_id })
             },
             loadLigneDevis: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallLigneDevis().pipe(
+                return _task_service.getallModels(store.path_string()).pipe(
                     tap({
                         next: (ldevis) => {
                             let ids = ldevis.filter(x => x.parent_code != "").map(x => x.id)
@@ -2238,12 +2131,9 @@ export const LigneDevisStore = signalStore(
             ,
             addLigneDevis: rxMethod<any>(pipe(
                 switchMap((ldevis) => {
-                    return monservice.addLigneDevis(ldevis).pipe(
+                    return _task_service.addModel(store.path_string(), ldevis).pipe(
                         tap({
                             next: () => {
-                                //const updatedonnes = [...store.lignedevis_data(), ldevis]
-                                // patchState(store, { lignedevis_data: updatedonnes })
-
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2255,7 +2145,7 @@ export const LigneDevisStore = signalStore(
             )),
             removeLigneDevis: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteLigneDevis(id).pipe(tap({
+                    return _task_service.deleteModel(store.path_string(), id).pipe(tap({
                         next: () => {
                             const updatedonnes = store.lignedevis_data().filter(x => x.id != id)
                             patchState(store, { lignedevis_data: updatedonnes })
@@ -2271,19 +2161,15 @@ export const LigneDevisStore = signalStore(
                 switchMap((ids) => {
                     let obs: Observable<any>[] = []
                     ids.forEach(element => {
-                        obs.push(monservice.deleteLigneDevis(element))
+                        obs.push(_task_service.deleteModel(store.path_string(), element))
                     });
-                    return forkJoin(obs)
+                    return concat(obs)
                 }))),
             updateLigneDevis: rxMethod<any>(pipe(
                 switchMap((ldevis) => {
-                    return monservice.updateLigneDevis(ldevis).pipe(
+                    return _task_service.updateModel(store.path_string(), ldevis).pipe(
                         tap({
                             next: () => {
-                                var data = store.lignedevis_data()
-                                var index = data.findIndex(x => x.id == ldevis.id)
-                                data[index] = ldevis
-                                patchState(store, { lignedevis_data: data })
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2440,9 +2326,14 @@ export const ConstatStore = signalStore(
             )
         }
     )),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store,
+        _task_service = inject(TaskService),
+        snackbar = inject(MatSnackBar)) =>
     (
         {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
             filtrebyPosteId(poste_id: string) {
                 patchState(store, { selected_poste_id: poste_id })
             },
@@ -2454,7 +2345,7 @@ export const ConstatStore = signalStore(
                 patchState(store, { selected_dp: numero })
             },
             loadConstats: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallConstats().pipe(
+                return _task_service.getallModels(store.path_string()).pipe(
                     tap({
                         next: (constats) => {
                             patchState(store, { constat_data: constats })
@@ -2466,11 +2357,9 @@ export const ConstatStore = signalStore(
             }))),
             addConstat: rxMethod<any>(pipe(
                 switchMap((constat) => {
-                    return monservice.addConstat(constat).pipe(
+                    return _task_service.addModel(store.path_string(), constat).pipe(
                         tap({
                             next: () => {
-                                //const updatedonnes = [...store.lignedevis_data(), ldevis]
-                                // patchState(store, { lignedevis_data: updatedonnes })
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2482,10 +2371,8 @@ export const ConstatStore = signalStore(
             )),
             removeConstat: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteConstat(id).pipe(tap({
+                    return _task_service.deleteModel(store.path_string(), id).pipe(tap({
                         next: () => {
-                            const updatedonnes = store.constat_data().filter(x => x.id != id)
-                            patchState(store, { constat_data: updatedonnes })
                             Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                         }, error: () => {
                             Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2496,13 +2383,9 @@ export const ConstatStore = signalStore(
                 }))),
             updateConstat: rxMethod<any>(pipe(
                 switchMap((constat) => {
-                    return monservice.updateConstat(constat).pipe(
+                    return _task_service.updateModel(store.path_string(), constat).pipe(
                         tap({
                             next: () => {
-                                var data = store.constat_data()
-                                var index = data.findIndex(x => x.id == constat.id)
-                                data[index] = constat
-                                patchState(store, { constat_data: data })
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2516,9 +2399,9 @@ export const ConstatStore = signalStore(
                 switchMap((donnees) => {
                     let obs: Observable<any>[] = []
                     for (let row of donnees) {
-                        obs.push(monservice.deleteConstat(row.id))
+                        obs.push(_task_service.deleteModel(store.path_string(), row.id))
                     }
-                    return forkJoin(obs).pipe(tap({
+                    return concat(obs).pipe(tap({
                         next: () => {
                             const updatedonnes = store.constat_data().filter(x => !donnees.map(x => x.id).includes(x.id))
                             patchState(store, { constat_data: updatedonnes })
@@ -2655,9 +2538,15 @@ export const AttachementStore = signalStore(
             )
         }
     )),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store,
+        monservice = inject(WenService),
+        _task_service = inject(TaskService),
+        snackbar = inject(MatSnackBar)) =>
     (
         {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
             filtrebyDevisId(devis_id: string) {
                 patchState(store, { selected_devis_id: devis_id })
             },
@@ -2665,7 +2554,7 @@ export const AttachementStore = signalStore(
                 patchState(store, { selected_num: numero })
             },
             loadAttachements: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallAttachements().pipe(
+                return _task_service.getallModels(store.path_string()).pipe(
                     tap({
                         next: (attachements) => {
                             patchState(store, { attachement_data: attachements })
@@ -2678,14 +2567,12 @@ export const AttachementStore = signalStore(
             ,
             AddAttachement: rxMethod<any>(pipe(
                 switchMap((attachement) => {
-                    return monservice.addAttachement(attachement).pipe(
+                    return _task_service.addModel(store.path_string(), attachement).pipe(
                         tap({
                             next: () => {
-                                //const updatedonnes = [...store.lignedevis_data(), ldevis]
-                                // patchState(store, { lignedevis_data: updatedonnes })
-                                //Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
+                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => {
-                                // Showsnackerbaralert('échoué', 'fail', snackbar)
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
                             }
                         }
                         )
@@ -2694,10 +2581,8 @@ export const AttachementStore = signalStore(
             )),
             RemoveAttachement: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteAttachement(id).pipe(tap({
+                    return _task_service.deleteModel(store.path_string(), id).pipe(tap({
                         next: () => {
-                            const updatedonnes = store.attachement_data().filter(x => x.id != id)
-                            patchState(store, { attachement_data: updatedonnes })
                             Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                         }, error: () => {
                             Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2708,7 +2593,7 @@ export const AttachementStore = signalStore(
                 }))),
             updateAttachement: rxMethod<any>(pipe(
                 switchMap((attachement) => {
-                    return monservice.updateAttachement(attachement).pipe(
+                    return _task_service.updateModel(store.path_string(), attachement).pipe(
                         tap({
                             next: () => {
                                 var data = store.attachement_data()
@@ -2727,9 +2612,9 @@ export const AttachementStore = signalStore(
                 switchMap((donnees) => {
                     let obs: Observable<any>[] = []
                     for (let row of donnees) {
-                        obs.push(monservice.deleteAttachement(row.id))
+                        obs.push(_task_service.deleteModel(store.path_string(), row.id))
                     }
-                    return forkJoin(obs)
+                    return concat(obs)
                 })
             ))
         }
@@ -2760,14 +2645,19 @@ export const DecompteStore = signalStore(
             })
         }
     )),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store,
+        _task_service = inject(TaskService),
+        snackbar = inject(MatSnackBar)) =>
     (
         {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
             filtrebyNumero(numero: number) {
                 patchState(store, { selected_num: numero })
             },
             loadAllDecomptes: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getAllDecompte().pipe(
+                return _task_service.getallModels(store.path_string()).pipe(
                     tap({
                         next: (dp) => {
                             patchState(store, { decompte_data: dp })
@@ -2780,11 +2670,9 @@ export const DecompteStore = signalStore(
             ,
             AddDecompte: rxMethod<any>(pipe(
                 switchMap((dp) => {
-                    return monservice.addDecomptes(dp).pipe(
+                    return _task_service.addModel(store.path_string(), dp).pipe(
                         tap({
                             next: () => {
-                                //const updatedonnes = [...store.lignedevis_data(), ldevis]
-                                // patchState(store, { lignedevis_data: updatedonnes })
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2796,10 +2684,8 @@ export const DecompteStore = signalStore(
             )),
             RemoveDecompte: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteDecompte(id).pipe(tap({
+                    return _task_service.deleteModel(store.path_string(), id).pipe(tap({
                         next: () => {
-                            const updatedonnes = store.decompte_data().filter(x => x.id != id)
-                            patchState(store, { decompte_data: updatedonnes })
                             Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                         }, error: () => {
                             Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2810,7 +2696,7 @@ export const DecompteStore = signalStore(
                 }))),
             updateDecompte: rxMethod<any>(pipe(
                 switchMap((attachement) => {
-                    return monservice.updateDecompte(attachement).pipe(
+                    return _task_service.updateModel(store.path_string(), attachement).pipe(
                         tap({
                             next: () => {
                                 var data = store.decompte_data()
@@ -2830,7 +2716,7 @@ export const DecompteStore = signalStore(
                 switchMap((donnees) => {
                     let obs: Observable<any>[] = []
                     for (let row of donnees) {
-                        obs.push(monservice.deleteDecompte(row.id))
+                        obs.push(_task_service.deleteModel(store.path_string(), row.id))
                     }
                     return forkJoin(obs)
                 })
@@ -2854,11 +2740,17 @@ export const UnitesStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((
+        store,
+        _task_service = inject(TaskService),
+        snackbar = inject(MatSnackBar)) =>
     (
         {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
             loadUnites: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getAllUnites().pipe(
+                return _task_service.getallModels(store.path_string()).pipe(
                     tap((data) => {
                         patchState(store, { unites_data: data })
                     })
@@ -2867,11 +2759,9 @@ export const UnitesStore = signalStore(
             ))),
             addUnite: rxMethod<any>(pipe(
                 switchMap((unite) => {
-                    return monservice.addUnites(unite).pipe(
+                    return _task_service.addModel(store.path_string(), unite).pipe(
                         tap({
                             next: () => {
-                                const updatedonnes = [...store.unites_data(), unite]
-                                patchState(store, { unites_data: updatedonnes })
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => {
                                 patchState(store, { message: "échoué" });
@@ -2884,11 +2774,9 @@ export const UnitesStore = signalStore(
             )),
             removeUnite: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteUnite(id).pipe(tap(
+                    return _task_service.deleteModel(store.path_string(), id).pipe(tap(
                         {
                             next: () => {
-                                const updatedonnes = store.unites_data().filter(x => x.id != id)
-                                patchState(store, { unites_data: updatedonnes })
                                 Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                             },
                             error: () => {
@@ -2901,13 +2789,9 @@ export const UnitesStore = signalStore(
                 }))),
             updateUnite: rxMethod<any>(pipe(
                 switchMap((unite) => {
-                    return monservice.updateUnite(unite).pipe(
+                    return _task_service.updateModel(store.path_string(), unite).pipe(
                         tap({
                             next: () => {
-                                var data = store.unites_data()
-                                var index = data.findIndex(x => x.id == unite.id)
-                                data[index] = unite
-                                patchState(store, { unites_data: data })
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2935,11 +2819,14 @@ export const TachesStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store, _task_service = inject(TaskService), snackbar = inject(MatSnackBar)) =>
     (
         {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
             loadTaches: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getAllTaches().pipe(
+                return _task_service.getallModels(store.path_string()).pipe(
                     tap((data) => {
                         patchState(store, { taches_data: data })
                     })
@@ -2948,11 +2835,9 @@ export const TachesStore = signalStore(
             ))),
             addTache: rxMethod<any>(pipe(
                 switchMap((tache) => {
-                    return monservice.addTache(tache).pipe(
+                    return _task_service.addModel(store.path_string(), tache).pipe(
                         tap({
                             next: () => {
-                                const updatedonnes = [...store.taches_data(), tache]
-                                patchState(store, { taches_data: updatedonnes })
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => {
                                 patchState(store, { message: "échoué" });
@@ -2965,11 +2850,9 @@ export const TachesStore = signalStore(
             )),
             removeTache: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteTache(id).pipe(tap(
+                    return _task_service.deleteModel(store.path_string(), id).pipe(tap(
                         {
                             next: () => {
-                                const updatedonnes = store.taches_data().filter(x => x.id != id)
-                                patchState(store, { taches_data: updatedonnes })
                                 Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                             },
                             error: () => {
@@ -2982,13 +2865,9 @@ export const TachesStore = signalStore(
                 }))),
             updateTache: rxMethod<any>(pipe(
                 switchMap((tache) => {
-                    return monservice.updateTache(tache).pipe(
+                    return _task_service.updateModel(store.path_string(), tache).pipe(
                         tap({
                             next: () => {
-                                var data = store.taches_data()
-                                var index = data.findIndex(x => x.id == tache.id)
-                                data[index] = tache
-                                patchState(store, { taches_data: data })
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -3083,7 +2962,7 @@ export const TachesEnginsStore = signalStore(
         }
     ))
 )
-
+/*********************** */
 export const TacheProjetStore = signalStore(
     { providedIn: 'root' },
     withState(initialTacheProjetState),
@@ -3632,6 +3511,137 @@ export const CompteStore = signalStore(
                 )
 
             )
+        }
+    ))
+)
+export const DatesStore = signalStore(
+    { providedIn: 'root' },
+    withState(initialDatesState),
+    withComputed((store) => (
+        {
+            taille: computed(() => {
+                return store.dates().length
+            }),
+            donnees_dates: computed(() => {
+                return store.dates()
+            })
+
+        }
+    )),
+    withMethods((store,
+        monservice = inject(WenService),
+        snackbar = inject(MatSnackBar)
+    ) =>
+    (
+        {
+            loaddates(data: tab_personnel[]) {
+                let dates = data.map(x => x.dates);
+                let result: any = []
+                dates.forEach(element => {
+                    result = [...result, ...element]
+                });
+                let unique_dates = result.filter((value: any, index: any, self: any) => self.indexOf(value) === index)
+                patchState(store, { dates: unique_dates.map((x: any) => { return { dates: x } }) })
+            }
+            ,
+            adddates: rxMethod<datesPointages>(pipe(
+                switchMap((dates) => {
+                    return monservice.adddates(dates).pipe(
+                        tap({
+                            next: () => {
+                                const updatedonnes = [...store.dates(), dates]
+                                patchState(store, { dates: updatedonnes })
+                            }, error: () => { Showsnackerbaralert('échoué', 'fail', snackbar) }
+                        }
+                        )
+                    )
+                })
+            ))
+        }
+    ))
+)
+export const SstraitantStore = signalStore(
+    { providedIn: 'root' },
+    withState(initialSstraitantState),
+    withComputed((store) => (
+        {
+            taille: computed(() => store.sstraitant_data().length),
+            donnees_sstraitant: computed(() => {
+                return classeSstraitant(store.sstraitant_data())
+            }),
+            donnees_sstraitantById: computed(() => {
+                var ind = store.selectedId
+                let data: sous_traitant | undefined = store.sstraitant_data().find(x => x.id == ind())
+                return data
+            })
+        }
+    )
+    ),
+    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    (
+        {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
+            filtrebyId(id: string) {
+                patchState(store, { selectedId: id })
+            },
+            loadSstraitants: rxMethod<void>(pipe(switchMap(() => {
+                return monservice.getallSsouTraitants().pipe(
+                    tap((data) => {
+                        patchState(store, { sstraitant_data: classeSstraitant(data) })
+                    })
+                )
+            }
+            ))),
+            addSstraitant: rxMethod<sous_traitant>(pipe(
+                switchMap((sstraitant) => {
+                    return monservice.addSoustraitant(sstraitant).pipe(
+                        tap({
+                            next: () => {
+                                const updatedonnes = [...store.sstraitant_data(), sstraitant]
+                                patchState(store, { sstraitant_data: updatedonnes })
+                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
+                            }, error: () => { Showsnackerbaralert('échoué', 'fail', snackbar) }
+                        }
+                        )
+                    )
+                })
+            )),
+            removeSstraitant: rxMethod<string>(pipe(
+                switchMap((id) => {
+                    return monservice.deleteSoutraitant(id).pipe(tap({
+                        next: () => {
+                            const updatedonnes = store.sstraitant_data().filter(x => x.id != id)
+                            patchState(store, { sstraitant_data: updatedonnes })
+                            Showsnackerbaralert('élément supprimé', 'pass', snackbar)
+                        }, error: () => {
+                            Showsnackerbaralert('échoué', 'fail', snackbar)
+                        }
+                    }
+
+                    ))
+                }))),
+            updateSstraitant: rxMethod<sous_traitant>(pipe(
+                switchMap((sstraitant) => {
+                    return monservice.updateProjet(sstraitant).pipe(
+                        tap({
+                            next: () => {
+                                var data = store.sstraitant_data()
+                                var index = data.findIndex(x => x.id == sstraitant.id)
+                                data[index] = sstraitant
+                                patchState(store, { sstraitant_data: data })
+                                Showsnackerbaralert('modifié avec succès', 'pass', snackbar)
+                            },
+                            error: () => {
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
+
         }
     ))
 )

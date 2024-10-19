@@ -3,7 +3,7 @@ import { Observable, from, map, tap } from 'rxjs';
 import { Users } from './models/modeles';
 import { Router } from '@angular/router';
 import { Auth, signInWithEmailAndPassword, signOut, user } from '@angular/fire/auth';
-import { collection, collectionData, Firestore } from '@angular/fire/firestore';
+import { collection, collectionData, deleteDoc, Firestore, setDoc } from '@angular/fire/firestore';
 import { WenService } from './wen.service';
 import {  browserSessionPersistence, getAuth, setPersistence, signInWithCustomToken } from 'firebase/auth';
 import { Database } from '@angular/fire/database';
@@ -55,7 +55,7 @@ export class AuthenService {
         entreprise_id: entreprise_id,
         projet_id: projet_id
       }
-      this._service.addUser(data).subscribe()
+      this.addUser(data).subscribe()
     }))
   };
   loginFirebase(email: string, password: string): Observable<any> {
@@ -161,11 +161,7 @@ export class AuthenService {
 
   }
 
-  getallUsersByUid(uid: string): Observable<any> {
-    const docRef = doc(this.db, "myusers", uid);
-    const docSnap = getDoc(docRef);
-    return from(docSnap)
-  }
+
   getallUsersByuidJson(uid: string): Observable<Users|undefined> {
     return this._http.get<Users[]>('http://localhost:3000/users').pipe(map(resp=>resp.find(x=>x.uid==uid)))
   }
@@ -175,5 +171,24 @@ export class AuthenService {
     return api
   })
 
-
+  //users
+  getallUsers(): Observable<any[]> {
+    const UsersCollection = collection(this.db, 'myusers');
+    let collect = collectionData(UsersCollection, { idField: 'id' }) as Observable<any[]>
+    return collect
+  }
+  addUser(data: any): Observable<any> {
+    const docRef = setDoc(doc(this.db, 'myusers/' + data.id), data)
+    return from(docRef)
+  }
+  deleteUser(id: string): Observable<void> {
+    const docRef = doc(this.db, 'myusers/' + id)
+    const promise = deleteDoc(docRef)
+    return from(promise)
+  }
+  getallUsersByUid(uid: string): Observable<any> {
+    const docRef = doc(this.db, "myusers", uid);
+    const docSnap = getDoc(docRef);
+    return from(docSnap)
+  }
 }
