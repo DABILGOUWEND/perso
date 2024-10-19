@@ -55,16 +55,16 @@ export const routes: Routes = [
             },
             {
                 path: "constats",
-                component: EnginsComponent
+                component: ConstatsComponent
             }
             ,
             {
                 path: "attachements",
-                component: EnginsComponent
+                component: AttachementsComponent
             }  ,
             {
                 path: "decomptes",
-                component: EnginsComponent
+                component: DecomptesComponent
             }
            
         ]

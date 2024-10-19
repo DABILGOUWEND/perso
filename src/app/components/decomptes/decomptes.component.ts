@@ -12,6 +12,9 @@ import { EntreprisesPipe } from '../../entreprises.pipe';
   styleUrl: './decomptes.component.scss'
 })
 export class DecomptesComponent implements OnInit {
+  ngOnInit(){
+
+   }
   _decomptes_Store = inject(DecompteStore);
   _constat_store = inject(ConstatStore);
   _ligneDevis_Store = inject(LigneDevisStore);
@@ -30,13 +33,7 @@ export class DecomptesComponent implements OnInit {
   entreprise_id = signal('')
 
 
-  ngOnInit(){
-   this._decomptes_Store.loadAllDecomptes()
-   this._attachements_Store.loadAttachements()
-   this._devisStore.loadDevis()
-   this._sousTraitance_Store.loadSstraitants()
-   this._ligneDevis_Store.loadLigneDevis()
-  }
+
 
   selectChangeDevis(id: string) {
     this._attachements_Store.filtrebyDevisId(id)

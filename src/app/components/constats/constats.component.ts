@@ -21,7 +21,8 @@ import { DateTime, Info, Interval } from 'luxon';
   styleUrl: './constats.component.scss'
 })
 export class ConstatsComponent implements OnInit {
-
+  ngOnInit() { 
+  }
   constructor() {
     effect(() => {
       this.dataSource2().paginator = this.paginator;
@@ -246,13 +247,7 @@ export class ConstatsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  ngOnInit() {
-    this._constat_store.loadConstats()
-    this._ligneDevis_Store.loadLigneDevis()
-    this._devisStore.loadDevis()
-    this._sstrce_Store.loadSstraitants()
-    this._attachements_Store.loadAttachements()
-  }
+ 
 
   selectChangeDevis(id: string) {
     this._ligneDevis_Store.filtrebyDevis(id)

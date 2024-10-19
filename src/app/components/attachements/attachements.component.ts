@@ -19,6 +19,11 @@ import { AuthenService } from '../../authen.service';
   styleUrl: './attachements.component.scss'
 })
 export class AttachementsComponent implements OnInit {
+
+  ngOnInit() {
+
+  }
+
   authservice = inject(AuthenService)
 
   _constat_store = inject(ConstatStore)
@@ -204,14 +209,7 @@ export class AttachementsComponent implements OnInit {
 
   net_a_payer_prec = signal(0)
   net_a_payer_actuel = signal(0)
-  ngOnInit() {
-    this._attachements_Store.loadAttachements();
-    this._ligneDevis_Store.loadLigneDevis();
-    this._constat_store.loadConstats();
-    this._sstrce_Store.loadSstraitants();
-    this._devisStore.loadDevis();
-    this._decompte_Store.loadAllDecomptes()
-  }
+
   selectChangeDevis(id: string) {
     this.selected_devis.set(id);
     let ent_id = this._devisStore.donnees_devis().find(x => x.id == this.selected_devis())?.entreprise_id;

@@ -26,9 +26,6 @@ import { AuthenService } from '../../authen.service';
 export class SousTraitanceComponent implements OnInit {
   
   ngOnInit(): void {
-    this.Devis_Store.loadDevis()
-    this.LigneDevis_Store.loadLigneDevis()
-    this.SousTraitance_Store.loadSstraitants()
     this.table_update_form.valueChanges.subscribe(x => {
       this.quantite.set(x.quantite)
       this.prix.set(x.prix_u)
