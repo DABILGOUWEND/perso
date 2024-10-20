@@ -11,7 +11,7 @@ import { ApprogoComponent } from '../approgo/approgo.component';
 import { EssaiComponent } from '../essai/essai.component';
 import { WenService } from '../../wen.service';
 import { GasoilModelComponent } from '../gasoil-model/gasoil-model.component';
-import { GasoilService } from '../../services/gasoil.service';
+
 import { TaskService } from '../../task.service';
 @Component({
   selector: 'app-gasoil',

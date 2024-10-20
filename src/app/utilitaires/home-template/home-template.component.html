@@ -17,7 +17,7 @@
                 </button>
             </div>
             <div class="spacer_register" *ngIf="_auth_service.userSignal()?.role=='admin'">
-                <button mat-raised-button>
+                <button mat-raised-button (click)="click_admin()">
                     Admin
                 </button>
             </div>
