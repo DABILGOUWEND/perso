@@ -35,13 +35,11 @@
 
   .login-page__banner {
     text-align: center;
-    color: rgb(108, 53, 53);
+    color: rgb(223, 211, 211);
 
     h1 {
       font-family: 'Times New Roman', Times, serif;
     }
-
-
   }
 
   .login-form-container {
@@ -49,17 +47,16 @@
     align-items: center;
     justify-content: center;
 
-
     .login-disclaimer {
       color: map-get($wen-colors, primary-dark);
       font-size: 0.9rem;
-      margin-bottom: 2rem;
+      margin-bottom: 2rem; 
       text-align: justify;
       width: 20%;
     }
 
     .login-form {
-      width: 20%;
+      width: 20%; 
 
       .login-form__footer {
         margin: 25px 0;
@@ -77,8 +74,10 @@
         mat-form-field {
           align-items: center;
           width: 100%;
+
         }
       }
+
     }
   }
 
@@ -2702,9 +2701,11 @@ wen-table:make-gold {
 .toolbar {
   border: solid #b0dbdb 2px;
   width: 100%;
+
   mat-toolbar {
     display: flex;
-    background-color: rgb(148, 150, 150);
+    background-color: #b8d0e0;
+    ;
     height: 100px;
 
     h3 {
@@ -2716,7 +2717,7 @@ wen-table:make-gold {
     mat-form-field {
       margin-top: 20px;
       margin-left: 10px;
-      font-size: 25px!important;
+      font-size: 25px !important;
       text-align: center;
     }
 
@@ -2742,18 +2743,18 @@ wen-table:make-gold {
     .logo {
       display: block;
       background-color: #4890d8;
-      height: 80px;
-      padding-top: 20px;
+      padding-top: 10px;
 
       h3 {
         margin-left: 10px;
         margin-right: 10px;
-        font-size: 24px;
+        font-weight: bold;
+        font-size: 18px;
         text-align: center;
       }
 
       h4 {
-        font-size: 18px;
+        font-size: 12px;
         font-style: italic;
         text-align: center;
       }
@@ -2822,6 +2823,7 @@ wen-table:make-gold {
   left: 0px;
   right: 0;
   min-height: 1000px;
+
   .example-sidenav {
     display: block;
     align-items: center;
@@ -2893,17 +2895,19 @@ wen-table:make-gold {
 
   .row_pointage {
     display: flex;
-    height: 60px;
+    height: 80px;
     border-bottom: 2px solid map-get($wen-colors, divider);
     background-color: #e7eded;
-   h1{
-    font-size:16px;
-    font-weight:bold;
-    margin-left: 20px;
-   }
+
+    h1 {
+      font-size: 18px;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+
     button {
-      margin-left: 20px;
-      margin-right: 20px;
+      margin-left: 10px;
+      margin-right: 5px;
       margin-top: 10px;
     }
 
@@ -3080,6 +3084,7 @@ wen-table:make-gold {
   background-color: red;
   display: none;
 }
+
 .row_hide {
   background-color: red;
   display: none;
@@ -3525,10 +3530,6 @@ th {
   }
 }
 
-body {
-  background-color: #A8A8A8;
-  font-family: 'Roboto', sans-serif;
-}
 
 .container {
   /*border:1px solid white;*/
@@ -3600,6 +3601,11 @@ body {
   text-align: center;
   color: white;
   padding-top: 20px;
+
+  h3 {
+    font-size: 24px;
+    font-weight: bold;
+  }
 }
 
 .loginMsg .sstitle {
@@ -3645,6 +3651,7 @@ body {
 
 .inputbox {
   margin-top: 30px;
+  color: red;
 }
 
 
@@ -3688,6 +3695,7 @@ body {
   width: 50% !important;
   margin-left: 25%;
 }
+
 .example-container {
   position: absolute;
   top: 0;
@@ -3695,6 +3703,7 @@ body {
   left: 0;
   right: 0;
 }
+
 .example-card {
   max-width: 400px;
 }
@@ -3703,6 +3712,7 @@ body {
   background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
   background-size: cover;
 }
+
 .mat-tree {
   background: transparent;
 }
@@ -3710,28 +3720,33 @@ body {
 .mat-tree-node {
   color: black;
 }
-.ligne_expand{
+
+.ligne_expand {
   display: flex;
- margin-left: 50px;
-  h3{
+  margin-left: 50px;
+
+  h3 {
     font-size: 14px;
     margin-left: 10px;
-    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   }
-  button{
+
+  button {
     margin-left: 40px;
     margin-top: 5px;
   }
 }
+
 .ligne_expand:hover {
   background-color: #d2ccc4;
-  
+
 }
+
 .ligne_parent_expand {
   color: blue;
   display: flex;
-  button{
+
+  button {
     margin-left: 10px;
   }
-  
+
 }

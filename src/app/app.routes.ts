@@ -34,7 +34,7 @@ export const routes: Routes = [
         path: "", redirectTo: "/home", pathMatch: "full"
     },
     {
-        path: 'home', component: HomeComponent,canActivate: [homeGuard]
+        path: 'home', component: HomeComponent, canActivate: [homeGuard]
 
     }
     ,
@@ -49,6 +49,10 @@ export const routes: Routes = [
         path: "home_travaux",
         component: HomeTravauxComponent, canActivate: [travauxGuard],
         children: [
+
+            {
+                path: "", redirectTo: "/home_travaux/constats", pathMatch: "full"
+            },
             {
                 path: "devis",
                 component: SousTraitanceComponent
@@ -61,12 +65,12 @@ export const routes: Routes = [
             {
                 path: "attachements",
                 component: AttachementsComponent
-            }  ,
+            },
             {
                 path: "decomptes",
                 component: DecomptesComponent
             }
-           
+
         ]
     },
     {
@@ -87,38 +91,26 @@ export const routes: Routes = [
             ,
             {
                 path: "pointages",
-                component:PointageComponent
-            }  
+                component: PointageComponent
+            }
         ]
     },
     {
         path: "admin",
-        component: AdminComponent, canActivate: [adminGuard]
-    },
-    {
-        path: "register",
-        component: RegisterComponent, canActivate: [adminGuard]
+        component: AdminComponent, canActivate: [adminGuard],
+        children: [
+            {
+                path: "register",
+                component: RegisterComponent
+            }
+        ]
     },
     {
         path: "essai2",
         component: Essai2Component
-    }
-    ,
-    {
-        path: "sous_traitance",
-        component: SousTraitanceComponent
-    }
-    ,
+    },
     {
         path: "telecharger",
         component: TelechargerComponent
     }
-    ,
-    {
-        path: "engins",
-        component: EnginsComponent
-    }
-
-
-
 ];

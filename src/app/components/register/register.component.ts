@@ -14,6 +14,11 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent implements OnInit {
+  ngOnInit() {
+    this._entreprise_store.loadEntreprises();
+    this._projet_store.loadProjets()
+  }
+
   message = signal('');
   selected_entrep_id = signal('')
   _auth_service = inject(AuthenService);
@@ -41,15 +46,8 @@ export class RegisterComponent implements OnInit {
         nom: new FormControl('', Validators.required)
       }
     )
-    effect(() =>
-      console.log(this._projet_store.donnees_projet())
-    )
   }
-  ngOnInit() {
-    
-    this._entreprise_store.loadEntreprises();
-    this._projet_store.loadProjets()
-  }
+
   submitRegister() {
     let value = this.registerForm.getRawValue();
     this._auth_service.register(

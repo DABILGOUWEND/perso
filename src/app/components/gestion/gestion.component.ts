@@ -10,11 +10,37 @@ import { WenService } from '../../wen.service';
 @Component({
   selector: 'app-gestion',
   standalone: true,
-  imports: [ImportedModule, HomeTemplateComponent,RouterOutlet],
+  imports: [ImportedModule, HomeTemplateComponent, RouterOutlet],
   templateUrl: './gestion.component.html',
   styleUrl: './gestion.component.scss'
 })
 export class GestionComponent implements OnInit {
+  ngOnInit() {
+    //set path
+    this._personnel_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/personnel');
+    this._engins_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/engins');
+    this._classe_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/classes_engins');
+    this._conso_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/conso_gasoil');
+    this._pannes_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/pannes');
+    this._appro_go.setPathString('comptes/' + this._auth_service.current_projet_id() + '/appro_go');
+    
+    
+    //load data
+    this._projet_store.loadProjets();
+    this._engins_store.loadengins();
+    this._classe_store.loadclasses();
+    this._personnel_store.loadPersonnel();
+    this._conso_store.loadconso();
+    this._appro_go.loadappro();
+    this._pannes_store.loadPannes();
+  }
+
+  constructor() {
+    effect(() => {
+    })
+  }
+
+  //injections
   _engins_store = inject(EnginsStore);
   _classe_store = inject(ClasseEnginsStore);
   _personnel_store = inject(PersonnelStore);
@@ -22,34 +48,24 @@ export class GestionComponent implements OnInit {
   _compte_store = inject(CompteStore);
   _task_service = inject(TaskService);
   _pannes_store = inject(PannesStore);
-  _gasoil_store = inject(GasoilStore);
+  _conso_store = inject(GasoilStore);
   _appro_go = inject(ApproGasoilStore);
-  _service = inject(WenService);
-  constructor(){
-    effect(()=>{
-    })
-  }
-  ngOnInit()  {
-  }
   _auth_service = inject(AuthenService);
-  router = inject(Router);
+  _router = inject(Router);
+
   logout() {
     this._auth_service.logout().subscribe();
   }
   click_accueil() {
-    this.router.navigateByUrl('/home');
+    this._router.navigateByUrl('/home');
   }
-  click_gasoil()
-  {
-this.router.navigateByUrl('home_gestion/gasoil')
+  click_gasoil() {
+    this._router.navigateByUrl('home_gestion/gasoil')
   }
-  click_pannes()
-  {
-this.router.navigateByUrl('home_gestion/pannes')
+  click_pannes() {
+    this._router.navigateByUrl('home_gestion/pannes')
   }
-  click_pointages(){
-this.router.navigateByUrl('home_gestion/pointages')
+  click_pointages() {
+    this._router.navigateByUrl('home_gestion/pointages')
   }
-
-
 }

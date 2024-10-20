@@ -3,24 +3,30 @@ import { Router, RouterOutlet } from '@angular/router';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { AuthenService } from '../../authen.service';
 import { HomeTemplateComponent } from '../../utilitaires/home-template/home-template.component';
-import { AttachementStore, ConstatStore, DecompteStore, DevisStore, LigneDevisStore, SstraitantStore } from '../../store/appstore';
+import { AttachementStore, ConstatStore, DecompteStore, DevisStore, LigneDevisStore, ProjetStore, SstraitantStore } from '../../store/appstore';
 
 @Component({
   selector: 'app-home-travaux',
   standalone: true,
-  imports: [RouterOutlet, ImportedModule,HomeTemplateComponent],
+  imports: [RouterOutlet, ImportedModule, HomeTemplateComponent],
   templateUrl: './home-travaux.component.html',
   styleUrl: './home-travaux.component.scss'
 })
-export class HomeTravauxComponent  implements OnInit {
+export class HomeTravauxComponent implements OnInit {
+
+  //injections
   _devis_Store = inject(DevisStore)
   _constat_Store = inject(ConstatStore)
   _ligneDevis_Store = inject(LigneDevisStore)
   _sousTraitance_Store = inject(SstraitantStore)
   _attachements_Store = inject(AttachementStore)
   _decomptes_Store = inject(DecompteStore)
-  
+  _projet_store = inject(ProjetStore)
+  _auth_service = inject(AuthenService);
+  _router = inject(Router);
+
   ngOnInit() {
+    //set path
     this._devis_Store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/devis');
     this._ligneDevis_Store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/lignes_devis');
     this._sousTraitance_Store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/sous_traitants');
@@ -35,35 +41,23 @@ export class HomeTravauxComponent  implements OnInit {
     this._constat_Store.loadConstats();
     this._attachements_Store.loadAttachements();
     this._decomptes_Store.loadAllDecomptes();
+    this._projet_store.loadProjets();
 
   }
-  _auth_service = inject(AuthenService);
-  router = inject(Router);
+
   logout() {
     this._auth_service.logout().subscribe();
-  
   }
   accueil() {
-    this.router.navigateByUrl('/home');
-  } 
-  click_devis()
-  {
-    this.router.navigateByUrl('home_travaux/devis');
+    this._router.navigateByUrl('/home');
   }
-  click_budget()
-  {
-    this.router.navigateByUrl('home_travaux/budget');
+  click_devis() {
+    this._router.navigateByUrl('home_travaux/devis');
   }
-  click_constats()
-  {
-    this.router.navigateByUrl('home_travaux/constats');
+  click_constats() {
+    this._router.navigateByUrl('home_travaux/constats');
   }
-  click_attachements()
-  {
-    this.router.navigateByUrl('home_travaux/attachements');
-  }
-  click_decomptes()
-  {
-    this.router.navigateByUrl('home_travaux/decomptes');
+  click_attachements() {
+    this._router.navigateByUrl('home_travaux/attachements');
   }
 }
