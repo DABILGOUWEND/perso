@@ -28,6 +28,7 @@ import { gestionGuard } from './gestion.guard';
 import { PointageComponent } from './components/pointage/pointage.component';
 import { SousTraitanceComponent } from './components/sous-traitance/sous-traitance.component';
 import { TelechargerComponent } from './components/telecharger/telecharger.component';
+import { TableauBordComponent } from './components/tableau-bord/tableau-bord.component';
 
 export const routes: Routes = [
     {
@@ -100,8 +101,15 @@ export const routes: Routes = [
         component: AdminComponent, canActivate: [adminGuard],
         children: [
             {
+                path: "", redirectTo: "/admin/tableau_bord", pathMatch: "full"
+            },
+            {
                 path: "register",
                 component: RegisterComponent
+            },
+            {
+                path: "tableau_bord",
+                component: TableauBordComponent
             }
         ]
     },

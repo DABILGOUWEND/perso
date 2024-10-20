@@ -1,11 +1,12 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, effect, EventEmitter, inject, input, Input, OnInit, Output, signal, TemplateRef } from '@angular/core';
+import { Component, computed, effect, EventEmitter, inject, input, Input, OnInit, output, Output, signal, TemplateRef } from '@angular/core';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { AuthenService } from '../../authen.service';
 import { TaskService } from '../../task.service';
 import { GasoilComponent } from '../../components/gasoil/gasoil.component';
-import { GasoilService } from '../../services/gasoil.service';
+
 import { EnginsStore, GasoilStore, ProjetStore } from '../../store/appstore';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home-template',
@@ -21,12 +22,10 @@ export class HomeTemplateComponent implements OnInit{
  content=input.required<TemplateRef<any>>();
  _auth_service=inject(AuthenService);
  _projet_store=inject(ProjetStore);
+ _router=inject((Router));  
 
  selected_projet_id=signal<string | undefined>('');
-
-
  ngOnInit() {
-
  }
  choix_projet(data:any)
  {
@@ -48,5 +47,8 @@ export class HomeTemplateComponent implements OnInit{
     }
   })
 })
-
+click_admin()
+{
+  this._router.navigateByUrl('admin');
+}
 }

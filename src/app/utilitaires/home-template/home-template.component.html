@@ -9,19 +9,18 @@
         <mat-toolbar>
             <ng-container [ngTemplateOutlet]="toolbar()">
             </ng-container>
+
             <div class="spacer_register">
                 <h1>{{ _auth_service.userSignal()?.username}}</h1>
                 <button mat-icon-button (click)="logout()" title="déconnecter">
                     <mat-icon>logout</mat-icon>
                 </button>
-
             </div>
-
-           <!--  <div class="spacer_register">
-                <button mat-raised-button extended type="button">
-                    Register
+            <div class="spacer_register" *ngIf="_auth_service.userSignal()?.role=='admin'">
+                <button mat-raised-button>
+                    Admin
                 </button>
-            </div> -->
+            </div>
             <div class="spacer_user">
                 <mat-form-field>
                     <mat-label> Choisir projet</mat-label>
@@ -29,7 +28,7 @@
                         @for(projet of projets();track projet.id){
                         <mat-option [value]="projet.id">{{projet.intitule}}</mat-option>
                         }
-                    </mat-select> 
+                    </mat-select>
                 </mat-form-field>
             </div>
             <div class="spacer_logo">
