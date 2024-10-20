@@ -8,6 +8,7 @@ import { PannesStore, EnginsStore } from '../../store/appstore';
 import { WenService } from '../../wen.service';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { TablePanneComponent } from '../table-panne/table-panne.component';
+import { PannesService } from '../../services/pannes.service';
 
 
 @Component({
@@ -21,6 +22,7 @@ export class PannesComponent {
   _pannestore = inject(PannesStore);
   _enginStore = inject(EnginsStore);
   _app_service = inject(WenService);
+  _pannes_service=inject(PannesService)
   datasource = computed(
     () => new MatTableDataSource<Engins>(this._enginStore.donnees_engins()),
   );

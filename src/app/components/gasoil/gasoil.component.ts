@@ -13,6 +13,7 @@ import { WenService } from '../../wen.service';
 import { GasoilModelComponent } from '../gasoil-model/gasoil-model.component';
 
 import { TaskService } from '../../task.service';
+import { GasoilService } from '../../services/gasoil.service';
 @Component({
   selector: 'app-gasoil',
   standalone: true,

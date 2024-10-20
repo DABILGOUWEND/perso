@@ -12,8 +12,8 @@
 
             <div class="spacer_register">
                 <h1>{{ _auth_service.userSignal()?.username}}</h1>
-                <button mat-icon-button (click)="logout()" title="déconnecter">
-                    <mat-icon>logout</mat-icon>
+                <button mat-raised-button (click)="logout()" title="déconnecter">
+                    logout
                 </button>
             </div>
             <div class="spacer_register" *ngIf="_auth_service.userSignal()?.role=='admin'">
