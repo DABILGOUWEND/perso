@@ -50,13 +50,13 @@
     .login-disclaimer {
       color: map-get($wen-colors, primary-dark);
       font-size: 0.9rem;
-      margin-bottom: 2rem; 
+      margin-bottom: 2rem;
       text-align: justify;
       width: 20%;
     }
 
     .login-form {
-      width: 20%; 
+      width: 20%;
 
       .login-form__footer {
         margin: 25px 0;
@@ -2817,34 +2817,27 @@ wen-table:make-gold {
 }
 
 .example-container {
-  position: absolute;
-  top: 5px;
-  bottom: 0;
-  left: 0px;
-  right: 0;
+
   min-height: 1000px;
 
   .example-sidenav {
     display: block;
     align-items: center;
-    justify-content: center;
-    margin-left: 10px;
-    width: 20%;
+    width: 25%;
     border: 1px solid rgb(70, 68, 68);
   }
 
   .example-sidenav-content {
     display: block;
-    align-items: center;
-    justify-content: center;
-    width: 80%;
+    width: 75%;
+    padding-left: 0;
     min-height: 1000px;
     border: 1px solid rgb(70, 68, 68);
   }
 
   .example-header {
     width: 100%;
-    padding-left: 20px;
+
     padding-top: 5px;
     padding-bottom: 5px;
     text-align: center;
@@ -2897,18 +2890,16 @@ wen-table:make-gold {
     display: flex;
     height: 80px;
     border-bottom: 2px solid map-get($wen-colors, divider);
-    background-color: #e7eded;
+    background-color: #84c2c2;
 
     h1 {
-      font-size: 18px;
+      font-size: 14px;
       font-weight: bold;
-      margin-left: 5px;
+      margin-top: 5px;
     }
 
     button {
-      margin-left: 10px;
-      margin-right: 5px;
-      margin-top: 10px;
+      margin-top: 5px;
     }
 
   }
@@ -3129,12 +3120,19 @@ wen-table:make-gold {
     background-color: rgb(238, 168, 168) !important;
     color: blue;
   }
+
+  h1 {
+    font-size: 14px !important;
+    text-align: center;
+  }
+
 }
 
 .spacer_user {
-  flex: 0.15 1 auto;
+  flex: 0.1 1 auto;
   margin-left: 10px;
   text-align: center;
+
 
   button {
     margin-top: 10px;
@@ -3152,15 +3150,20 @@ wen-table:make-gold {
 }
 
 .spacer_register {
-  flex: 0.15 1 auto;
+  flex: 0.1 0.5 auto;
   margin-left: 10px;
-  text-align: center;
+
 
   button {
     margin-top: 10px;
     margin-left: 20px;
     background-color: rgb(238, 168, 168) !important;
     color: blue;
+  }
+
+  h1 {
+    font-size: 14px !important;
+    text-align: center;
   }
 }
 
@@ -3568,7 +3571,7 @@ th {
 .frontbox p {
   text-align: center;
   font-size: 18px;
-  color: red;
+  color: rgb(0, 30, 255);
 }
 
 .moving {
@@ -3591,12 +3594,12 @@ th {
 
 .loginMsg .logo {
   font-weight: bold;
-  background-color: rgb(68, 158, 222);
+  background-color: rgb(33, 142, 219);
   margin-left: 10%;
   margin-right: 10%;
   margin-top: 10%;
   width: 80%;
-  height: 50px;
+  height: 100px;
   font-size: 28px;
   text-align: center;
   color: white;
@@ -3605,6 +3608,11 @@ th {
   h3 {
     font-size: 24px;
     font-weight: bold;
+  }
+  
+  h4 {
+    font-size: 16px;
+    font-style: italic;
   }
 }
 
@@ -3620,7 +3628,9 @@ th {
 .textcontent {
   color: white;
   margin-top: 20px;
+  margin-left: 10px;
   text-align: center;
+  width: 90%;
 }
 
 .loginMsg button,
@@ -3731,10 +3741,11 @@ th {
   }
 
   button {
-    margin-left: 40px;
+    margin-left: 10px;
     margin-top: 5px;
   }
 }
+
 
 .ligne_expand:hover {
   background-color: #d2ccc4;

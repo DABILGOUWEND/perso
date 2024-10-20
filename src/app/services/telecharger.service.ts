@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { addDoc, collection, collectionData, deleteDoc, doc, Firestore, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
 import { AuthenService } from '../authen.service';
-import { Devis, Constats, Ligne_devis, ModelAttachement, ModelDecompte, unites, Gasoil } from '../models/modeles';
+import { Devis, Constats, Ligne_devis, ModelAttachement, ModelDecompte, unites, Gasoil, Statuts } from '../models/modeles';
 
 @Injectable({
   providedIn: 'root'
@@ -252,8 +252,36 @@ export class TelechargerService {
     const docRef = setDoc(Collection, mydata)
     return from(docRef)
   }
-
-
+//statut
+addStatut(data: any): Observable<void> {
+  let mydata = {
+    'designation': data.designation,
+  }
+  const Collection = doc(this.db, 'comptes/' +
+    this._auth_service.current_projet_id() + '/statuts_personnel/' + data.id)
+  const docRef = setDoc(Collection, mydata)
+  return from(docRef)
+}
+//ENTREPRISES
+addEntreprises(data: any): Observable<void> {
+  let mydata = {
+    entreprise: data.entreprise ? data.entreprise : '',
+    enseigne:   data.enseigne ? data.enseigne : '',
+    ifu:  data.ifu ? data.ifu : '',
+    rccm:   data.rccm ? data.rccm : '',
+    adresse:  data.adresse ? data.adresse : '',
+    phone:  data.phone ? data.phone : '',
+    nom_responsable:  data.nom_responsable ? data.nom_responsable : '',
+    prenom_responsable:   data.prenom_responsable ? data.prenom_responsable : '',
+    date_naissance:   data.date_naissance ? data.date_naissance : '',
+    lieu_naissance:   data.lieu_naissance ? data.lieu_naissance : '',
+    num_cnib:   data.num_cnib ? data.num_cnib : '',
+  }
+  const Collection = doc(this.db, 'comptes/' +
+    this._auth_service.current_projet_id() + '/entreprises/' + data.id)
+  const docRef = setDoc(Collection, mydata)
+  return from(docRef)
+}
   //unites
   getAllUnites(): Observable<unites[]> {
     const Collection = collection(this.db, 'unites')

@@ -169,8 +169,8 @@ export class GasoilComponent {
     engin_id: new FormControl("", Validators.required),
     date: new FormControl(new Date(), Validators.required),
     designation: new FormControl({ value: "", disabled: true }, Validators.minLength(2)),
-    compteur: new FormControl(""),
-    quantite_go: new FormControl("", [Validators.required, Validators.min(1)])
+    compteur: new FormControl(0),
+    quantite_go: new FormControl(0, [Validators.required, Validators.min(1)])
   })
   constructor(
     private _fb: FormBuilder,
@@ -233,28 +233,29 @@ export class GasoilComponent {
     }
   }
   updateData(data: any) {
+    console.log(data)
     let valeur = data[0];
     let is_update = data[2];
     if (is_update) {
       let val_tr =
       {
         id: valeur.id,
-        engin_id: valeur.id_engin,
+        engin_id: valeur.engin_id,
         date: valeur.date.toLocaleDateString(),
-        quantite_go: valeur.quantite_go,
+        quantite_go: Number(valeur.quantite_go),
         diff_work: 0,
-        numero: valeur.numero,
-        compteur: valeur.compteur !== null ? valeur.compteur.toString() : "0",
+        numero:   Number(valeur.numero),
+        compteur:   Number(valeur.compteur) ,
       }
       this._gasoil_store.updateconso(val_tr)
     }
     else {
       let val_tr =
       {
-        engin_id: valeur.id_engin,
+        engin_id: valeur.engin_id,
         date: valeur.date.toLocaleDateString(),
         quantite_go: valeur.quantite_go,
-        compteur: valeur.compteur !== null ? valeur.compteur.toString() : "0",
+        compteur: valeur.compteur ,
         diff_work: 0,
         numero: (this._gasoil_store.lastNum() + 1)
       }
@@ -295,7 +296,7 @@ export class GasoilComponent {
     }
     else {
       this.selected_compteur.set("panne");
-      this.table_update_form.get("compteur")?.setValue("0");
+      this.table_update_form.get("compteur")?.setValue(0);
     }
     let ind = this.table().findIndex(x => x.control_name === "engin_id")
     let tab = this._engins_store.donnees_engins().

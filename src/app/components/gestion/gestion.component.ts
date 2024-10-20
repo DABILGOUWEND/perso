@@ -3,9 +3,9 @@ import { ImportedModule } from '../../modules/imported/imported.module';
 import { HomeTemplateComponent } from '../../utilitaires/home-template/home-template.component';
 import { AuthenService } from '../../authen.service';
 import { Router, RouterOutlet } from '@angular/router';
-import { EnginsStore, ClasseEnginsStore, PersonnelStore, ProjetStore, CompteStore, PannesStore, GasoilStore, ApproGasoilStore } from '../../store/appstore';
+import { EnginsStore, ClasseEnginsStore, PersonnelStore, ProjetStore, CompteStore, PannesStore, GasoilStore, ApproGasoilStore, StatutStore } from '../../store/appstore';
 import { TaskService } from '../../task.service';
-import { WenService } from '../../wen.service';
+
 
 @Component({
   selector: 'app-gestion',
@@ -23,7 +23,7 @@ export class GestionComponent implements OnInit {
     this._conso_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/conso_gasoil');
     this._pannes_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/pannes');
     this._appro_go.setPathString('comptes/' + this._auth_service.current_projet_id() + '/appro_go');
-    
+  this._statut_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/statuts_personnel');
     
     //load data
     this._projet_store.loadProjets();
@@ -33,6 +33,7 @@ export class GestionComponent implements OnInit {
     this._conso_store.loadconso();
     this._appro_go.loadappro();
     this._pannes_store.loadPannes();
+    this._statut_store.loadstatut();
   }
 
   constructor() {
@@ -50,6 +51,7 @@ export class GestionComponent implements OnInit {
   _pannes_store = inject(PannesStore);
   _conso_store = inject(GasoilStore);
   _appro_go = inject(ApproGasoilStore);
+  _statut_store = inject(StatutStore);
   _auth_service = inject(AuthenService);
   _router = inject(Router);
 

@@ -2,14 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from 'express';
 import { AuthenService } from '../../authen.service';
-import { UserStore, EnginsStore, ClasseEnginsStore, PersonnelStore, ProjetStore, CompteStore, DevisStore, LigneDevisStore, ApproGasoilStore, GasoilStore, PannesStore, AttachementStore, DecompteStore, TachesStore, ConstatStore, UnitesStore, SstraitantStore } from '../../store/appstore';
+import { UserStore, EnginsStore, ClasseEnginsStore, PersonnelStore, ProjetStore, CompteStore, DevisStore, LigneDevisStore, ApproGasoilStore, GasoilStore, PannesStore, AttachementStore, DecompteStore, TachesStore, ConstatStore, UnitesStore, SstraitantStore, StatutStore } from '../../store/appstore';
 import { TaskService } from '../../task.service';
 import { WenService } from '../../wen.service';
 import { concat, forkJoin, Observable, of, switchMap } from 'rxjs';
 import { TelechargerService } from '../../services/telecharger.service';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
-import { appro_gasoil, Gasoil, tab_personnel } from '../../models/modeles';
+import { appro_gasoil, Entreprise, Gasoil, Statuts, tab_personnel } from '../../models/modeles';
 
 @Component({
   selector: 'app-telecharger',
@@ -31,7 +31,7 @@ export class TelechargerComponent implements OnInit {
     //this._sous_traitance_store.loadSstraitants();
   }
   telecharger() {
-    this.upload_personnel().subscribe();
+    this.upload_entreprises().subscribe();
   }
   db = inject(Firestore)
   _user_store = inject(UserStore);
@@ -56,6 +56,7 @@ export class TelechargerComponent implements OnInit {
   _constat_store = inject(ConstatStore);
   _unite_store = inject(UnitesStore);
   _sous_traitance_store = inject(SstraitantStore);
+  _statut_store = inject(StatutStore);
 
 
   upload_personnel() {
@@ -202,6 +203,38 @@ export class TelechargerComponent implements OnInit {
       )
     })
     return concat(obsrv)
+  }
+  upload_statut() {
+    let obsrv: Observable<any>[] = [];
+    const MyCollection = collection(this.db, 'satut')
+    let rep = collectionData(MyCollection, { idField: 'id' }) as Observable<Statuts[]>
+    return rep.pipe(switchMap(gasoil => {
+      gasoil.forEach(
+        (element: any) => {
+          obsrv.push(
+            this._telecharger_service.addStatut(element)
+          )
+        })
+      return concat(obsrv)
+    }
+    ))
+
+  }
+  upload_entreprises() {
+    let obsrv: Observable<any>[] = [];
+    const MyCollection = collection(this.db, 'entreprises')
+    let rep = collectionData(MyCollection, { idField: 'id' }) as Observable<Entreprise[]>
+    return rep.pipe(switchMap(entreprise => {
+      entreprise.forEach(
+        (element: any) => {
+          obsrv.push(
+            this._telecharger_service.addEntreprises(element)
+          )
+        })
+      return concat(obsrv)
+    }
+    ))
+
   }
   upload_decomptes() {
     let obsrv: Observable<any>[] = []

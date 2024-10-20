@@ -375,6 +375,7 @@ export interface Statuts {
 export interface tab_satatutStore {
     statut_data: Statuts[],
     message: string,
+    path_string: string
 }
 export interface tab_DevisStore {
     devis_data: Devis[],

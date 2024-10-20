@@ -196,7 +196,9 @@ const initialUserState: tab_userStore =
 const initialStatutState: tab_satatutStore =
 {
     statut_data: [],
-    message: ''
+    message: '',
+    path_string: ''
+
 }
 const initialConstatState: tab_constatStore =
 {
@@ -566,7 +568,7 @@ export const EnginsStore = signalStore(
                 switchMap((id) => {
                     return _task_service.deleteModel(store.path_string(), id).pipe(tap({
                         next: () => {
-            
+
                             Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                         }, error: (err) => {
                             patchState(store, { message: 'echoué' });
@@ -581,7 +583,7 @@ export const EnginsStore = signalStore(
                     return _task_service.updateModel(store.path_string(), engin).pipe(
                         tap({
                             next: () => {
-                               
+
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }
                             ,
@@ -1888,11 +1890,14 @@ export const StatutStore = signalStore(
 
         }
     )),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store, _task_service = inject(TaskService), snackbar = inject(MatSnackBar)) =>
     (
         {
+            setPathString(path: string) {
+                patchState(store, { path_string: path })
+            },
             loadstatut: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallstatut().pipe(
+                return _task_service.getallModels(store.path_string()).pipe(
                     tap({
                         next: (statut) => {
                             patchState(store, { statut_data: statut })
@@ -3061,12 +3066,11 @@ export const EntrepriseStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store, _task_service = inject(TaskService), snackbar = inject(MatSnackBar)) =>
     (
         {
-
             loadEntreprises: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getAllEntreprises().pipe(
+                return _task_service.getallModels("entreprises").pipe(
                     tap((data) => {
                         patchState(store, { liste_entreprise: data });
                     })
@@ -3075,7 +3079,7 @@ export const EntrepriseStore = signalStore(
             ))),
             addEntreprise: rxMethod<any>(pipe(
                 switchMap((entreprise) => {
-                    return monservice.addEntreprise(entreprise).pipe(
+                    return _task_service.addModel("entreprises", entreprise).pipe(
                         tap({
                             next: () => {
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
@@ -3090,11 +3094,9 @@ export const EntrepriseStore = signalStore(
             )),
             removeEntreprise: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteEntreprise(id).pipe(tap(
+                    return _task_service.deleteModel("entreprises", id).pipe(tap(
                         {
                             next: () => {
-                                const updatedonnes = store.liste_entreprise().filter(x => x.id != id)
-                                patchState(store, { liste_entreprise: updatedonnes })
                                 Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                             },
                             error: () => {
@@ -3107,13 +3109,9 @@ export const EntrepriseStore = signalStore(
                 }))),
             updateEntreprise: rxMethod<any>(pipe(
                 switchMap((entreprise) => {
-                    return monservice.updateEntreprise(entreprise).pipe(
+                    return _task_service.updateModel("entreprises", entreprise).pipe(
                         tap({
                             next: () => {
-                                var data = store.liste_entreprise();
-                                var index = data.findIndex(x => x.id == entreprise.id)
-                                data[index] = entreprise
-                                patchState(store, { liste_entreprise: data })
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)

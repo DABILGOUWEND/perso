@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { FormGroup, FormBuilder, FormControl, Validators, NonNullableFormBuilder } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
@@ -17,11 +17,16 @@ import { EssaiComponent } from '../essai/essai.component';
   styleUrl: './personnel.component.scss'
 })
 export class PersonnelComponent  implements OnInit{
+  constructor() {
+    effect(() => {
+  // console.log(this.personnel_store.personnel_data())   
+   }
+    )
+  }
   EnginsStore = inject(EnginsStore)
   personnel_store = inject(PersonnelStore)
   classeEngins_store = inject(ClasseEnginsStore)
   statut_store = inject(StatutStore)
-  _compte_store=inject(CompteStore)
   fb = inject(NonNullableFormBuilder)
   table_update_form = this.fb.group({
     id: new FormControl(''),
@@ -126,7 +131,7 @@ export class PersonnelComponent  implements OnInit{
   dataSource = computed(
     () => {
       let donnees: any = []
-      this._compte_store.donnees_personnel().forEach(element => {
+      this.personnel_store.donnees_personnel().forEach(element => {
         let statut = this.statut_store.donnees_statut().find(x => x.id == element.statut_id)
         let statut_a = statut?.designation
         donnees.push(
@@ -152,8 +157,7 @@ export class PersonnelComponent  implements OnInit{
     }
   );
   ngOnInit() {
-    this.personnel_store.loadPersonnel()
-    this.statut_store.loadstatut()
+
   }
   updateData(data: any) {
     let valeur =data[0]

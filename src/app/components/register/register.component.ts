@@ -15,8 +15,6 @@ import { HttpClient } from '@angular/common/http';
 })
 export class RegisterComponent implements OnInit {
   ngOnInit() {
-    this._entreprise_store.loadEntreprises();
-    this._projet_store.loadProjets()
   }
 
   message = signal('');

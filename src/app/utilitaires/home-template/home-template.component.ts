@@ -23,7 +23,6 @@ export class HomeTemplateComponent implements OnInit{
  _auth_service=inject(AuthenService);
  _projet_store=inject(ProjetStore);
  _router=inject((Router));  
-
  selected_projet_id=signal<string | undefined>('');
  ngOnInit() {
  }

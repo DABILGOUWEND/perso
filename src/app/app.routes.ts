@@ -14,7 +14,6 @@ import { RegisterComponent } from './components/register/register.component';
 import { authGuard } from './auth.guard';
 import { administraGuard } from './administra.guard';
 import { travauxGuard } from './travaux.guard';
-import { HomeComponent } from './components/home/home.component';
 import { homeGuard } from './home.guard';
 import { MyessaisComponent } from './components/myessais/myessais.component';
 import { AdminComponent } from './components/admin/admin.component';
@@ -29,6 +28,7 @@ import { PointageComponent } from './components/pointage/pointage.component';
 import { SousTraitanceComponent } from './components/sous-traitance/sous-traitance.component';
 import { TelechargerComponent } from './components/telecharger/telecharger.component';
 import { TableauBordComponent } from './components/tableau-bord/tableau-bord.component';
+import { HomeComponent } from './components/home/home.component';
 
 export const routes: Routes = [
     {
@@ -93,6 +93,16 @@ export const routes: Routes = [
             {
                 path: "pointages",
                 component: PointageComponent
+            }
+            ,
+            {
+                path: "materiel",
+                component: EnginsComponent
+            }
+            ,
+            {
+                path: "personnel",
+                component: PersonnelComponent
             }
         ]
     },

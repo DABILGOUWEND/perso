@@ -21,8 +21,10 @@ export const APP_Is = 'AIzaSyBsK6a4cgI9g94bdY050vnuI3BP3ejiiXE';
 })
 export class HomeComponent implements OnInit {
   _projet_store = inject(ProjetStore);
+  _entreprise_store = inject(EntrepriseStore);
   //methods
   ngOnInit() {
     this._projet_store.loadProjets();
+    this._entreprise_store.loadEntreprises();
   }
 }

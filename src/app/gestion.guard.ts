@@ -7,10 +7,10 @@ export const gestionGuard: CanActivateFn = (route, state) => {
   const _service = inject(WenService);
   const _auth_service = inject(AuthenService);
   const router = inject(Router);
-  if (_auth_service.userSignal() && (_auth_service.userSignal()?.role == "admin" ||_auth_service.userSignal()?.role == "user2")) {
+  if (_auth_service.userSignal() && (_auth_service.userSignal()?.role == "admin" ||_auth_service.userSignal()?.role == "user1")) {
     return true;
   } else {
-    //alert("droits requis pour continuer");
+ alert('Vous n\'avez pas les droits pour accéder à cette page');
     return false;
   }
 };
