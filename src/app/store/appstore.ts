@@ -347,8 +347,8 @@ export const UserStore = signalStore(
                     ))
                 }))),
             updateUser: rxMethod<tab_personnel>(pipe(
-                switchMap((personnel) => {
-                    return _task_service.updateModel("myusers",personnel).pipe(
+                switchMap((user) => {
+                    return _task_service.updateModel("myusers",user).pipe(
                         tap({
                             next: () => {
                                

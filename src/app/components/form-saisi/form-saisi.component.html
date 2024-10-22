@@ -27,6 +27,16 @@
                             {{row.valeur}}</mat-option>
                     </mat-select>
                 </ng-container>
+                <ng-container *ngSwitchCase="'selectM'">
+                    <mat-label>
+                        {{label()}}
+                    </mat-label>
+                    <span aria-hidden="true" class="placeholder-required"> *</span>
+                    <mat-select [formControlName]="control_name()" (selectionChange)="selectChange($event.value)" multiple="">
+                        <mat-option *ngFor="let row of tableau()" [value]="row.id">
+                            {{row.valeur}}</mat-option>
+                    </mat-select>
+                </ng-container>
                 <!-- For date picker -->
                 <ng-container *ngSwitchCase="'date'">
                     <mat-label>

@@ -4118,18 +4118,21 @@ th {
   justify-content: center;
   height: 500px;
   align-items: center;
-  margin-top: 20px;
-  background-color: red;
+  padding-top: 250px;
+  padding-left: 10px;
+
+  background-color: rgb(225, 219, 219);
   width: 100%;
   .row1{
    width: 50%;
    background-color: blue;
-
+   margin-right: 10px;
+   border: 1px solid black;
 
   }
   .row2{
     width: 50%;
     background-color: rgb(0, 255, 128);
- 
+    margin-right: 10px;
    }
 }

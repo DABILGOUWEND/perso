@@ -92,6 +92,10 @@
     ) {<app-form-saisi label={{item.label}} type={{item.type}} control_name={{item.control_name}}
         [tableau]="item.tableau" [parent_FG]="formGroup" (ChangeSelectEvent)="ChangeSelect($event,item.control_name)">
     </app-form-saisi>}
+     @case ("selectM"
+    ) {<app-form-saisi label={{item.label}} type={{item.type}} control_name={{item.control_name}}
+        [tableau]="item.tableau" [parent_FG]="formGroup" (ChangeSelectEvent)="ChangeSelect($event,item.control_name)">
+    </app-form-saisi>}
     }
     }
 </ng-template>
