@@ -39,7 +39,7 @@ export class LoginComponent {
   ngOnInit() {
   }
   setMessage() {
-    if (this.authservice.isloggedIn()) {
+    if (this.authservice.userSignal()?.uid!=="") {
       this.message.set('vous êtes connecté.')
     } else {
       this.message.set('identifiant ou mot de passe incorrecte.')

@@ -194,7 +194,11 @@ export class PersonnelComponent  implements OnInit{
         email: valeur.email,
         num_matricule: valeur.num_matricule,
         statut_id: valeur.statut_id,
-        presence:[]
+        presence:[],
+        dates:[],
+        heuresN:[],
+        heureSup:[]
+  
       }
       this.personnel_store.addPersonnel(mydata)
     }

@@ -1,1 +1,48 @@
-<p>tableau-bord works!</p>
+<div class="tableau_bord">
+    <div class="row1">
+        <app-essai [table]="table()" [table_update_form]="table_update_form" [dataSource]="_user_store.users_data"
+        [titre_tableau]="titre_tableau()" [displayedColumns]="displayedColumns" (newItemEvent)="updateData($event)"
+        (RemoveItemEvent)="deleteData($event)" (RechercheEvent)="recherche($event)" (AfficheToutEvent)="afficheTout()"
+        [titre]="titre" (PatchEvent)="PatchEventFct($event)" (addEvent)="addEventFct()">
+    </app-essai>
+    </div>
+    <div class="row2">
+        <app-essai [table]="table()" [table_update_form]="table_update_form" [dataSource]="_user_store.users_data"
+        [titre_tableau]="titre_tableau()" [displayedColumns]="displayedColumns" (newItemEvent)="updateData($event)"
+        (RemoveItemEvent)="deleteData($event)" (RechercheEvent)="recherche($event)" (AfficheToutEvent)="afficheTout()"
+        [titre]="titre" (PatchEvent)="PatchEventFct($event)" (addEvent)="addEventFct()">
+    </app-essai>
+    </div>
+   
+</div>
+
+
+<ng-template #titre>
+    <div class="content_head_perso">
+        <h2> {{titre_tableau()}}</h2>
+    </div>
+</ng-template>
+<div class="tableau_bord">
+    <div class="row1">
+        <app-essai [table]="table()" [table_update_form]="table_update_form" [dataSource]="_user_store.users_data"
+        [titre_tableau]="titre_tableau()" [displayedColumns]="displayedColumns" (newItemEvent)="updateData($event)"
+        (RemoveItemEvent)="deleteData($event)" (RechercheEvent)="recherche($event)" (AfficheToutEvent)="afficheTout()"
+        [titre]="titre" (PatchEvent)="PatchEventFct($event)" (addEvent)="addEventFct()">
+    </app-essai>
+    </div>
+    <div class="row2">
+        <app-essai [table]="table()" [table_update_form]="table_update_form" [dataSource]="_user_store.users_data"
+        [titre_tableau]="titre_tableau()" [displayedColumns]="displayedColumns" (newItemEvent)="updateData($event)"
+        (RemoveItemEvent)="deleteData($event)" (RechercheEvent)="recherche($event)" (AfficheToutEvent)="afficheTout()"
+        [titre]="titre" (PatchEvent)="PatchEventFct($event)" (addEvent)="addEventFct()">
+    </app-essai>
+    </div>
+   
+</div>
+
+
+<ng-template #titre>
+    <div class="content_head_perso">
+        <h2> {{titre_tableau()}}</h2>
+    </div>
+</ng-template>

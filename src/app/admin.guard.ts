@@ -10,7 +10,7 @@ export const adminGuard: CanActivateFn = (route, state) => {
   if (_auth_service.userSignal() && _auth_service.userSignal()?.role == "admin") {
     return true;
   } else {
-    alert("droits requis pour continuer");
+    //alert("droits requis pour continuer");
     return false;
   }
 

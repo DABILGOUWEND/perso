@@ -298,7 +298,7 @@ export const UserStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar), _auth = inject(Auth)) =>
+    withMethods((store, _task_service = inject(TaskService), snackbar = inject(MatSnackBar), _auth = inject(Auth)) =>
     (
         {
             setUrl(url: string) {
@@ -309,41 +309,60 @@ export const UserStore = signalStore(
             },
 
             loadUsers: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallUsers().pipe(
+                return _task_service.getallModels("myusers").pipe(
                     tap((data) => {
                         patchState(store, { users_data: data })
                     })
                 )
             }
             ))),
-            loadUser: rxMethod<void>(pipe(switchMap(() => {
-                let myuser$ = user(_auth);
-                return myuser$.pipe(
-                    tap((data: any) => {
-                        let filtre = store.users_data().find(x => x.uid == data.uid);
-                        patchState(store, { user: data })
-                    })
-                )
-            }
-            ))),
-
-            removeUser: rxMethod<string>(pipe(
-                switchMap((id) => {
-                    return monservice.deleteUser(id).pipe(tap(
-                        {
+            addUser: rxMethod<any>(pipe(
+                switchMap((personnel) => {
+                    return _task_service.addModel("myusers",personnel).pipe(
+                        tap({
                             next: () => {
-                                const updatedonnes = store.users_data().filter(x => x.uid != id)
-                                patchState(store, { users_data: updatedonnes })
-                                Showsnackerbaralert('élément supprimé', 'pass', snackbar)
+                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             },
                             error: () => {
                                 patchState(store, { message: 'echoué' });
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
                             }
                         }
-
+                        )
+                    )
+                })
+            )),
+            removeUser: rxMethod<string>(pipe(
+                switchMap((id) => {
+                    return _task_service.deleteModel("myusers",id).pipe(tap({
+                        next: () => {
+                            
+                            Showsnackerbaralert('élément supprimé', 'pass', snackbar)
+                        },
+                        error: () => {
+                            patchState(store, { message: 'echoué' });
+                            Showsnackerbaralert('échoué', 'fail', snackbar)
+                        }
+                    }
                     ))
                 }))),
+            updateUser: rxMethod<tab_personnel>(pipe(
+                switchMap((personnel) => {
+                    return _task_service.updateModel("myusers",personnel).pipe(
+                        tap({
+                            next: () => {
+                               
+                                Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
+                            },
+                            error: () => {
+                                patchState(store, { message: 'echoué' });
+                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                            }
+                        }
+                        )
+                    )
+                })
+            )),
 
         }
     ))
@@ -731,6 +750,7 @@ export const PersonnelStore = signalStore(
             getDates: computed(() => {
                 let personnel = store.personnel_data();
                 let dates = personnel.map(x => x.dates);
+                console.log(personnel.filter(x => x.dates==undefined))
                 let result: any = []
                 dates.forEach(element => {
                     result = [...result, ...element]
@@ -895,7 +915,7 @@ export const PersonnelStore = signalStore(
             ))),
             addPersonnel: rxMethod<any>(pipe(
                 switchMap((personnel) => {
-                    return task_service.addPersonnel(personnel).pipe(
+                    return task_service.addModel(store.path_string(),personnel).pipe(
                         tap({
                             next: () => {
                                 const updatedonnes = [...store.personnel_data(), personnel]
@@ -913,7 +933,7 @@ export const PersonnelStore = signalStore(
             )),
             removePersonnel: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return task_service.deletePersonnel(id).pipe(tap({
+                    return task_service.deleteModel(store.path_string(),id).pipe(tap({
                         next: () => {
                             const updatedonnes = store.personnel_data().filter(x => x.id != id)
                             patchState(store, { personnel_data: updatedonnes })
@@ -938,7 +958,7 @@ export const PersonnelStore = signalStore(
                 ))),
             updatePersonnel: rxMethod<tab_personnel>(pipe(
                 switchMap((personnel) => {
-                    return task_service.updatePersonnel(personnel).pipe(
+                    return task_service.updateModel(store.path_string(),personnel).pipe(
                         tap({
                             next: () => {
                                 var data = store.personnel_data()

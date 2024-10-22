@@ -5,7 +5,6 @@ import { AuthenService } from './authen.service';
 import { Auth } from '@angular/fire/auth';
 import { ApproGasoilStore, ClasseEnginsStore, DatesStore, EnginsStore, GasoilStore, PannesStore, PersonnelStore, ProjetStore } from './store/appstore';
 import { TaskService } from './task.service';
-import { GasoilService } from './services/gasoil.service';
 
 @Component({
   selector: 'app-root',
@@ -18,12 +17,14 @@ export class AppComponent implements OnInit {
   constructor() {
     this._auth.onAuthStateChanged(
       (userCredential) => {
-        if (userCredential)
+        if (userCredential) {
           this._auth_service.handleCreateUser(userCredential);
+        }else{
+          this._auth_service.logout().subscribe();
+        }
+
       })
 
-   
-    
   }
 
 
@@ -39,8 +40,6 @@ export class AppComponent implements OnInit {
   title = signal('wenbtp');
   ngOnInit() {
     this._auth_service.autoLogin();
-/*     this._classes_engins_store.loadclasses(); 
-    this._engins_store.loadengins() ;
-    this._projet_store.loadProjets(); */
+
   }
 }

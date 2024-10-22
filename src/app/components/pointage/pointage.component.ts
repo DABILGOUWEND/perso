@@ -105,10 +105,10 @@ export class PointageComponent implements OnInit {
 
   data_expand = computed(() => {
     let tab: any[] = [];
-    var init = 5;
-    var debut_date = '21/' + init + '/2024';
+    var init = 0o5;
+    var debut_date = '21/' + '0'+init + '/2024';
     var fin_date = this.getfin_date(debut_date);
-    while (fin_date.getMonth() <= new Date().getMonth()) {
+    while (fin_date.getMonth() <= new Date().getMonth()+1) {
       init++;
       let dates =this.personnel_store.getDates().filter((x: any) => {
         return this._service.convertDate(x).getTime() >= this._service.convertDate(debut_date).getTime()
@@ -121,7 +121,7 @@ export class PointageComponent implements OnInit {
         'debut' : debut_date,
         'fin' : fin_date.toLocaleDateString()
       });
-      debut_date = '21/' + init + '/2024';
+      debut_date = '21/' + (init>=10?init:('0'+init) )+ '/2024';
       fin_date = this.getfin_date(debut_date);
 
     }

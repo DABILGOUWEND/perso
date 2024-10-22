@@ -5,14 +5,14 @@ import { Router } from '@angular/router';
 import { Auth, signInWithEmailAndPassword, signOut, user } from '@angular/fire/auth';
 import { collection, collectionData, deleteDoc, Firestore, setDoc } from '@angular/fire/firestore';
 import { WenService } from './wen.service';
-import {  browserSessionPersistence, getAuth, setPersistence, signInWithCustomToken } from 'firebase/auth';
+import { browserLocalPersistence, browserSessionPersistence, getAuth, setPersistence, signInWithCustomToken } from 'firebase/auth';
 import { Database } from '@angular/fire/database';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { and, doc, getDoc } from 'firebase/firestore';
-import { sign } from 'node:crypto';
+
 import { isPlatformBrowser, NumberSymbol } from '@angular/common';
-import { ProjetStore } from './store/appstore';
+
 const apiKey = environment.firebaseConfig.apiKey;
 @Injectable({
   providedIn: 'root'
@@ -31,7 +31,6 @@ export class AuthenService {
   _service = inject(WenService);
   db: Firestore = inject(Firestore);
   token = signal('');
-  user$ = user(this._auth);
   loadings = signal(false);
   userSignal = signal<Users | undefined>(undefined);
   affichage = signal<string | null | undefined>('')
@@ -61,7 +60,7 @@ export class AuthenService {
   loginFirebase(email: string, password: string): Observable<any> {
     this.loadings.set(true);
     const auth = getAuth();
-    return from(this._auth.setPersistence(browserSessionPersistence).then(() => {
+    return from(this._auth.setPersistence(browserLocalPersistence).then(() => {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
@@ -76,22 +75,21 @@ export class AuthenService {
   }
   logout(): Observable<any> {
     let promise = signOut(this._auth).then(() => {
-      setTimeout(() => {
-        this.router.navigateByUrl('/login');
-        localStorage.removeItem('user');
-        this.userSignal.set(undefined);
-        this.current_projet_id.set(undefined);
-      }, 2000);
-    }
-    );
+      this.router.navigateByUrl('/login');
+      localStorage.removeItem('user');
+      this.userSignal.set(undefined);
+      this.current_projet_id.set(undefined);
+
+    })
+      .catch((error) => {
+        console.log('error', error)
+      })
+
 
     return from(promise);
   }
 
-  isloggedIn() {
-    let uid = localStorage.getItem('token');
-    return uid != null;
-  }
+
   autoLogin() {
     if (this.isBrowser) {
       let data = localStorage.getItem('user');
@@ -115,8 +113,7 @@ export class AuthenService {
     }
     this.userSignal.set(new_user);
     localStorage.setItem('user', JSON.stringify(this.userSignal()));
-    if(environment.production)
-    {
+    if (environment.production) {
       this.getallUsersByUid(user.uid).pipe(
         tap(
           (resp: any) => {
@@ -139,11 +136,10 @@ export class AuthenService {
 
           }
         )
-      ).subscribe() 
-    }else{
-      this.getallUsersByuidJson(user.uid).subscribe(resp=>{
-        if(resp)
-        {
+      ).subscribe()
+    } else {
+      this.getallUsersByuidJson(user.uid).subscribe(resp => {
+        if (resp) {
           this.userSignal.update(
             (user: any) =>
             (
@@ -157,7 +153,7 @@ export class AuthenService {
             )
           )
           localStorage.setItem('user', JSON.stringify(this.userSignal()));
-            this.current_projet_id.set(resp.projet_id[0]);
+          this.current_projet_id.set(resp.projet_id[0]);
         }
       })
     }
@@ -165,12 +161,11 @@ export class AuthenService {
   }
 
 
-  getallUsersByuidJson(uid: string): Observable<Users|undefined> {
-    return this._http.get<Users[]>('http://localhost:3000/users').pipe(map(resp=>resp.find(x=>x.uid==uid)))
+  getallUsersByuidJson(uid: string): Observable<Users | undefined> {
+    return this._http.get<Users[]>('http://localhost:3000/users').pipe(map(resp => resp.find(x => x.uid == uid)))
   }
-  lodal_apiUrl=computed(()=>
-  {
-    let api=environment.apiUrl;
+  lodal_apiUrl = computed(() => {
+    let api = environment.apiUrl;
     return api
   })
 
@@ -196,5 +191,5 @@ export class AuthenService {
   }
 
   //projets
-  
+
 }

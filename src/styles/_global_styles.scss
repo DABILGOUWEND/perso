@@ -844,6 +844,8 @@ wen-table:make-gold {
     }
 
     .content_soushead {
+      display: flex;
+
       h2 {
 
         color: black;
@@ -855,7 +857,7 @@ wen-table:make-gold {
         font-size: 25px;
       }
 
-      display: flex;
+
       border-bottom: 2px solid map-get($wen-colors, divider);
 
       .table-col1 {
@@ -908,9 +910,356 @@ wen-table:make-gold {
       }
 
       .table-col2 {
+        display: block;
         padding-top: 10px;
         padding-bottom: 10px;
         width: 50%;
+        text-align: center;
+        border-right: 2px solid map-get($wen-colors, divider);
+
+        h1 {
+          font-size: 22px;
+          font-weight: bold;
+        }
+
+        h2 {
+          font-size: 18px;
+          font-weight: bold;
+        }
+
+      }
+
+      .table-col3 {
+        display: block;
+        padding-top: 10px;
+        width: 20%;
+        text-align: center;
+        border-right: 2px solid map-get($wen-colors, divider);
+
+        .row1_col3 {
+
+          h2 {
+            font-size: 24px;
+          }
+        }
+
+        .row2_col3 {
+          background-color: #cbdbb0;
+
+          h2 {
+            font-size: 22px;
+          }
+        }
+
+      }
+
+      .tabcol1 {
+
+        width: 80%;
+        text-align: center;
+        background-color: rgb(226, 249, 251);
+        border-right: 5px solid map-get($wen-colors, divider);
+
+      }
+
+      .tabcol2 {
+
+        width: 40%;
+        text-align: center;
+        background-color: rgb(226, 249, 251);
+        border-right: 5px solid map-get($wen-colors, divider);
+
+      }
+
+      .tabcol3 {
+
+        width: 20%;
+        text-align: center;
+        background-color: rgb(226, 249, 251);
+        border-right: 2px solid map-get($wen-colors, divider);
+
+      }
+
+    }
+
+    .content_button {
+
+      margin-left: 10px;
+      margin-bottom: 20px;
+      padding-top: 10px;
+
+      mat-form-field {
+        width: 20%;
+        margin-left: 10px;
+      }
+
+      mat-label {
+        font-size: 20px;
+      }
+
+
+      button {
+        margin-left: 20px;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+    }
+
+    .content_add_button {
+      display: flex;
+      border-bottom: 2px solid rgb(142, 136, 148);
+
+      button {
+        margin-top: 5%;
+        margin-bottom: 5%;
+        background-color: #b3d1f0 !important;
+      }
+
+      .AlignGauche {
+        width: 20%;
+
+        button {
+          width: 60%;
+          margin-left: 20%;
+          margin-right: 20%;
+          background-color: #93cca3 !important;
+        }
+      }
+
+      .AlignMilieu {
+        width: 60%;
+
+        h2 {
+          font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+          font-size: 26px;
+          margin-top: 10px;
+          font-weight: bold;
+          text-align: center;
+        }
+
+        h3 {
+          font-size: 22px;
+          color: #07498a;
+          text-align: center;
+        }
+
+        h4 {
+          font-size: 20px;
+          color: #1777d7;
+          text-align: center;
+        }
+      }
+
+      .AlignDroite {
+        width: 20%;
+
+        button {
+          width: 60%;
+          margin-left: 20%;
+          margin-right: 20%;
+          background-color: #75a4e5 !important;
+        }
+      }
+    }
+
+    .content_body {
+      align-content: center;
+    }
+  }
+
+  mat-drawer-content#pointages {
+    display: block;
+
+    .content_head {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid map-get($wen-colors, divider);
+
+      h2 {
+        color: rgb(35, 34, 34);
+        font-family: 'Times New Roman', Times, serif;
+        text-align: center;
+        font-weight: bold;
+        font-size: 30px;
+      }
+
+      h3 {
+        font-size: 18px;
+      }
+
+      mat-form-field {
+        width: 40%
+      }
+
+      button {
+        margin-left: 90%;
+      }
+
+    }
+
+    .content_head_engins {
+      background-color: rgb(72, 80, 114);
+      padding-top: 10px;
+      border-bottom: 2px solid map-get($wen-colors, divider);
+
+      h2 {
+        color: white;
+        font-family: 'Times New Roman', Times, serif;
+        text-align: center;
+        font-weight: bold;
+        font-size: 30px;
+      }
+
+      h3 {
+        font-size: 18px;
+      }
+
+      mat-select {
+        width: 20%
+      }
+    }
+
+    .content_head_perso {
+      background-color: rgb(176, 161, 110);
+      padding-top: 10px;
+      border-bottom: 2px solid map-get($wen-colors, divider);
+
+      h2 {
+        color: white;
+        font-family: 'Times New Roman', Times, serif;
+        text-align: center;
+        font-weight: bold;
+        font-size: 30px;
+      }
+
+      h3 {
+        font-size: 18px;
+      }
+
+      mat-select {
+        width: 20%
+      }
+
+
+    }
+
+    .content_head_gasoil {
+      background-color: rgb(226, 203, 118);
+      padding-top: 10px;
+      border-bottom: 5px solid rgb(166, 104, 104);
+
+      h2 {
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        font-weight: bold;
+        font-size: 30px;
+      }
+
+      h3 {
+        font-size: 18px;
+      }
+
+      mat-select {
+        width: 20%
+      }
+
+
+    }
+
+    .content_head_panne {
+      background-color: rgba(61, 81, 65, 0.348);
+      padding-top: 10px;
+      border-bottom: 5px solid rgb(218, 211, 211);
+
+      h2 {
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        font-weight: bold;
+        font-size: 30px;
+      }
+
+      h3 {
+        font-size: 18px;
+      }
+
+      mat-select {
+        width: 20%
+      }
+
+
+    }
+
+    .content_soushead {
+      display: flex;
+      h2 {
+
+        color: black;
+        font-family: 'Times New Roman', Times, serif;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        text-align: center;
+        font-weight: bold;
+        font-size: 25px;
+      }
+
+
+      border-bottom: 2px solid map-get($wen-colors, divider);
+
+      .table-col1 {
+        display: block;
+        width: 30%;
+        text-align: center;
+        border-right: 2px solid map-get($wen-colors, divider);
+        padding-top: 10px;
+
+        mat-form-field {
+
+          width: 90%;
+        }
+
+        button {
+          margin-bottom: 10px;
+        }
+
+        .myrow1 {
+          padding-top: 20px;
+          width: 95%;
+          margin-left: 2.5%;
+          margin-right: 2.5%;
+          background-color: rgb(238, 219, 194);
+        }
+
+        .myrow2 {
+          padding-top: 20px;
+          width: 95%;
+          margin-left: 2.5%;
+          margin-right: 2.5%;
+          background-color: rgba(87, 153, 219, 0.362);
+
+          h2 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+          }
+
+          mat-select {
+            font-size: 22px !important;
+          }
+
+          mat-form-field {
+
+            font-size: 22px !important;
+          }
+        }
+
+      }
+
+      .tablecolo2 {
+        display: block;
+        background-color: red;
+        width: 40%;
         text-align: center;
         border-right: 2px solid map-get($wen-colors, divider);
 
@@ -2823,14 +3172,14 @@ wen-table:make-gold {
   .example-sidenav {
     display: block;
     align-items: center;
-    width: 25%;
+    width: 30%;
     border: 1px solid rgb(70, 68, 68);
   }
 
   .example-sidenav-content {
     display: block;
-    width: 75%;
-    padding-left: 0;
+    width: 70%;
+    padding-left: 5%;
     min-height: 1000px;
     border: 1px solid rgb(70, 68, 68);
   }
@@ -2888,18 +3237,20 @@ wen-table:make-gold {
 
   .row_pointage {
     display: flex;
-    height: 80px;
+    height: 50px;
     border-bottom: 2px solid map-get($wen-colors, divider);
     background-color: #84c2c2;
 
     h1 {
-      font-size: 14px;
-      font-weight: bold;
+      font-size: 18px;
       margin-top: 5px;
+      color: white;
+      margin-left: 10px;
     }
 
     button {
-      margin-top: 5px;
+      margin-top: 15px;
+      margin-left: 10px;
     }
 
   }
@@ -3609,7 +3960,7 @@ th {
     font-size: 24px;
     font-weight: bold;
   }
-  
+
   h4 {
     font-size: 16px;
     font-style: italic;
@@ -3737,7 +4088,8 @@ th {
 
   h3 {
     font-size: 14px;
-    margin-left: 10px;
+    margin-left: 20px;
+    border-bottom: 2px solid map-get($wen-colors, divider);
   }
 
   button {
@@ -3760,4 +4112,24 @@ th {
     margin-left: 10px;
   }
 
+}
+.tableau_bord {
+  display: flex;
+  justify-content: center;
+  height: 500px;
+  align-items: center;
+  margin-top: 20px;
+  background-color: red;
+  width: 100%;
+  .row1{
+   width: 50%;
+   background-color: blue;
+
+
+  }
+  .row2{
+    width: 50%;
+    background-color: rgb(0, 255, 128);
+ 
+   }
 }

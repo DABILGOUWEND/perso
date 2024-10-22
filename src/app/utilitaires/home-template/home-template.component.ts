@@ -16,7 +16,13 @@ import { Router } from '@angular/router';
   styleUrl: './home-template.component.scss'
 })
 export class HomeTemplateComponent implements OnInit{
-
+constructor()
+{
+  effect(() => {
+  //  console.log(this.projets())  
+}
+)
+}
  nav_liste=input.required<TemplateRef<any>>();
  toolbar=input.required<TemplateRef<any>>();
  content=input.required<TemplateRef<any>>();
@@ -25,6 +31,7 @@ export class HomeTemplateComponent implements OnInit{
  _router=inject((Router));  
  selected_projet_id=signal<string | undefined>('');
  ngOnInit() {
+  this._projet_store.loadProjets()
  }
  choix_projet(data:any)
  {
