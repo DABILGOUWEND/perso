@@ -1,3 +1,30 @@
-<app-tbord-users>
-    
+<div class="rubrique_class">
+    <mat-form-field>
+        <mat-label>Rubrique</mat-label>
+        <mat-select (selectionChange)="choix_rubrique($event)">
+            @for(item of items;track item)
+            {
+            <mat-option [value]="item.id">
+                {{item.value}}
+            </mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+
+</div>
+
+<app-tbord-users *ngIf="selected_rubrique()==1">
+
 </app-tbord-users>
+
+<app-tbord-classes-engins *ngIf="selected_rubrique()==2">
+
+</app-tbord-classes-engins>
+
+<app-tbord-entreprises *ngIf="selected_rubrique()==3">
+
+</app-tbord-entreprises>
+
+<app-tbord-projets *ngIf="selected_rubrique()==4">
+
+</app-tbord-projets>

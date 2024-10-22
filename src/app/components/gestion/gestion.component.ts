@@ -3,7 +3,7 @@ import { ImportedModule } from '../../modules/imported/imported.module';
 import { HomeTemplateComponent } from '../../utilitaires/home-template/home-template.component';
 import { AuthenService } from '../../authen.service';
 import { Router, RouterOutlet } from '@angular/router';
-import { EnginsStore, ClasseEnginsStore, PersonnelStore, ProjetStore, CompteStore, PannesStore, GasoilStore, ApproGasoilStore, StatutStore } from '../../store/appstore';
+import { EnginsStore, ClasseEnginsStore, PersonnelStore, ProjetStore, CompteStore, PannesStore, GasoilStore, ApproGasoilStore, StatutStore, TachesStore } from '../../store/appstore';
 import { TaskService } from '../../task.service';
 
 
@@ -16,15 +16,6 @@ import { TaskService } from '../../task.service';
 })
 export class GestionComponent implements OnInit {
   ngOnInit() {
-    //set path
-    this._personnel_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/personnel');
-    this._engins_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/engins');
-    this._classe_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/classes_engins');
-    this._conso_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/conso_gasoil');
-    this._pannes_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/pannes');
-    this._appro_go.setPathString('comptes/' + this._auth_service.current_projet_id() + '/appro_go');
-  this._statut_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/statuts_personnel');
-    
     //load data
     this._projet_store.loadProjets();
     this._engins_store.loadengins();
@@ -34,13 +25,12 @@ export class GestionComponent implements OnInit {
     this._appro_go.loadappro();
     this._pannes_store.loadPannes();
     this._statut_store.loadstatut();
+    this._taches_store.loadTaches()
   }
-
   constructor() {
     effect(() => {
     })
   }
-
   //injections
   _engins_store = inject(EnginsStore);
   _classe_store = inject(ClasseEnginsStore);
@@ -53,6 +43,7 @@ export class GestionComponent implements OnInit {
   _appro_go = inject(ApproGasoilStore);
   _statut_store = inject(StatutStore);
   _auth_service = inject(AuthenService);
+  _taches_store = inject(TachesStore)
   _router = inject(Router);
 
   logout() {
