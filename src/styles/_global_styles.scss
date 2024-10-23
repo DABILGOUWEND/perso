@@ -1014,7 +1014,8 @@ wen-table:make-gold {
       button {
         margin-top: 5%;
         margin-bottom: 5%;
-        background-color: #b3d1f0 !important;
+        margin-left: 50px;
+        background-color: #87829d !important;
       }
 
       .AlignGauche {
@@ -1029,6 +1030,7 @@ wen-table:make-gold {
       }
 
       .AlignMilieu {
+       
         width: 60%;
 
         h2 {
@@ -1054,13 +1056,7 @@ wen-table:make-gold {
 
       .AlignDroite {
         width: 20%;
-
-        button {
-          width: 60%;
-          margin-left: 20%;
-          margin-right: 20%;
-          background-color: #75a4e5 !important;
-        }
+        background-color: #87829d;
       }
     }
 
@@ -3179,7 +3175,6 @@ wen-table:make-gold {
   .example-sidenav-content {
     display: block;
     width: 70%;
-    padding-left: 5%;
     min-height: 1000px;
     border: 1px solid rgb(70, 68, 68);
   }
@@ -3219,7 +3214,7 @@ wen-table:make-gold {
 
 .panneau_lat {
   width: 100%;
-  border: 2px solid rgb(122, 66, 66);
+  border: 1px solid rgb(122, 66, 66);
 
   .titre {
     padding-top: 5px;

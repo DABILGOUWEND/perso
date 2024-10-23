@@ -217,26 +217,10 @@ export class TaskService {
 
   //projets
   getallProjets(): Observable<Projet[]> {
-    if (!environment.production) {
-      return this._http.get<Projet[]>('http://localhost:3000/projets').pipe(
-        map((resp) => resp.map((x: any) => {
-          return {
-            id: x.id.toString(),
-            code: x.code,
-            intitule: x.intitule,
-            maitre_ouvrage_id: x.maitre_oeuvre_id,
-            maitre_oeuvre_id: x.maitre_oeuvre_id,
-            entreprise_id: x.entreprise_id,
-            bailleur_id: x.bailleur_id,
-            date_debut: "",
-            duree: 0
-          }
-        }))
-      )
-    } else {
+
       const Collection = collection(this.db, '/projet');
       return collectionData(Collection, { idField: 'id' }) as Observable<Projet[]>
-    }
+    
 
   }
   addProjets(data: any): Observable<string> {

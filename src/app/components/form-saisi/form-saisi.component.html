@@ -62,7 +62,7 @@
                 <mat-date-range-picker #daterangepicker></mat-date-range-picker>
                 <mat-error>
                     {{control.hasError('required')?
-                    (required_error || 'Ce champ ne peut pas être vide.')
+                    (required_error() || 'Ce champ ne peut pas être vide.')
                     : (control.hasError('message')?
                     control.getError('message')
                     : invalid_error)}}

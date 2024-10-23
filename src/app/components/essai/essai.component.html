@@ -112,12 +112,12 @@
                 <mat-label>Rechercher</mat-label>
                 <input matInput (keyup)="applyFilter($event)" #input placeholder="rechercher">
             </mat-form-field>
-            <button mat-fab extended (click)="affichertout()" color="primary"> Afficher tout</button>
+            <button mat-flat-button (click)="affichertout()" color="primary"> Afficher tout</button>
         </div>
     </div>
     <div class="content_add_button">
         <div class="Aligndroite">
-            <button (click)="addElement()" mat-fab extended color="primary" matTooltip="Ajouter nouveau"
+            <button (click)="addElement()" mat-flat-button color="primary" matTooltip="Ajouter nouveau"
                 matTooltipPosition="left" aria-label="Ajouter nouveau">
                 <span class="material-icons">
                     playlist_add

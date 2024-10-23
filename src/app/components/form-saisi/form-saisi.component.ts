@@ -1,4 +1,4 @@
-import { Component, EventEmitter, input, Input, OnInit, Output } from '@angular/core';
+import { Component, input,  OnInit, output } from '@angular/core';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { AbstractControl, FormGroup } from '@angular/forms';
 
@@ -12,26 +12,26 @@ import { AbstractControl, FormGroup } from '@angular/forms';
 export class FormSaisiComponent implements OnInit {
 
   label = input.required<string>();
-  required_error = input<string>();
+  required_error = input<string>('');
   type = input.required<string>();
   parent_FG = input.required<FormGroup>();
   control_name = input.required<string>();
   tableau = input<any>();
-  @Output() ChangeSelectEvent = new EventEmitter()
-  @Output() RadioButtonEvent = new EventEmitter()
+  ChangeSelectEvent = output()
+  RadioButtonEvent = output()
 
   invalid_error: string = 'Donnée invalide.';
   placeholder = input<string>();
   control!: AbstractControl;
   control2!: AbstractControl;
-  @Input() enddate_control_name: string;
+  enddate_control_name = input<string>();
 
   ngOnInit() {
     this.control = this.parent_FG().get(this.control_name()) as AbstractControl;
     //check if required validator
     if (!!this.control.validator) {
       let validators = this.control.validator({} as AbstractControl);
-     
+
     }
     //update the invalid error for date fields
     if (this.type() == 'date' || this.type() == 'daterange') {

@@ -99,30 +99,16 @@ export interface sous_traitant {
     lieu_naissance: string,
     num_cnib: string
 }
-export interface Entreprise {
-    id: string,
-    entreprise: string,
-    enseigne: string,
-    ifu: string,
-    rccm: string,
-    adresse: string,
-    phone: string,
-    nom_responsable: string,
-    prenom_responsable: string,
-    date_naissance: string,
-    lieu_naissance: string,
-    num_cnib: string
-}
+
 export interface Projet {
     id: string
     code: string,
-    intitule: string
-    maitre_ouvrage_id: string,
-    maitre_oeuvre_id: string,
+    intitule: string,
+    maitre_ouvrage: string, 
+    maitre_oeuvre: string,
     entreprise_id: string,
-    bailleur_id: string,
-    date_debut: string,
-    duree: number
+    financement: string,
+    descrip_travaux: string,
 
 }
 export interface Devis {
