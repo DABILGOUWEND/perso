@@ -1,5 +1,5 @@
 <mat-drawer-container class="wen-table-drawer-container">
-    <mat-drawer mode="over" position="end" id="table_panne" [opened]="open_tab_pannes()" disableClose="true">
+    <mat-drawer class="edit_pannes" mode="over" position="end"  [opened]="open_tab_pannes()" disableClose="true">
         <section class="table-update">
             <div class="table-update__body">
                 <app-table-panne [engin]="engin()" (close)="onclose()">
@@ -7,8 +7,8 @@
             </div>
         </section>
     </mat-drawer>
-    <mat-drawer-content>
-        <div class="content_head_panne">
+    <mat-drawer-content class="pannes">
+        <div class="content_head">
             <h2>Déclaration de pannes</h2>
         </div>
         <table mat-table [dataSource]="datasource()" class="wen-table">

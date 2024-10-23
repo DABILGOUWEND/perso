@@ -52,7 +52,7 @@ export class TablePanneComponent implements OnInit {
   UpdatePanne() {
     if (this.formG.valid) {
       let saisies = this.formG.value;
-      if (!this.is_update) {
+      if (!this.is_update()) {
         let donnees =
         {
           id: "",
@@ -61,7 +61,7 @@ export class TablePanneComponent implements OnInit {
           fin_panne: this.selected() === "2" ? saisies.fin_panne.toLocaleDateString() : "",
           heure_debut: saisies.heure_debut,
           heure_fin: this.selected() === "2" ? saisies.heure_fin : "",
-          motif_panne: saisies.motif_panne,
+          motif_panne: saisies.motif_panne? saisies.motif_panne:"",
           situation: this.selected() === "1" ? "garage" : "dépanné",
         }
         this.PanneStore.addPannes(donnees);
@@ -75,9 +75,10 @@ export class TablePanneComponent implements OnInit {
           fin_panne: this.selected() === "2" ? saisies.fin_panne.toLocaleDateString() : "",
           heure_debut: saisies.heure_debut,
           heure_fin: this.selected() === "2" ? saisies.heure_fin : "",
-          motif_panne: saisies.motif_panne,
+          motif_panne: saisies.motif_panne? saisies.motif_panne:"",
           situation: this.selected() === "1" ? "garage" : "dépanné",
         }
+        console.log(donnees);
         this.PanneStore.updatePannes(donnees);
       }
       this.formG.reset();
@@ -94,7 +95,8 @@ export class TablePanneComponent implements OnInit {
     this.formG.reset();
   }
   choix_situation(data: any) {
-    this.selected = data.value;
+    this.selected.set(data.value);
+    console.log(this.selected())
     if (data.value === "2") {
       this.formG.get('fin_panne')?.setValidators(Validators.required);
       this.formG.get('heure_fin')?.setValidators(Validators.required);

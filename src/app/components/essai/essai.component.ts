@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, Signal, TemplateRef, ViewChild, WritableSignal, computed, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, Signal, TemplateRef, ViewChild, WritableSignal, computed, inject, input, signal } from '@angular/core';
 import { TableComponent } from '../table/table.component';
 import { MatTableDataSource } from '@angular/material/table';
 import { Engins, tab_personnel } from '../../models/modeles';
@@ -14,7 +14,7 @@ import { FormSaisiComponent } from '../form-saisi/form-saisi.component';
   imports: [TableComponent, FormSaisiComponent, KeyValuePipe, ImportedModule],
   templateUrl: './essai.component.html',
   styleUrl: './essai.component.scss'
-})
+}) 
 export class EssaiComponent implements OnInit {
 
   is_open = signal(false)
@@ -22,7 +22,7 @@ export class EssaiComponent implements OnInit {
   current_row: WritableSignal<any> = signal([])
   @Input() titre: TemplateRef<any>;
   @Input() table_update_form: FormGroup
-  @Input() titre_tableau: string
+
   @Input() table: any
   @Input() displayedColumns: any
   @Input() dataSource: any
@@ -34,6 +34,7 @@ export class EssaiComponent implements OnInit {
   @Output() PatchEvent=new EventEmitter()
   @Output() addEvent=new EventEmitter()
   header_titles: string[] = []
+  className=input<string>()
   donnees_table = computed(() => {
     return new MatTableDataSource<any>(this.dataSource())
   })

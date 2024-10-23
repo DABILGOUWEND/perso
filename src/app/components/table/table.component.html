@@ -1,16 +1,22 @@
+<mat-drawer-container class="wen-table-drawer-container">
+    <mat-drawer 
+    [ngClass]="{'personnel':className()=='personnel','engins':className()=='engins',
+        'default':className()=='default'
+    }" 
+    mode="over" 
+    position="end" 
+    [opened]="is_open()"
+    disableClose="true">
+        <ng-container [ngTemplateOutlet]="Entete">
+        </ng-container>
+    </mat-drawer>
+    <ng-content select="mydrawer2">
 
-
-        <mat-drawer-container class="wen-table-drawer-container">
-            <mat-drawer mode="over" position="start" #table_update [opened]="is_open()" disableClose="true">
-                <ng-container [ngTemplateOutlet]="Entete">
-                </ng-container>
-            </mat-drawer>
-            <ng-content select="mydrawer2">
-        
-            </ng-content>
-            <mat-drawer-content>
-                <ng-container [ngTemplateOutlet]="Corps">
-                </ng-container>
-            </mat-drawer-content>
-        </mat-drawer-container> 
- 
+    </ng-content>
+    <mat-drawer-content [ngClass]="{'personnel':className()=='personnel','engins':className()=='engins',
+         'default':className()=='default'
+    }" >
+        <ng-container [ngTemplateOutlet]="Corps">
+        </ng-container>
+    </mat-drawer-content>
+</mat-drawer-container>

@@ -1,4 +1,4 @@
-<app-table [is_open]="is_open" [Entete]="Entete" [Corps]="Corps">
+<app-table [is_open]="is_open" [Entete]="Entete" [Corps]="Corps" [className]="className()">
     <ng-template ngProjectAs="mydrawer2">
         <ng-content select="mydrawer">
 
@@ -92,7 +92,7 @@
     ) {<app-form-saisi label={{item.label}} type={{item.type}} control_name={{item.control_name}}
         [tableau]="item.tableau" [parent_FG]="formGroup" (ChangeSelectEvent)="ChangeSelect($event,item.control_name)">
     </app-form-saisi>}
-     @case ("selectM"
+    @case ("selectM"
     ) {<app-form-saisi label={{item.label}} type={{item.type}} control_name={{item.control_name}}
         [tableau]="item.tableau" [parent_FG]="formGroup" (ChangeSelectEvent)="ChangeSelect($event,item.control_name)">
     </app-form-saisi>}
@@ -114,16 +114,17 @@
             </mat-form-field>
             <button mat-flat-button (click)="affichertout()" color="primary"> Afficher tout</button>
         </div>
+        <div class="table-col2">
+        </div>
     </div>
     <div class="content_add_button">
-        <div class="Aligndroite">
-            <button (click)="addElement()" mat-flat-button color="primary" matTooltip="Ajouter nouveau"
-                matTooltipPosition="left" aria-label="Ajouter nouveau">
-                <span class="material-icons">
-                    playlist_add
-                </span>
-                Nouveau
-            </button>
-        </div>
+        <button (click)="addElement()" mat-flat-button color="primary" matTooltip="Ajouter nouveau"
+            matTooltipPosition="left" aria-label="Ajouter nouveau">
+            <span class="material-icons">
+                playlist_add
+            </span>
+            Nouveau
+        </button>
+
     </div>
 </ng-template>

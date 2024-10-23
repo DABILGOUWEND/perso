@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, Input, OnInit, TemplateRef, WritableSignal, computed, inject } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, WritableSignal, computed, inject, input } from '@angular/core';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { ClasseEnginsStore, EnginsStore, PersonnelStore } from '../../store/appstore';
 import { MatTableDataSource } from '@angular/material/table';
@@ -18,6 +18,7 @@ export class TableComponent implements OnInit {
   @Input() Entete: TemplateRef<any>;
   @Input() Corps: TemplateRef<any>;
   @Input() is_open:WritableSignal<boolean>
+  className=input<string>()
   ngOnInit() {
 
   }

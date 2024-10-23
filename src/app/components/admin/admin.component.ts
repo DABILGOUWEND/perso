@@ -17,7 +17,7 @@ import { TaskService } from '../../task.service';
 export class AdminComponent implements OnInit {
 
   _engins_store = inject(EnginsStore);
-  _classe_store = inject(ClasseEnginsStore);
+  _classes_store = inject(ClasseEnginsStore);
   _personnel_store = inject(PersonnelStore);
   _projet_store = inject(ProjetStore);
   _compte_store = inject(CompteStore);
@@ -34,22 +34,11 @@ export class AdminComponent implements OnInit {
   _router=inject(Router);
   constructor() { }
   ngOnInit(){
-    this._personnel_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/personnel');
-    this._engins_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/engins');
-    this._classe_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/classes_engins');
-    this._conso_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/conso_gasoil');
-    this._pannes_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/pannes');
-    this._appro_go.setPathString('comptes/' + this._auth_service.current_projet_id() + '/appro_go');
-    this._statut_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/statuts_personnel');
-
     this._projet_store.loadProjets();
     this._entreprise_store.loadEntreprises();
     this._user_store.loadUsers();
-    this._classe_store.loadclasses();
+    this._classes_store.loadclasses();
     this._taches_store.loadTachesEngins();
-  
-
-
   }
   click_home(){
     this._router.navigateByUrl('/home');

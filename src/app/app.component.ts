@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { ImportedModule } from './modules/imported/imported.module';
 import { AuthenService } from './authen.service';
 import { Auth } from '@angular/fire/auth';
-import { ApproGasoilStore, ClasseEnginsStore, DatesStore, EnginsStore, GasoilStore, PannesStore, PersonnelStore, ProjetStore } from './store/appstore';
+import { ApproGasoilStore, ClasseEnginsStore, CompteStore, DatesStore, EnginsStore, EntrepriseStore, GasoilStore, PannesStore, PersonnelStore, ProjetStore, StatutStore, TachesStore } from './store/appstore';
 import { TaskService } from './task.service';
 
 @Component({
@@ -14,6 +14,24 @@ import { TaskService } from './task.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
+  _engins_store = inject(EnginsStore);
+  _classe_store = inject(ClasseEnginsStore);
+  _personnel_store = inject(PersonnelStore);
+  _projet_store = inject(ProjetStore);
+  _compte_store = inject(CompteStore);
+  _task_service = inject(TaskService);
+  _pannes_store = inject(PannesStore);
+  _conso_store = inject(GasoilStore);
+  _appro_go = inject(ApproGasoilStore);
+  _statut_store = inject(StatutStore);
+  _auth_service = inject(AuthenService);
+  _taches_store = inject(TachesStore);
+  _entreprise_store = inject(EntrepriseStore);
+  
+  _consogo_store = inject(GasoilStore);
+  _approgo_store = inject(ApproGasoilStore);
+  _classes_engins_store = inject(ClasseEnginsStore);
+
   constructor() {
     this._auth.onAuthStateChanged(
       (userCredential) => {
@@ -28,18 +46,18 @@ export class AppComponent implements OnInit {
   }
 
 
-  _auth_service = inject(AuthenService);
-  _consogo_store = inject(GasoilStore);
-  _approgo_store = inject(ApproGasoilStore);
-  _engins_store = inject(EnginsStore);
-  _classes_engins_store = inject(ClasseEnginsStore);
-  _projet_store = inject(ProjetStore);
-  _task_service = inject(TaskService);
-  _date_store = inject(DatesStore)
   _auth = inject(Auth);
   title = signal('wenbtp');
   ngOnInit() {
     this._auth_service.autoLogin();
+    this._personnel_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/personnel');
+    this._engins_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/engins');
+    this._classe_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/classes_engins');
+    this._conso_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/conso_gasoil');
+    this._pannes_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/pannes');
+    this._appro_go.setPathString('comptes/' + this._auth_service.current_projet_id() + '/appro_go');
+    this._statut_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/statuts_personnel');
+    this._taches_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/taches');
 
   }
 }

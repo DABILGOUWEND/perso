@@ -1,9 +1,9 @@
 <mat-drawer-container class="wen-table-drawer-container">
-    <mat-drawer mode="over" position="start"  [opened]="is_open()" disableClose="true">
+    <mat-drawer class="gasoil_conso" mode="over" position="start" [opened]="is_open()" disableClose="true">
         <ng-container [ngTemplateOutlet]="Entete">
         </ng-container>
     </mat-drawer>
-    <mat-drawer mode="over" position="end" id="table_ajout_gasoil" [opened]="appro_opened()"
+    <mat-drawer class="gasoil_appro" mode="over" position="end"  [opened]="appro_opened()"
         disableClose="true">
         <section class="table-update">
             <app-approgo [is_new_row_being_added]="true" (onRowAdd)="retourQuitter()">
@@ -11,7 +11,7 @@
             </app-approgo>
         </section>
     </mat-drawer>
-    <mat-drawer-content>
+    <mat-drawer-content class="gasoil">
         <ng-container [ngTemplateOutlet]="Corps">
         </ng-container>
     </mat-drawer-content>
@@ -129,7 +129,7 @@
         </div>
 
         <div class="AlignDroite">
-            <button (click)="addElement()" mat-fab extended color="primary" matTooltip="Ajouter nouveau"
+            <button (click)="addElement()" mat-flat-button  matTooltip="Ajouter nouveau"
                 matTooltipPosition="left" aria-label="nouvelle conso">
                 <span class="material-icons">
                     playlist_add

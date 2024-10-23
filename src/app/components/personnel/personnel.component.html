@@ -1,5 +1,6 @@
 <app-essai [table]="table()" [table_update_form]="table_update_form" [dataSource]="dataSource"
-    [titre_tableau]="titre_tableau()" [displayedColumns]="displayedColumns"
+    [displayedColumns]="displayedColumns"
+    [className]="'personnel'"
     (newItemEvent)="updateData($event)"
     (RemoveItemEvent)="deleteData($event)" (RechercheEvent)="recherche($event)"
     (AfficheToutEvent)="afficheTout()" 
@@ -9,7 +10,7 @@
 </app-essai>
 
 <ng-template #titre>
-    <div class="content_head_perso">
+    <div class="content_head">
         <h2> {{titre_tableau()}}</h2>
     </div>
-</ng-template>
+</ng-template> 
