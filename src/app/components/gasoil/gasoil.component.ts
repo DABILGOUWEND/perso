@@ -180,6 +180,7 @@ export class GasoilComponent {
       date_fin: new FormControl(new Date(), Validators.required)
     });
     effect(() => {
+      this._gasoil_service.chartOptions().data[0].dataPoints = this._gasoil_store.historique_consogo()[0];
     })
   }
   ngOnInit() {
@@ -189,7 +190,7 @@ export class GasoilComponent {
     this._gasoil_store.loadconso();
     this._appro_go.loadappro();
     this._gasoil_store.setCurrentDate(this.madate());
-    this._gasoil_service.chartOptions().data[0].dataPoints = this._gasoil_store.historique_consogo()[0];
+    
   }
   addEvent(event: MatDatepickerInputEvent<any>) {
     this.default_date.set(event.value);

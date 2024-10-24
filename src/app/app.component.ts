@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   _auth_service = inject(AuthenService);
   _taches_store = inject(TachesStore);
   _entreprise_store = inject(EntrepriseStore);
-  
+
   _consogo_store = inject(GasoilStore);
   _approgo_store = inject(ApproGasoilStore);
   _classes_engins_store = inject(ClasseEnginsStore);
@@ -35,14 +35,9 @@ export class AppComponent implements OnInit {
   constructor() {
     this._auth.onAuthStateChanged(
       (userCredential) => {
-        if (userCredential) {
+        if (userCredential)
           this._auth_service.handleCreateUser(userCredential);
-        }else{
-          this._auth_service.logout().subscribe();
-        }
-
       })
-
   }
 
 
