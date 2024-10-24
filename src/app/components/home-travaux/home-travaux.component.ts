@@ -4,6 +4,7 @@ import { ImportedModule } from '../../modules/imported/imported.module';
 import { AuthenService } from '../../authen.service';
 import { HomeTemplateComponent } from '../../utilitaires/home-template/home-template.component';
 import { AttachementStore, ConstatStore, DecompteStore, DevisStore, LigneDevisStore, ProjetStore, SstraitantStore } from '../../store/appstore';
+import { DataLoaderService } from '../../services/data-loader.service';
 
 @Component({
   selector: 'app-home-travaux',
@@ -14,36 +15,17 @@ import { AttachementStore, ConstatStore, DecompteStore, DevisStore, LigneDevisSt
 })
 export class HomeTravauxComponent implements OnInit {
 
-  //injections
-  _devis_Store = inject(DevisStore)
-  _constat_Store = inject(ConstatStore)
-  _ligneDevis_Store = inject(LigneDevisStore)
-  _sousTraitance_Store = inject(SstraitantStore)
-  _attachements_Store = inject(AttachementStore)
-  _decomptes_Store = inject(DecompteStore)
-  _projet_store = inject(ProjetStore)
+
   _auth_service = inject(AuthenService);
+  _loader_service = inject(DataLoaderService);
   _router = inject(Router);
 
   ngOnInit() {
-    //set path
-    this._devis_Store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/devis');
-    this._ligneDevis_Store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/lignes_devis');
-    this._sousTraitance_Store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/sous_traitants');
-    this._constat_Store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/constats');
-    this._attachements_Store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/attachements');
-    this._decomptes_Store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/decomptes');
+    this._loader_service.setPath();
+    this._loader_service.loadDataInit();
+    this._loader_service.Load_travaux_Data();
 
-    //load data
-    this._devis_Store.loadDevis();
-    this._ligneDevis_Store.loadLigneDevis();
-    this._sousTraitance_Store.loadSstraitants();
-    this._constat_Store.loadConstats();
-    this._attachements_Store.loadAttachements();
-    this._decomptes_Store.loadAllDecomptes();
-    this._projet_store.loadProjets();
-
-  }
+    }
 
   logout() {
     this._auth_service.logout().subscribe();

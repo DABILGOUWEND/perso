@@ -8,7 +8,7 @@ export const travauxGuard: CanActivateFn = (route, state) => {
   if (_auth_service.userSignal() && (_auth_service.userSignal()?.role == "admin" ||_auth_service.userSignal()?.role == "user2")) {
     return true;
   } else {
-    alert('Vous n\'avez pas les droits pour accéder à cette page');
+    //alert('Vous n\'avez pas les droits pour accéder à cette page');
     return false;
   }
 

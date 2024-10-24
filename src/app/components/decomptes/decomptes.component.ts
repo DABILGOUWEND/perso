@@ -16,10 +16,7 @@ export class DecomptesComponent implements OnInit {
 
    }
   _decomptes_Store = inject(DecompteStore);
-  _constat_store = inject(ConstatStore);
-  _ligneDevis_Store = inject(LigneDevisStore);
   _devisStore = inject(DevisStore);
-  _service = inject(WenService);
   _sstrce_Store = inject(SstraitantStore);
   _attachements_Store = inject(AttachementStore);
   _sousTraitance_Store = inject(SstraitantStore);

@@ -12,6 +12,7 @@ import { environment } from '../environments/environment';
 import { and, doc, getDoc } from 'firebase/firestore';
 
 import { isPlatformBrowser, NumberSymbol } from '@angular/common';
+import { DataLoaderService } from './services/data-loader.service';
 
 const apiKey = environment.firebaseConfig.apiKey;
 @Injectable({
@@ -85,7 +86,6 @@ export class AuthenService {
         console.log('error', error)
       })
 
-
     return from(promise);
   }
 
@@ -118,6 +118,7 @@ export class AuthenService {
         tap(
           (resp: any) => {
             let data = resp.data();
+          
             this.userSignal.update(
               (user: any) =>
               (
@@ -133,7 +134,7 @@ export class AuthenService {
             )
             localStorage.setItem('user', JSON.stringify(this.userSignal()));
             this.current_projet_id.set(data.projet_id[0]);
-
+         
           }
         )
       ).subscribe()
@@ -157,6 +158,7 @@ export class AuthenService {
         }
       })
     }
+    
 
   }
 

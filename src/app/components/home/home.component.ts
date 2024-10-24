@@ -11,6 +11,7 @@ import { WenService } from '../../wen.service';
 import { EnginsComponent } from '../engins/engins.component';
 import { Auth, authState } from '@angular/fire/auth';
 import { HomeTemplateComponent } from '../../utilitaires/home-template/home-template.component';
+import { DataLoaderService } from '../../services/data-loader.service';
 export const APP_Is = 'AIzaSyBsK6a4cgI9g94bdY050vnuI3BP3ejiiXE';
 @Component({
   selector: 'app-home',
@@ -21,25 +22,25 @@ export const APP_Is = 'AIzaSyBsK6a4cgI9g94bdY050vnuI3BP3ejiiXE';
 })
 export class HomeComponent implements OnInit {
   _engins_store = inject(EnginsStore);
-  _classes_store = inject(ClasseEnginsStore);
+  _classe_store = inject(ClasseEnginsStore);
   _personnel_store = inject(PersonnelStore);
   _projet_store = inject(ProjetStore);
-  _compte_store = inject(CompteStore);
-  _task_service = inject(TaskService);
   _pannes_store = inject(PannesStore);
   _conso_store = inject(GasoilStore);
   _appro_go = inject(ApproGasoilStore);
   _statut_store = inject(StatutStore);
-  _auth_service = inject(AuthenService);
   _taches_store = inject(TachesStore);
   _entreprise_store = inject(EntrepriseStore);
-  
-  //methods
-  ngOnInit() {
- 
-    this._projet_store.loadProjets();
-    this._entreprise_store.loadEntreprises();
+  _users_store = inject(UserStore);
 
-    ///
+  _auth_service = inject(AuthenService);
+  _loader_service = inject(DataLoaderService);
+
+  ngOnInit() {
+    this._loader_service.setPath();
+    this._loader_service.loadDataInit();
+    this._loader_service.Load_gestion_Data();
+    this._loader_service.Load_travaux_Data();
+     ///
   }
 }

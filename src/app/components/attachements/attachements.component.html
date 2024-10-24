@@ -1,5 +1,5 @@
 <mat-drawer-container class="wen-table-drawer-container">
-    <mat-drawer mode="over" position="end" #table_update_drawer id="decomptes" [opened]="is_table_opened()"
+    <mat-drawer class="default" mode="over" position="end" #table_update_drawer [opened]="is_table_opened()"
         disableClose="true">
         <section class="table-update">
             <div class="table-update__header">
@@ -125,12 +125,12 @@
             </div>
         </section>
     </mat-drawer>
-    <mat-drawer-content id="creationattach">
+    <mat-drawer-content class="default">
         <div class="content_head">
             <h2>ATTACHEMENTS</h2>
         </div>
 
-        <div class="titre_attach">  
+        <div class="titre_attach">
             <div class="block1">
                 <mat-form-field>
                     <mat-label>
@@ -156,7 +156,8 @@
                 <h3> {{entreprise_id()|entreprises:_sousTraitance_Store.donnees_sstraitant()|async}}</h3>
                 <h4>{{'ATTACHEMENT N° ' +defile_numero()}}</h4>
 
-                <button mat-icon-button (click)="defilement_back()" [disabled]="defile_numero()==_constat_store.min_numero()"><mat-icon>
+                <button mat-icon-button (click)="defilement_back()"
+                    [disabled]="defile_numero()==_constat_store.min_numero()"><mat-icon>
                         navigate_before</mat-icon></button>
                 <button mat-icon-button (click)="defilement_next()"
                     [disabled]="defile_numero()>= _constat_store.last_num()"><mat-icon>
@@ -173,7 +174,7 @@
                 <button mat-flat-button (click)="decompte()">
                     Fiche de décompte
                 </button>
-                <button mat-flat-button (click)="printFacture()" >
+                <button mat-flat-button (click)="printFacture()">
                     Facture
                 </button>
 
@@ -346,8 +347,6 @@
 
             </table>
         </div>
-
-
         <div>
             <qr-code>
 

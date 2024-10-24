@@ -750,7 +750,6 @@ export const PersonnelStore = signalStore(
             getDates: computed(() => {
                 let personnel = store.personnel_data();
                 let dates = personnel.map(x => x.dates);
-                console.log(personnel.filter(x => x.dates==undefined))
                 let result: any = []
                 dates.forEach(element => {
                     result = [...result, ...element]

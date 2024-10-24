@@ -1,5 +1,5 @@
 <mat-drawer-container class="wen-table-drawer-container">
-  <mat-drawer mode="over" position="end" #table_update_drawer id="creation_devis" [opened]="is_table_opened()"
+  <mat-drawer class="default"   mode="over" position="end" #table_update_drawer  [opened]="is_table_opened()"
     disableClose="true">
     <section class="table-update">
       <div class="table-update__header">
@@ -17,7 +17,7 @@
         </h3>
         }
       </div>
-      <div class="table-update__header_sous">
+      <div class="table-update__header">
             <mat-radio-group [(ngModel)]="type_rubrique" (change)="choix_type_rubrique()">
               <mat-radio-button value="1">Avec sous niveaux</mat-radio-button>
               <mat-radio-button value="2" [checked]="true">Sans sous niveaux</mat-radio-button>
@@ -186,7 +186,8 @@
 
     </section>
   </mat-drawer>
-  <mat-drawer-content id="creationdevis">
+  <mat-drawer-content class="default">y
+    
     <div class="content_head">
       <h2>DEVIS PRESTATIONS</h2>
     </div>
