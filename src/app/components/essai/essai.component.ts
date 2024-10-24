@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, Signal, TemplateRef, ViewChild, WritableSignal, computed, inject, input, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, Signal, TemplateRef, ViewChild, WritableSignal, computed, inject, input, output, signal } from '@angular/core';
 import { TableComponent } from '../table/table.component';
 import { MatTableDataSource } from '@angular/material/table';
 import { Engins, tab_personnel } from '../../models/modeles';
@@ -14,43 +14,44 @@ import { FormSaisiComponent } from '../form-saisi/form-saisi.component';
   imports: [TableComponent, FormSaisiComponent, KeyValuePipe, ImportedModule],
   templateUrl: './essai.component.html',
   styleUrl: './essai.component.scss'
-}) 
+})
 export class EssaiComponent implements OnInit {
-
+  ngOnInit() {
+    this.header_titles = Object.keys(this.displayedColumns());
+  }
   is_open = signal(false)
   is_update = signal(false)
-  current_row: WritableSignal<any> = signal([])
-  @Input() titre: TemplateRef<any>;
-  @Input() table_update_form: FormGroup
+  current_row=signal([])
 
-  @Input() table: any
-  @Input() displayedColumns: any
-  @Input() dataSource: any
-  @Output() newItemEvent = new EventEmitter<any>();
-  @Output() RemoveItemEvent = new EventEmitter<any>();
-  @Output() RechercheEvent = new EventEmitter<any>();
-  @Output() AfficheToutEvent = new EventEmitter();
-  @Output() ChangeSelectEvent = new EventEmitter();
-  @Output() PatchEvent=new EventEmitter()
-  @Output() addEvent=new EventEmitter()
+  titre = input.required<TemplateRef<any>>();
+  table_update_form = input.required<FormGroup>();
+  table = input()
+  displayedColumns = input.required<any>()
+  dataSource = input<any>()
+
+  newItemEvent = output<any>()
+  RemoveItemEvent = output<any>()
+  RechercheEvent = output<any>()
+  AfficheToutEvent = output()
+  ChangeSelectEvent = output<any>()
+  PatchEvent = output()
+  addEvent = output()
   header_titles: string[] = []
-  className=input<string>()
+  className = input<string>()
   donnees_table = computed(() => {
     return new MatTableDataSource<any>(this.dataSource())
   })
-  ngOnInit() {
-    this.header_titles = Object.keys(this.displayedColumns);
-  }
+ 
   modifier(row: any, id: string) {
     this.current_row.update(() => row)
     this.is_open.set(true)
     this.is_update.set(true)
     this.PatchEvent.emit(row)
-   
+
   }
   addNewItem() {
-    if (this.table_update_form.valid) {
-      let valeur = this.table_update_form.value
+    if (this.table_update_form().valid) {
+      let valeur = this.table_update_form().value
       this.newItemEvent.emit([valeur, this.current_row(), this.is_update()])
       this.is_open.set(false)
     }
@@ -76,8 +77,8 @@ export class EssaiComponent implements OnInit {
   affichertout() {
     this.AfficheToutEvent.emit()
   }
-  ChangeSelect(data: any,controle_name:any) {
-    this.ChangeSelectEvent.emit([data,controle_name])
+  ChangeSelect(data: any, controle_name: any) {
+    this.ChangeSelectEvent.emit([data, controle_name])
   }
 
 }
