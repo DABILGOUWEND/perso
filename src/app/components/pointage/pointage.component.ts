@@ -131,7 +131,6 @@ export class PointageComponent implements OnInit {
 
  //methods
   ngOnInit() {
-    this.personnel_store.loadPersonnel();
     this.madate.set(this.default_date().toLocaleDateString());
     this.personnel_store.filtrebyDate(this.madate());
     this.tab_expander.set(new Array(this.data_expand().length).fill(true))

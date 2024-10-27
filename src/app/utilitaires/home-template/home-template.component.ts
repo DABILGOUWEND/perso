@@ -7,6 +7,7 @@ import { GasoilComponent } from '../../components/gasoil/gasoil.component';
 
 import { EnginsStore, GasoilStore, ProjetStore } from '../../store/appstore';
 import { Router } from '@angular/router';
+import { DataLoaderService } from '../../services/data-loader.service';
 
 @Component({
   selector: 'app-home-template',
@@ -16,6 +17,7 @@ import { Router } from '@angular/router';
   styleUrl: './home-template.component.scss'
 })
 export class HomeTemplateComponent implements OnInit{
+  _loader_service=inject(DataLoaderService);
 constructor()
 {
   effect(() => {
@@ -31,11 +33,13 @@ constructor()
  _router=inject((Router));  
  selected_projet_id=signal<string | undefined>('');
  ngOnInit() {
-  this._projet_store.loadProjets()
  }
  choix_projet(data:any)
  {
   this._auth_service.current_projet_id.set(data.value);
+  this._loader_service.setPath();
+  this._loader_service.Load_gestion_Data();
+  this._loader_service.Load_travaux_Data();
  }
  logout()
  {

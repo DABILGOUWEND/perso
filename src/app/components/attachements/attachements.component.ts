@@ -25,7 +25,6 @@ export class AttachementsComponent implements OnInit {
   }
 
   authservice = inject(AuthenService)
-
   _constat_store = inject(ConstatStore)
   _ligneDevis_Store = inject(LigneDevisStore)
   _devisStore = inject(DevisStore)

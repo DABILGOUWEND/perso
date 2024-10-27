@@ -706,6 +706,148 @@ wen-table:make-gold {
 
 
   }
+  mat-drawer.devis {
+    width: 85%;
+    border: solid 1px map-get($wen-colors, border_botom_color);
+
+    .table-update {
+
+      .table-update__header {
+        width: 100%;
+        background-color: map-get($wen-colors, drawer_title_go_pannes);
+        border-bottom: 1px solid map-get($wen-colors, border_botom_color);
+        padding-top: 5px;
+
+        h2 {
+          text-align: center;
+          font-size: 28px;
+          margin-top: 0px;
+          font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+
+        h3 {
+          text-align: center;
+          font-size: 24px;
+          margin-top: 5px;
+        }
+      }
+
+      .table-update__body {
+        width: 100%;
+        padding-top: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+        border-bottom: 1px solid map-get($wen-colors, divider);     
+        h2 {
+          font-size: 24px;
+          text-align: center;
+          font-weight: bold;
+        }
+        .col1{
+          display: block;
+          width: 30%;
+          background-color: #cbdbb0;
+          mat-form-field{
+            width: 90%;
+          }
+        }
+        .col2{
+          display: block;
+          width: 70%;
+          background-color: #dbccb0;
+        }
+      }
+
+      .table-update__footer {
+
+        padding-top: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+
+        button {
+          width: 40%;
+          margin-left: 5%;
+          margin-right: 5%;
+        }
+      }
+    }
+    .table-update2 {
+      .table-update__header2 {
+        width: 100%;
+        background-color: gray;
+        border-bottom: 1px solid map-get($wen-colors, border_botom_color);
+        padding-top: 5px;
+
+        h2 {
+          text-align: center;
+          font-size: 28px;
+          margin-top: 0px;
+          font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+
+        h3 {
+          text-align: center;
+          font-size: 24px;
+          margin-top: 5px;
+        }
+      }
+
+      .table-update__body2 {
+        display: flex;
+        width: 98%;
+        padding-top: 20px;
+        padding-left: 2%;
+        padding-right: 0%;
+        border-bottom: 1px solid map-get($wen-colors, divider);
+padding-bottom: 20px;
+      
+        h2 {
+          font-size: 24px;
+          text-align: center;
+          font-weight: bold;
+        }
+        .col1{
+          display: block;
+          width: 30%;
+          background-color: rgb(231, 234, 234);
+          text-align: center;
+          border: 1px solid rgb(107, 103, 103);
+          mat-form-field{
+            width: 90%;
+            margin-left: 5%;
+          }
+          button{
+            margin-right: 5px;
+          }
+        }
+        .col2{
+          display: block;
+          width: 70%;
+          text-align: center;
+          border: 1px solid rgb(107, 103, 103);
+          button{
+            margin-right: 5px;
+            margin-bottom: 10px;
+          }
+        }
+      }
+
+      .table-update__footer2 {
+
+        padding-top: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+
+        button {
+          width: 40%;
+          margin-left: 5%;
+          margin-right: 5%;
+        }
+      }
+    }
+
+
+  }
   mat-drawer-content.default {
     display: block;
 
@@ -733,7 +875,7 @@ wen-table:make-gold {
       }
 
     }
-
+ 
     .content_soushead {
       display: flex;
       border-bottom: 1px solid map-get($wen-colors, border_rigth_color);
@@ -2254,7 +2396,268 @@ wen-table:make-gold {
       }
     }
   }
+  mat-drawer-content.devis {
+    display: block;
 
+    .content_head {
+      background-color: map-get($wen-colors, drawerContent_entete_personnel);
+      border-bottom: 2px solid map-get($wen-colors, border_botom_color);
+
+      h2 {
+        font-family: 'Times New Roman', Times, serif;
+        text-align: center;
+        font-weight: bold;
+        font-size: 28px;
+      }
+
+      h3 {
+        font-size: 18px;
+      }
+
+      mat-form-field {
+        width: 40%
+      }
+
+      button {
+        margin-left: 90%;
+      }
+
+    }
+    .titre_devis{
+      display: block;
+      text-align: center;
+      border-bottom: 1px solid map-get($wen-colors, border_botom_color);
+      h3{
+        font-size: 24px;
+        font-weight: bold;
+      }
+      h4{
+        font-size: 22px;
+      }
+    }
+    .content_soushead {
+      display: flex;
+      border-bottom: 1px solid map-get($wen-colors, border_rigth_color);
+
+      h2 {
+
+        color: black;
+        font-family: 'Times New Roman', Times, serif;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        text-align: center;
+        font-weight: bold;
+        font-size: 25px;
+      }
+
+
+
+      .table-col1 {
+        display: block;
+        width: 30%;
+        text-align: center;
+        border-right: 1px solid map-get($wen-colors, border_rigth_color);
+        padding-top: 10px;
+
+        mat-form-field {
+          width: 90%;
+        }
+
+        button {
+          justify-content: center;
+          margin-bottom: 10px;
+        }
+
+        .myrow1 {
+          padding-top: 20px;
+          width: 95%;
+          margin-left: 2.5%;
+          margin-right: 2.5%;
+          background-color: rgb(238, 219, 194);
+        }
+
+        .myrow2 {
+          padding-top: 20px;
+          width: 95%;
+          margin-left: 2.5%;
+          margin-right: 2.5%;
+          background-color: rgba(87, 153, 219, 0.362);
+
+          h2 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+          }
+
+          mat-select {
+            font-size: 22px !important;
+          }
+
+          mat-form-field {
+
+            font-size: 22px !important;
+          }
+        }
+
+      }
+
+      .table-col2 {
+        display: block;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        width: 50%;
+        text-align: center;
+        border-right: 1px solid map-get($wen-colors, border_rigth_color);
+
+        h1 {
+          font-size: 22px;
+          font-weight: bold;
+        }
+
+        h2 {
+          font-size: 18px;
+          font-weight: bold;
+        }
+
+      }
+
+      .table-col3 {
+        display: block;
+        padding-top: 10px;
+        width: 20%;
+        text-align: center;
+        border-right: 2px solid map-get($wen-colors, divider);
+
+        .row1_col3 {
+
+          h2 {
+            font-size: 24px;
+          }
+        }
+
+        .row2_col3 {
+          background-color: #cbdbb0;
+
+          h2 {
+            font-size: 22px;
+          }
+        }
+
+      }
+
+      .tabcol1 {
+
+        width: 80%;
+        text-align: center;
+        background-color: rgb(226, 249, 251);
+        border-right: 5px solid map-get($wen-colors, divider);
+
+      }
+
+      .tabcol2 {
+
+        width: 40%;
+        text-align: center;
+        background-color: rgb(226, 249, 251);
+        border-right: 5px solid map-get($wen-colors, divider);
+
+      }
+
+      .tabcol3 {
+
+        width: 20%;
+        text-align: center;
+        background-color: rgb(226, 249, 251);
+        border-right: 2px solid map-get($wen-colors, divider);
+
+      }
+
+    }
+
+    .content_button {
+
+      margin-left: 10px;
+      margin-bottom: 20px;
+      padding-top: 10px;
+
+      mat-form-field {
+        width: 20%;
+        margin-left: 10px;
+      }
+
+      mat-label {
+        font-size: 20px;
+      }
+
+
+      button {
+        margin-left: 20px;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+    }
+
+    .content_add_button {
+      display: flex;
+      justify-content: right;
+      background-color: #919198;
+      border-bottom: 1px solid map-get($wen-colors, border_botom_color);
+
+
+      button {
+        margin-top: 10px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
+
+      .AlignGauche {
+        width: 20%;
+
+        button {
+          width: 60%;
+          margin-left: 20%;
+          margin-right: 20%;
+          background-color: #93cca3 !important;
+        }
+      }
+
+      .AlignMilieu {
+
+        width: 60%;
+
+        h2 {
+          font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+          font-size: 26px;
+          margin-top: 10px;
+          font-weight: bold;
+          text-align: center;
+        }
+
+        h3 {
+          font-size: 22px;
+          color: #07498a;
+          text-align: center;
+        }
+
+        h4 {
+          font-size: 20px;
+          color: #1777d7;
+          text-align: center;
+        }
+      }
+
+      .AlignDroite {
+        width: 20%;
+        background-color: #87829d;
+      }
+    }
+
+    .content_body {
+      align-content: center;
+    }
+  }
   mat-drawer-content#pointages {
     display: block;
 
@@ -2629,28 +3032,6 @@ wen-table:make-gold {
 
     }
 
-    .titre_devis {
-      text-align: center;
-      border: 0.5px dashed rgb(51, 0, 255);
-
-      mat-form-field {
-        margin-top: 20px;
-        width: 40%;
-        margin-left: 30%;
-        margin-right: 30%;
-      }
-
-      h3 {
-        font-size: 20px;
-        background-color: #76b5f4;
-        font-weight: bold;
-      }
-
-      h4 {
-        font-size: 18px;
-      }
-    }
-
     .content_soushead {
       h2 {
 
@@ -2797,28 +3178,7 @@ wen-table:make-gold {
 
     }
 
-    .titre_devis {
-      text-align: center;
-      border: 0.5px dashed rgb(51, 0, 255);
-
-      mat-form-field {
-        margin-top: 20px;
-        width: 40%;
-        margin-left: 30%;
-        margin-right: 30%;
-      }
-
-      h3 {
-        font-size: 20px;
-        background-color: #76b5f4;
-        font-weight: bold;
-      }
-
-      h4 {
-        font-size: 18px;
-      }
-    }
-
+  
     .content_soushead {
       h2 {
 

@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { effect, inject, Injectable } from '@angular/core';
 import { EnginsStore, ClasseEnginsStore, PersonnelStore, ProjetStore, PannesStore, GasoilStore, ApproGasoilStore, StatutStore, TachesEnginsStore, EntrepriseStore, DevisStore, ConstatStore, LigneDevisStore, SstraitantStore, AttachementStore, DecompteStore, UserStore } from '../store/appstore';
 import { AuthenService } from '../authen.service';
 
@@ -27,11 +27,17 @@ export class DataLoaderService {
   _decomptes_store = inject(DecompteStore)
   _users_store = inject(UserStore);
 
+  
+
   _auth_service = inject(AuthenService);
 
   loadDataInit() {
-    this._projets_store.loadProjets();
-    this._entreprise_store.loadEntreprises();
+    if (this._auth_service.userSignal())
+    {
+      this._projets_store.loadProjets()
+      this._entreprise_store.loadEntreprises();
+    }
+      
   }
   setPath() {
 
@@ -51,23 +57,31 @@ export class DataLoaderService {
 
   }
   Load_gestion_Data() {
-    this._engins_store.loadengins();
-    this._classes_engins_store.loadclasses();
-    this._personnel_store.loadPersonnel();
-    this._pannes_store.loadPannes();
-    this._consogo_store.loadconso();
-    this._approgo_store.loadappro();
-    this._statuts_personnel_store.loadstatut();
+    if (this._auth_service.userSignal()){
+      this._engins_store.loadengins();
+      this._classes_engins_store.loadclasses();
+      this._personnel_store.loadPersonnel();
+      this._pannes_store.loadPannes();
+      this._consogo_store.loadconso();
+      this._approgo_store.loadappro();
+      this._statuts_personnel_store.loadstatut();
+    }
+   
   }
   Load_travaux_Data() {
-    this._taches_engins_store.loadTachesEngins();
-    this._users_store.loadUsers();
-    this._devis_store.loadDevis();
-    this._ligneDevis_store.loadLigneDevis();
-    this._sousTraitance_store.loadSstraitants();
-    this._constats_store.loadConstats();
-    this._attachements_store.loadAttachements();
-    this._decomptes_store.loadAllDecomptes();
+    if(this._auth_service.userSignal())
+    {
+      this._taches_engins_store.loadTachesEngins();
+      this._users_store.loadUsers();
+      this._devis_store.loadDevis();
+      this._ligneDevis_store.loadLigneDevis();
+      this._sousTraitance_store.loadSstraitants();
+      this._constats_store.loadConstats();
+      this._attachements_store.loadAttachements();
+      this._decomptes_store.loadAllDecomptes();
+    }
+    
   }
+
 
 }

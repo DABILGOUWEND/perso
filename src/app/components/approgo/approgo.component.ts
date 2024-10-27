@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild, computed, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, computed, inject, input, output, signal } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -26,8 +26,8 @@ export class ApprogoComponent  implements OnInit{
   );
   @ViewChild(MatPaginator) paginator: MatPaginator
   @ViewChild(MatSort) sort: MatSort;
-  @Input() is_new_row_being_added: boolean
-  @Output() onRowAdd = new EventEmitter<any>();
+  is_new_row_being_added=signal<boolean>(true);
+  onRowAdd = output()
   default_date = new Date()
   constructor(
     fb: FormBuilder
@@ -44,7 +44,7 @@ export class ApprogoComponent  implements OnInit{
   updateTableData() {
     if (this.formGroup.valid) {
       let valeur = this.formGroup.value;
-      if (this.is_new_row_being_added) {
+      if (this.is_new_row_being_added()) {
         let val_tr:appro_gasoil = {
           id:'',
           date: valeur.date.toLocaleDateString(),
@@ -71,13 +71,13 @@ export class ApprogoComponent  implements OnInit{
     }
   }
   addappro() {
-    this.is_new_row_being_added = true
+    this.is_new_row_being_added.set(true)
   }
   editappro(appro: any) {
     let temp=appro.date
     const [day,month,year]=temp.split("/")
     const date= new Date(+year,+month-1,+day)
-    this.is_new_row_being_added = false
+    this.is_new_row_being_added.set(false)
     this.formGroup.patchValue({
       id:appro.id,
       date:date,

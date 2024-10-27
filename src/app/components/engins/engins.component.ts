@@ -17,14 +17,11 @@ import { AuthenService } from '../../authen.service';
 export class EnginsComponent implements OnInit {
   constructor() {
     effect(() => {
-      console.log(this._auth_service.current_projet_id() );
+    
     })
    }
   ngOnInit() {
-    this.EnginsStore.setPathString('comptes/' + this._auth_service.current_projet_id() + '/engins');
-    this.EnginsStore.loadengins();
-    this.personnel_store.loadPersonnel();
-    this.classeEngins_store.loadclasses();
+
   }
   EnginsStore = inject(EnginsStore);
   personnel_store = inject(PersonnelStore);

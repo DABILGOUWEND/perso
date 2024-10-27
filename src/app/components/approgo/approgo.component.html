@@ -35,8 +35,7 @@
             </div>
             <div class="actions">
                 <button mat-flat-button class="primary-button" color="primary" type="submit"
-                    [disabled]="!formGroup.valid">{{is_new_row_being_added?"Enregistrer":"Modifier"}}</button>
-
+                    [disabled]="!formGroup.valid">{{is_new_row_being_added()?"Enregistrer":"Modifier"}}</button>
                 <button mat-flat-button class="primary-button" color="warn" type="button"
                     (click)="quitter()">quitter</button>
             </div>

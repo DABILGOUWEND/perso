@@ -5,7 +5,7 @@
     </mat-drawer>
     <mat-drawer mode="over" position="end" #table_update2 id="table_ajout_gasoil" [opened]="is_open2()" disableClose="true">
         <section class="table-update">
-            <app-approgo [is_new_row_being_added]="true" (onRowAdd)="retourQuitter()">
+            <app-approgo (onRowAdd)="retourQuitter()">
 
             </app-approgo>
         </section>

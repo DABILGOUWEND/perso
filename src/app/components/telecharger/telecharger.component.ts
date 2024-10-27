@@ -204,7 +204,7 @@ export class TelechargerComponent implements OnInit {
     })
     return concat(obsrv)
   }
-  upload_statut() {
+  upload_statut(path: string) {
     let obsrv: Observable<any>[] = [];
     const MyCollection = collection(this.db, 'satut')
     let rep = collectionData(MyCollection, { idField: 'id' }) as Observable<Statuts[]>
@@ -212,7 +212,7 @@ export class TelechargerComponent implements OnInit {
       gasoil.forEach(
         (element: any) => {
           obsrv.push(
-            this._telecharger_service.addStatut(element)
+            this._telecharger_service.addStatut(path,element)
           )
         })
       return concat(obsrv)
@@ -274,11 +274,17 @@ export class TelechargerComponent implements OnInit {
   }
   upload_sstraitance() {
     let obsrv: Observable<any>[] = [];
-    this._sous_traitance_store.sstraitant_data().forEach((element) => {
-      obsrv.push(
-        this._telecharger_service.addSstraitance(element)
-      )
-    })
-    return concat(obsrv)
+    const MyCollection = collection(this.db, 'sstraitants')
+    let rep = collectionData(MyCollection, { idField: 'id' }) as Observable<tab_personnel[]>
+    return rep.pipe(switchMap(data => {
+      data.forEach(
+        (element: any) => {
+          obsrv.push(
+            this._telecharger_service.addSstraitance(element)
+          )
+        })
+      return concat(obsrv)
+    }
+    ))
   }
 }

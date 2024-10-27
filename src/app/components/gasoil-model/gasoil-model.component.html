@@ -6,7 +6,7 @@
     <mat-drawer class="gasoil_appro" mode="over" position="end"  [opened]="appro_opened()"
         disableClose="true">
         <section class="table-update">
-            <app-approgo [is_new_row_being_added]="true" (onRowAdd)="retourQuitter()">
+            <app-approgo (onRowAdd)="retourQuitter()">
 
             </app-approgo>
         </section>
@@ -14,7 +14,7 @@
     <mat-drawer-content class="gasoil">
         <ng-container [ngTemplateOutlet]="Corps">
         </ng-container>
-    </mat-drawer-content>
+    </mat-drawer-content> 
 </mat-drawer-container>
 
 <ng-template #Entete>

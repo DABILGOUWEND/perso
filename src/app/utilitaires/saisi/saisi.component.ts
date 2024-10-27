@@ -51,9 +51,6 @@ export class SaisiComponent implements OnInit {
   @Input() enddate_control_name: string;
   default_design:string='ddmdmmd'
   ngOnInit() {
-    this.projets_store.loadProjets()
-    this.sstraitants_store.loadSstraitants()
-    this.statut_store.loadstatut()
     this.control = this.parent_FG.get(this.control_name) as AbstractControl;
     //check if required validator
     if (!!this.control.validator) {

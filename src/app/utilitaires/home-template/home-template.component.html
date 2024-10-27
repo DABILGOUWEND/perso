@@ -14,6 +14,19 @@
             </a>
             -----------------------
             }
+            @if(_auth_service.userSignal()?.role=='admin' || _auth_service.userSignal()?.role=='user2')
+            {
+            <a mat-list-item routerLink="/home_travaux/devis">
+                <mat-icon> local_shipping </mat-icon>
+                <span>Liste des devis</span>
+            </a>
+            -----------------------
+            <a mat-list-item routerLink="/home_travaux/liste_sstraitants">
+                <mat-icon>person </mat-icon>
+                <span>Liste des sous-traitants </span>
+            </a>
+            -----------------------
+            }
 
             @if(_auth_service.userSignal()?.role=='admin')
             { <a mat-list-item routerLink="/admin">

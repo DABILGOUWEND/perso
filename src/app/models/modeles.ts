@@ -369,6 +369,7 @@ export interface tab_DevisStore {
     selectedEntreprise_id: string,
     selectedProjet_id: string,
     path_string: string
+    current_devis:string
 
 
 }

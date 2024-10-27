@@ -253,12 +253,12 @@ export class TelechargerService {
     return from(docRef)
   }
 //statut
-addStatut(data: any): Observable<void> {
+addStatut(path:string,data: any): Observable<void> {
   let mydata = {
     'designation': data.designation,
   }
   const Collection = doc(this.db, 'comptes/' +
-    this._auth_service.current_projet_id() + '/statuts_personnel/' + data.id)
+   path + '/statuts_personnel/' + data.id)
   const docRef = setDoc(Collection, mydata)
   return from(docRef)
 }

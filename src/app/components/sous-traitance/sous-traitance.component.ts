@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, effect, inject, signal, ɵunwrapWritableSignal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, input, output, signal, ɵunwrapWritableSignal } from '@angular/core';
 import { DevisStore, LigneDevisStore, ProjetStore, SstraitantStore } from '../../store/appstore';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -24,14 +24,14 @@ import { AuthenService } from '../../authen.service';
   styleUrl: './sous-traitance.component.scss'
 })
 export class SousTraitanceComponent implements OnInit {
-  
+
   ngOnInit(): void {
     this.table_update_form.valueChanges.subscribe(x => {
       this.quantite.set(x.quantite)
       this.prix.set(x.prix_u)
     })
   }
-  
+
   //injections
   Devis_Store = inject(DevisStore)
   LigneDevis_Store = inject(LigneDevisStore)
@@ -40,10 +40,19 @@ export class SousTraitanceComponent implements OnInit {
   _service = inject(WenService)
   authservice = inject(AuthenService);
 
+  selected_devis = input("", {
+    transform: (id: string) => {
+      this.init_selection(id)
+      return id
+    }
+
+  })
+
+  onRowAdd = output()
   //signals variables
   selected_sstraitant = signal("")
   selected_projet = signal("")
-  selected_devis = signal("")
+
   titre_devis = signal("")
   is_rubrique_parent = signal(false)
   ajout = signal(false)
@@ -70,7 +79,7 @@ export class SousTraitanceComponent implements OnInit {
       let mynum = element.code.split(devis?.code + 'LN')
       num.push(Number(mynum[1]))
     });
-    return Math.max(...num) + 1
+    return num.length > 0 ? Math.max(...num) + 1 : 1
   })
   donnees = computed(() => {
     let mydata = this.LigneDevis_Store.taches_classees()
@@ -152,7 +161,8 @@ export class SousTraitanceComponent implements OnInit {
     effect(() => {
       this.table_update_form.patchValue({
         'montant': this.quantite() * this.prix()
-      })
+      }
+      )
 
 
       if (this.type_rubrique() == "1") {
@@ -256,20 +266,20 @@ export class SousTraitanceComponent implements OnInit {
     return codes
   }
   ajouter() {
-      this.is_rubrique_parent.set(false)
-      this.is_table_updated.set(false)
-      this.is_table_opened.set(true)
-      this.type_rubrique.set('1')
-      let devis = this.Devis_Store.donnees_devis().find(x => x.id == this.expandedElement?.devis_id)
-      this.table_update_form.reset()
-      this.table_update_form.patchValue(
-        {
-          'code_parent': this.expandedElement?.code,
-          'designation_parent': this.expandedElement?.designation,
-          'code': devis?.code + 'LN' + this.last_num().toString()
-        }
-      )
-    
+    this.is_rubrique_parent.set(false)
+    this.is_table_updated.set(false)
+    this.is_table_opened.set(true)
+    this.type_rubrique.set('1')
+    let devis = this.Devis_Store.donnees_devis().find(x => x.id == this.expandedElement?.devis_id)
+    this.table_update_form.reset()
+    this.table_update_form.patchValue(
+      {
+        'code_parent': this.expandedElement?.code,
+        'designation_parent': this.expandedElement?.designation,
+        'code': devis?.code + 'LN' + this.last_num().toString()
+      }
+    )
+
 
   }
   clicker(data: any) {
@@ -347,73 +357,80 @@ export class SousTraitanceComponent implements OnInit {
     this.is_table_opened.set(false)
   }
   edit(value: any) {
-      this.ligne_parent = value
-      this.current_code.set(value.code)
-      if (this.has_child().includes(this.current_code())) {
-        this.type_rubrique.set('1')
+    this.ligne_parent = value
+    this.current_code.set(value.code)
+    if (this.has_child().includes(this.current_code())) {
+      this.type_rubrique.set('1')
+    }
+    else {
+      this.type_rubrique.set('2')
+    }
+    this.is_table_updated.set(true)
+    this.is_table_opened.set(true)
+    this.table_update_form.patchValue(
+      {
+        id: value.id,
+        code: value.code,
+        devis_id: value.devis_id,
+        designation: value.designation,
+        prix_u: value.prix_u,
+        unite: value.unite,
+        quantite: value.quantite,
+        montant: value.montant,
+        collapsed: value.collapsed,
+        isvisible: value.isvisible,
+        poste: value.poste,
       }
-      else {
-        this.type_rubrique.set('2')
-      }
-      this.is_table_updated.set(true)
-      this.is_table_opened.set(true)
-      this.table_update_form.patchValue(
-        {
-          id: value.id,
-          code: value.code,
-          devis_id: value.devis_id,
-          designation: value.designation,
-          prix_u: value.prix_u,
-          unite: value.unite,
-          quantite: value.quantite,
-          montant: value.montant,
-          collapsed: value.collapsed,
-          isvisible: value.isvisible,
-          poste: value.poste,
-        }
-      )
-    
+    )
+
   }
   delete(data: any) {
 
-      let ids1: any = []
-      let ids2: any = []
-      if (confirm("La suppression de cet élement entrainera la supression d'autres élements liés, voulez-vous supprimer cet élement?")) {
-        let niv1 = this.LigneDevis_Store.donnees_Lignedevis().filter(x => x.parent_code == data.code)
-        if (niv1) {
-          niv1.forEach(element => {
-            ids1.push(element.id)
-            let niv2 = this.LigneDevis_Store.donnees_Lignedevis().filter(x => x.parent_code == element.code)
-            if (niv2) {
-              niv2.forEach(element => {
-                ids2.push(element.id)
-              });
-            }
-          });
-        }
-        this.LigneDevis_Store.removeLigneManyDevis(ids1.concat(ids2, data.id))
-    
+    let ids1: any = []
+    let ids2: any = []
+    if (confirm("La suppression de cet élement entrainera la supression d'autres élements liés, voulez-vous supprimer cet élement?")) {
+      let niv1 = this.LigneDevis_Store.donnees_Lignedevis().filter(x => x.parent_code == data.code)
+      if (niv1) {
+        niv1.forEach(element => {
+          ids1.push(element.id)
+          let niv2 = this.LigneDevis_Store.donnees_Lignedevis().filter(x => x.parent_code == element.code)
+          if (niv2) {
+            niv2.forEach(element => {
+              ids2.push(element.id)
+            });
+          }
+        });
+      }
+      this.LigneDevis_Store.removeLigneManyDevis(ids1.concat(ids2, data.id))
+
     }
 
   }
   ajouter_rubrique() {
- 
-      this.is_table_updated.set(false)
-      this.is_table_opened.set(true)
-      this.is_rubrique_parent.set(true)
-      this.type_rubrique.set("1")
-      let devis = this.Devis_Store.donnees_devis().find(x => x.id == this.selected_devis())
-      this.table_update_form.reset()
-      this.table_update_form.patchValue(
-        {
-          'code': devis?.code + 'LN' + this.last_num().toString()
-        }
-      )
-    
+
+    this.is_table_updated.set(false)
+    this.is_table_opened.set(true)
+    this.is_rubrique_parent.set(true)
+    this.type_rubrique.set("1")
+    let devis = this.Devis_Store.donnees_devis().find(x => x.id == this.selected_devis())
+    this.table_update_form.reset()
+    this.table_update_form.patchValue(
+      {
+        'code': devis?.code + 'LN' + this.last_num().toString()
+      }
+    )
+
 
   }
   choix_type_rubrique() {
-
-
+  }
+  init_selection(id:string)
+  {
+    
+    this.LigneDevis_Store.filtrebyDevis(id);
+    let ent_id = this.Devis_Store.donnees_devis().find(x => x.id == id)?.entreprise_id
+    let ent_objet = this.Devis_Store.donnees_devis().find(x => x.id == id)?.objet
+    this.entreprise_id.set(ent_id ? ent_id : '')
+    this.devis_objet.set(ent_objet ? ent_objet : '')
   }
 }

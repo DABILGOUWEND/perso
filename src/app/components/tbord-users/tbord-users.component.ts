@@ -3,8 +3,10 @@ import { ImportedModule } from '../../modules/imported/imported.module';
 import { SaisiComponent } from '../../utilitaires/saisi/saisi.component';
 import { EssaiComponent } from '../essai/essai.component';
 import { FormControl, NonNullableFormBuilder, Validators } from '@angular/forms';
-import {  UserStore, EntrepriseStore, ProjetStore, UnitesStore, TachesStore } from '../../store/appstore';
+import { UserStore, EntrepriseStore, ProjetStore, UnitesStore, TachesStore } from '../../store/appstore';
 import { AuthenService } from '../../authen.service';
+import { concat, Observable } from 'rxjs';
+import { ComptesDateInitService } from '../../services/comptes-date-init.service';
 
 @Component({
   selector: 'app-tbord-users',
@@ -155,7 +157,7 @@ export class TbordUsersComponent implements OnInit {
       this._auth_service.register(valeur.email, valeur.mot_de_passe, valeur.role, valeur.username, valeur.entreprise_id, valeur.projet_id).subscribe(
         {
           next: () => {
-            console.log('utilisateur enregistré');
+
           },
           error: (error) => {
             console.error('There was an error!', error);

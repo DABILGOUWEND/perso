@@ -29,6 +29,9 @@ import { SousTraitanceComponent } from './components/sous-traitance/sous-traitan
 import { TelechargerComponent } from './components/telecharger/telecharger.component';
 import { TableauBordComponent } from './components/tableau-bord/tableau-bord.component';
 import { HomeComponent } from './components/home/home.component';
+import { ListeDevisComponent } from './components/liste-devis/liste-devis.component';
+import { ListeSousTraitantsComponent } from './components/liste-sous-traitants/liste-sous-traitants.component';
+import { ListeSstraitantsComponent } from './components/liste-sstraitants/liste-sstraitants.component';
 
 export const routes: Routes = [
     {
@@ -52,11 +55,11 @@ export const routes: Routes = [
         children: [
 
             {
-                path: "", redirectTo: "/home_travaux/constats", pathMatch: "full"
+                path: "", redirectTo: "/home_travaux/devis", pathMatch: "full"
             },
             {
                 path: "devis",
-                component: SousTraitanceComponent
+                component: ListeDevisComponent
             },
             {
                 path: "constats",
@@ -70,6 +73,11 @@ export const routes: Routes = [
             {
                 path: "decomptes",
                 component: DecomptesComponent
+            }
+            ,
+            {
+                path: "liste_sstraitants",
+                component: ListeSstraitantsComponent
             }
 
         ]

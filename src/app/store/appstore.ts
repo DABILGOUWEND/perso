@@ -33,6 +33,7 @@ import { Auth, authState, user } from "@angular/fire/auth";
 import { TaskService } from "../task.service";
 import { DateAdapter } from "@angular/material/core";
 import { PassThrough } from "node:stream";
+import { ComptesDateInitService } from "../services/comptes-date-init.service";
 const initialGasoilState: gasoilStore = {
     conso_data: [],
     err: null,
@@ -60,7 +61,8 @@ const initialDevisState: tab_DevisStore =
     message: '',
     selectedEntreprise_id: '',
     selectedProjet_id: '',
-    path_string: ''
+    path_string: '',
+    current_devis   : ''
 }
 //ligne devis
 const initialLigneDevisState: tab_LigneDevisStore =
@@ -318,7 +320,7 @@ export const UserStore = signalStore(
             ))),
             addUser: rxMethod<any>(pipe(
                 switchMap((personnel) => {
-                    return _task_service.addModel("myusers",personnel).pipe(
+                    return _task_service.addModel("myusers", personnel).pipe(
                         tap({
                             next: () => {
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
@@ -334,9 +336,9 @@ export const UserStore = signalStore(
             )),
             removeUser: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return _task_service.deleteModel("myusers",id).pipe(tap({
+                    return _task_service.deleteModel("myusers", id).pipe(tap({
                         next: () => {
-                            
+
                             Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                         },
                         error: () => {
@@ -348,10 +350,10 @@ export const UserStore = signalStore(
                 }))),
             updateUser: rxMethod<tab_personnel>(pipe(
                 switchMap((user) => {
-                    return _task_service.updateModel("myusers",user).pipe(
+                    return _task_service.updateModel("myusers", user).pipe(
                         tap({
                             next: () => {
-                               
+
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             },
                             error: () => {
@@ -384,7 +386,9 @@ export const ProjetStore = signalStore(
         }
     )
     ),
-    withMethods((store, _task_service = inject(TaskService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store, _task_service = inject(TaskService),
+        _compte_data = inject(ComptesDateInitService),
+        snackbar = inject(MatSnackBar)) =>
     (
         {
 
@@ -402,12 +406,12 @@ export const ProjetStore = signalStore(
             addProjet: rxMethod<Projet>(pipe(
                 switchMap((projet) => {
                     return _task_service.addProjets(projet).pipe(
-                        tap({
-                            next: () => {
-                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
-                            }, error: () => {
-                                patchState(store, { message: 'echoué' });
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
+                        tap(resp => {
+                            let obsrv: Observable<any>[] = [];
+                            if (resp!="") {
+                              _compte_data.upload_data("unites", "unites", resp)
+                               _compte_data.upload_data("satut", "statuts_personnel", resp)
+                                _compte_data.upload_data("classes", "classes_engins", resp)
                             }
                         }
                         )
@@ -914,7 +918,7 @@ export const PersonnelStore = signalStore(
             ))),
             addPersonnel: rxMethod<any>(pipe(
                 switchMap((personnel) => {
-                    return task_service.addModel(store.path_string(),personnel).pipe(
+                    return task_service.addModel(store.path_string(), personnel).pipe(
                         tap({
                             next: () => {
                                 const updatedonnes = [...store.personnel_data(), personnel]
@@ -932,7 +936,7 @@ export const PersonnelStore = signalStore(
             )),
             removePersonnel: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return task_service.deleteModel(store.path_string(),id).pipe(tap({
+                    return task_service.deleteModel(store.path_string(), id).pipe(tap({
                         next: () => {
                             const updatedonnes = store.personnel_data().filter(x => x.id != id)
                             patchState(store, { personnel_data: updatedonnes })
@@ -957,7 +961,7 @@ export const PersonnelStore = signalStore(
                 ))),
             updatePersonnel: rxMethod<tab_personnel>(pipe(
                 switchMap((personnel) => {
-                    return task_service.updateModel(store.path_string(),personnel).pipe(
+                    return task_service.updateModel(store.path_string(), personnel).pipe(
                         tap({
                             next: () => {
                                 var data = store.personnel_data()
@@ -1966,12 +1970,14 @@ export const DevisStore = signalStore(
         }
     )),
     withMethods((store,
-        monservice = inject(WenService),
         _task_service = inject(TaskService),
         snackbar = inject(MatSnackBar)) =>
     (
 
         {
+            setCurrentDevisId(id: string) {
+                patchState(store, {current_devis: id })
+            },
             setPathString(path: string) {
                 patchState(store, { path_string: path })
             },
@@ -1997,7 +2003,8 @@ export const DevisStore = signalStore(
                 switchMap((devis) => {
                     return _task_service.addModel(store.path_string(), devis).pipe(
                         tap({
-                            next: () => {
+                            next: (resp) => {
+                                patchState(store, { current_devis: resp })
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -3594,7 +3601,9 @@ export const SstraitantStore = signalStore(
         }
     )
     ),
-    withMethods((store, monservice = inject(WenService), snackbar = inject(MatSnackBar)) =>
+    withMethods((store, 
+        _task_service = inject(TaskService),
+         snackbar = inject(MatSnackBar)) =>
     (
         {
             setPathString(path: string) {
@@ -3604,7 +3613,7 @@ export const SstraitantStore = signalStore(
                 patchState(store, { selectedId: id })
             },
             loadSstraitants: rxMethod<void>(pipe(switchMap(() => {
-                return monservice.getallSsouTraitants().pipe(
+                return _task_service.getallModels(store.path_string()).pipe(
                     tap((data) => {
                         patchState(store, { sstraitant_data: classeSstraitant(data) })
                     })
@@ -3613,11 +3622,10 @@ export const SstraitantStore = signalStore(
             ))),
             addSstraitant: rxMethod<sous_traitant>(pipe(
                 switchMap((sstraitant) => {
-                    return monservice.addSoustraitant(sstraitant).pipe(
+                    return _task_service.addModel(store.path_string(),sstraitant).pipe(
                         tap({
                             next: () => {
-                                const updatedonnes = [...store.sstraitant_data(), sstraitant]
-                                patchState(store, { sstraitant_data: updatedonnes })
+                               
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => { Showsnackerbaralert('échoué', 'fail', snackbar) }
                         }
@@ -3627,10 +3635,9 @@ export const SstraitantStore = signalStore(
             )),
             removeSstraitant: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return monservice.deleteSoutraitant(id).pipe(tap({
+                    return _task_service.deleteModel(store.path_string(),id).pipe(tap({
                         next: () => {
-                            const updatedonnes = store.sstraitant_data().filter(x => x.id != id)
-                            patchState(store, { sstraitant_data: updatedonnes })
+                           
                             Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                         }, error: () => {
                             Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -3641,13 +3648,9 @@ export const SstraitantStore = signalStore(
                 }))),
             updateSstraitant: rxMethod<sous_traitant>(pipe(
                 switchMap((sstraitant) => {
-                    return monservice.updateProjet(sstraitant).pipe(
+                    return _task_service.updateModel(store.path_string(),sstraitant).pipe(
                         tap({
                             next: () => {
-                                var data = store.sstraitant_data()
-                                var index = data.findIndex(x => x.id == sstraitant.id)
-                                data[index] = sstraitant
-                                patchState(store, { sstraitant_data: data })
                                 Showsnackerbaralert('modifié avec succès', 'pass', snackbar)
                             },
                             error: () => {

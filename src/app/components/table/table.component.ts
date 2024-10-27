@@ -14,12 +14,10 @@ import { FormGroup } from '@angular/forms';
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss'
 })
-export class TableComponent implements OnInit {
-  @Input() Entete: TemplateRef<any>;
-  @Input() Corps: TemplateRef<any>;
-  @Input() is_open:WritableSignal<boolean>
-  className=input<string>()
-  ngOnInit() {
+export class TableComponent  {
+  Entete = input.required<TemplateRef<any>>();
+  Corps = input.required<TemplateRef<any>>();
+  is_open = input.required<boolean>()
+  className = input<string>()
 
-  }
 }

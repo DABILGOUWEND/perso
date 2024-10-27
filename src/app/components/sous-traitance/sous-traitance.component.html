@@ -186,23 +186,12 @@
 
     </section>
   </mat-drawer>
-  <mat-drawer-content class="default">y
+  <mat-drawer-content class="devis">
     
     <div class="content_head">
       <h2>DEVIS PRESTATIONS</h2>
     </div>
-    <div class="titre_devis">
 
-        <mat-form-field>
-          <mat-label>
-            Liste des devis
-          </mat-label>
-          <mat-select [(value)]="selected_devis" (selectionChange)="selectChangeDevis($event.value)">
-            <mat-option *ngFor="let row of Devis_Store.donnees_devis()" [value]="row.id">
-              {{(row.entreprise_id|entreprises:SousTraitance_Store.donnees_sstraitant()|async)+ ' --- '+row.code}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-    </div>
 
     <div class="titre_devis">
       <h3> {{entreprise_id()|entreprises:SousTraitance_Store.donnees_sstraitant()|async}}</h3>
@@ -211,7 +200,7 @@
 
     <div class="actions5">
       <button mat-flat-button (click)="ajouter_rubrique()" [disabled]="selected_devis()==''" > créer rubrique parent</button>
-      <button mat-flat-button (click)="ajouter()" [disabled]="expandedElement==null || (!has_child().includes(expandedElement.code) && has_child().includes(expandedElement.parent_code))"> créer sous_niveau</button>
+      <button mat-flat-button (click)="ajouter()" [disabled]="expandedElement==null || (!has_child().includes(expandedElement.code) && has_child().includes(expandedElement.parent_code))"> créer sous-niveau</button>
     </div>
     <div class="content_body">
       <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8">
