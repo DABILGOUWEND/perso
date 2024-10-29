@@ -369,9 +369,8 @@ export interface tab_DevisStore {
     selectedEntreprise_id: string,
     selectedProjet_id: string,
     path_string: string
-    current_devis:string
-
-
+    current_devis_id:string,
+    current_devis:Devis|undefined
 }
 export interface tab_LigneDevisStore {
     lignedevis_data: Ligne_devis[],

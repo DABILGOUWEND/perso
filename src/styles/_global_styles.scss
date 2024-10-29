@@ -240,6 +240,7 @@ wen-table:make-gold {
 
 .wen-table-drawer-container {
   min-height: 1000px;
+
   mat-drawer.default {
     width: 25%;
 
@@ -706,6 +707,7 @@ wen-table:make-gold {
 
 
   }
+
   mat-drawer.devis {
     width: 85%;
     border: solid 1px map-get($wen-colors, border_botom_color);
@@ -737,21 +739,25 @@ wen-table:make-gold {
         padding-top: 20px;
         padding-left: 20px;
         padding-right: 20px;
-        border-bottom: 1px solid map-get($wen-colors, divider);     
+        border-bottom: 1px solid map-get($wen-colors, divider);
+
         h2 {
           font-size: 24px;
           text-align: center;
           font-weight: bold;
         }
-        .col1{
+
+        .col1 {
           display: block;
           width: 30%;
           background-color: #cbdbb0;
-          mat-form-field{
+
+          mat-form-field {
             width: 90%;
           }
         }
-        .col2{
+
+        .col2 {
           display: block;
           width: 70%;
           background-color: #dbccb0;
@@ -771,6 +777,7 @@ wen-table:make-gold {
         }
       }
     }
+
     .table-update2 {
       .table-update__header2 {
         width: 100%;
@@ -799,33 +806,38 @@ wen-table:make-gold {
         padding-left: 2%;
         padding-right: 0%;
         border-bottom: 1px solid map-get($wen-colors, divider);
-padding-bottom: 20px;
-      
+        padding-bottom: 20px;
+
         h2 {
           font-size: 24px;
           text-align: center;
           font-weight: bold;
         }
-        .col1{
+
+        .col1 {
           display: block;
           width: 30%;
           background-color: rgb(231, 234, 234);
           text-align: center;
           border: 1px solid rgb(107, 103, 103);
-          mat-form-field{
+
+          mat-form-field {
             width: 90%;
             margin-left: 5%;
           }
-          button{
+
+          button {
             margin-right: 5px;
           }
         }
-        .col2{
+
+        .col2 {
           display: block;
           width: 70%;
           text-align: center;
           border: 1px solid rgb(107, 103, 103);
-          button{
+
+          button {
             margin-right: 5px;
             margin-bottom: 10px;
           }
@@ -845,9 +857,165 @@ padding-bottom: 20px;
         }
       }
     }
+    .table-update3 {
+      .table-update__header3 {
+        display: block;
+        width: 100%;
+        background-color: rgb(207, 42, 42);
+        border-bottom: 1px solid map-get($wen-colors, border_botom_color);
+        padding-top: 5px;
+
+        h2 {
+          text-align: center;
+          font-size: 28px;
+          margin-top: 0px;
+          font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+
+        h3 {
+          text-align: center;
+          font-size: 24px;
+          margin-top: 5px;
+        }
+      }
+
+      .table-update__body3 {
+        display: block;
+        width: 98%;
+        padding-top: 20px;
+        padding-left: 2%;
+        padding-right: 0%;
+        border-bottom: 1px solid map-get($wen-colors, divider);
+        padding-bottom: 20px;
+
+        h2 {
+          font-size: 24px;
+          text-align: center;
+          font-weight: bold;
+        }
+
+        .col1 {
+          display: block;
+          width: 30%;
+          background-color: rgb(231, 234, 234);
+          text-align: center;
+          border: 1px solid rgb(107, 103, 103);
+
+          mat-form-field {
+            width: 90%;
+            margin-left: 5%;
+          }
+
+          button {
+            margin-right: 5px;
+          }
+        }
+
+        .col2 {
+          display: block;
+          width: 70%;
+          text-align: center;
+          border: 1px solid rgb(107, 103, 103);
+
+          button {
+            margin-right: 5px;
+            margin-bottom: 10px;
+          }
+        }
+      }
+
+      .table-update__footer3 {
+
+        padding-top: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+
+        button {
+          width: 40%;
+          margin-left: 5%;
+          margin-right: 5%;
+        }
+      }
+    }
 
 
   }
+
+  mat-drawer.devis2 {
+    width: 50%;
+    border: solid 1px map-get($wen-colors, border_botom_color);
+    .table-update {
+
+      .table-update__header {
+        display: block;
+        width: 100%;
+        background-color: map-get($wen-colors, drawer_title_go_pannes);
+        border-bottom: 1px solid map-get($wen-colors, border_botom_color);
+        padding-top: 5px;
+
+        h2 {
+          text-align: center;
+          font-size: 28px;
+          margin-top: 0px;
+          font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+
+        h3 {
+          text-align: center;
+          font-size: 24px;
+          margin-top: 5px;
+        }
+      }
+
+      .table-update__body {
+        display: block;
+        width: 100%;
+        padding-top: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+        border-bottom: 1px solid map-get($wen-colors, divider);
+
+        h2 {
+          font-size: 24px;
+          text-align: center;
+          font-weight: bold;
+        }
+
+        .col1 {
+          display: block;
+          width: 30%;
+          background-color: #cbdbb0;
+
+          mat-form-field {
+            width: 90%;
+          }
+        }
+
+        .col2 {
+          display: block;
+          width: 70%;
+          background-color: #dbccb0;
+        }
+      }
+
+      .table-update__footer {
+
+        padding-top: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+
+        button {
+          width: 40%;
+          margin-left: 5%;
+          margin-right: 5%;
+        }
+      }
+    }
+
+  
+
+  }
+
   mat-drawer-content.default {
     display: block;
 
@@ -875,7 +1043,7 @@ padding-bottom: 20px;
       }
 
     }
- 
+
     .content_soushead {
       display: flex;
       border-bottom: 1px solid map-get($wen-colors, border_rigth_color);
@@ -1099,6 +1267,7 @@ padding-bottom: 20px;
       align-content: center;
     }
   }
+
   mat-drawer-content.personnel {
     display: block;
 
@@ -2162,7 +2331,7 @@ padding-bottom: 20px;
       }
 
     }
-  
+
     .content_body {
       align-content: center;
 
@@ -2174,7 +2343,8 @@ padding-bottom: 20px;
 
       mat-sidenav.example-sidenav {
         width: 25%;
-        border:   1px dashed map-get($wen-colors, border_botom_color);
+        border: 1px dashed map-get($wen-colors, border_botom_color);
+
         .panneau_lat {
           display: block;
           width: 100%;
@@ -2185,7 +2355,8 @@ padding-bottom: 20px;
             text-align: center;
             height: 50px;
             background-color: #9d968f;
-            border-bottom:   1px solid map-get($wen-colors, border_botom_color);
+            border-bottom: 1px solid map-get($wen-colors, border_botom_color);
+
             h2 {
               font-size: 20px;
               font-weight: bold;
@@ -2195,7 +2366,7 @@ padding-bottom: 20px;
 
           .row_pointage {
             display: flex;
-            border-bottom: 1px solid map-get($wen-colors,border_botom_color);
+            border-bottom: 1px solid map-get($wen-colors, border_botom_color);
             background-color: #84c2c2;
 
             h1 {
@@ -2214,27 +2385,29 @@ padding-bottom: 20px;
           .row_pointage:hover {
             background-color: #76b5f4;
           }
+
           .ligne_expand {
             display: flex;
             margin-left: 10%;
             margin-right: 10%;
             width: 80%;
             border-bottom: 2px solid rgb(161, 164, 164);
+
             h3 {
               font-size: 14px;
-              
+
             }
-          
+
             button {
               margin-left: 10px;
               margin-top: 5px;
             }
           }
-          
-          
+
+
           .ligne_expand:hover {
             background-color: #d2ccc4;
-          
+
           }
         }
 
@@ -2243,12 +2416,13 @@ padding-bottom: 20px;
       mat-sidenav-content.example-sidenav-content {
         width: 75%;
         height: 100%;
+
         .content_soushead {
           display: flex;
           border-bottom: 1px solid map-get($wen-colors, border_rigth_color);
-    
+
           h2 {
-    
+
             color: black;
             font-family: 'Times New Roman', Times, serif;
             margin-bottom: 1rem;
@@ -2257,24 +2431,24 @@ padding-bottom: 20px;
             font-weight: bold;
             font-size: 25px;
           }
-    
-    
-    
+
+
+
           .table-col1 {
             display: block;
             width: 30%;
             text-align: center;
             border-right: 1px solid map-get($wen-colors, border_rigth_color);
             padding-top: 10px;
-    
+
             mat-form-field {
               width: 90%;
             }
-    
+
             button {
               margin-bottom: 10px;
             }
-    
+
             .myrow1 {
               padding-top: 20px;
               width: 95%;
@@ -2282,30 +2456,30 @@ padding-bottom: 20px;
               margin-right: 2.5%;
               background-color: rgb(238, 219, 194);
             }
-    
+
             .myrow2 {
               padding-top: 20px;
               width: 95%;
               margin-left: 2.5%;
               margin-right: 2.5%;
               background-color: rgba(87, 153, 219, 0.362);
-    
+
               h2 {
                 text-align: center;
                 font-size: 28px;
                 font-weight: bold;
               }
-    
+
               mat-select {
                 font-size: 22px !important;
               }
-    
+
               mat-form-field {
-    
+
                 font-size: 22px !important;
               }
             }
-    
+
             .myrow3 {
               padding-top: 20px;
               width: 95%;
@@ -2313,9 +2487,9 @@ padding-bottom: 20px;
               margin-right: 2.5%;
               background-color: rgb(238, 219, 194);
             }
-    
+
           }
-    
+
           .table-col2 {
             display: block;
             padding-top: 10px;
@@ -2323,79 +2497,82 @@ padding-bottom: 20px;
             width: 50%;
             text-align: center;
             border-right: 1px solid map-get($wen-colors, border_rigth_color);
-    
+
             h1 {
               font-size: 22px;
               font-weight: bold;
             }
-    
+
             h2 {
               font-size: 18px;
               font-weight: bold;
             }
+
             button {
               margin-bottom: 10px;
             }
           }
-    
+
           .table-col3 {
             display: block;
             padding-top: 10px;
             width: 20%;
             text-align: center;
             border-right: 1px solid map-get($wen-colors, border_rigth_color);
-    
+
             .row1_col3 {
-    
+
               h2 {
                 font-size: 24px;
               }
             }
-    
+
             .row2_col3 {
               background-color: #cbdbb0;
-    
+
               h2 {
                 font-size: 22px;
               }
             }
-    
+
           }
-    
+
           .tabcol1 {
-    
+
             width: 80%;
             text-align: center;
             background-color: rgb(226, 249, 251);
             border-right: 5px solid map-get($wen-colors, divider);
-    
+
           }
-    
+
           .tabcol2 {
-    
+
             width: 40%;
             text-align: center;
             background-color: rgb(226, 249, 251);
             border-right: 5px solid map-get($wen-colors, divider);
-    
+
           }
-    
+
           .tabcol3 {
-    
+
             width: 20%;
             text-align: center;
             background-color: rgb(226, 249, 251);
             border-right: 2px solid map-get($wen-colors, divider);
-    
+
           }
-    
+
         }
-        .content_contenu  {
+
+        .content_contenu {
           width: 100%;
         }
       }
     }
   }
+
   mat-drawer-content.devis {
     display: block;
 
@@ -2423,18 +2600,22 @@ padding-bottom: 20px;
       }
 
     }
-    .titre_devis{
+
+    .titre_devis {
       display: block;
       text-align: center;
       border-bottom: 1px solid map-get($wen-colors, border_botom_color);
-      h3{
+
+      h3 {
         font-size: 24px;
         font-weight: bold;
       }
-      h4{
+
+      h4 {
         font-size: 22px;
       }
     }
+
     .content_soushead {
       display: flex;
       border-bottom: 1px solid map-get($wen-colors, border_rigth_color);
@@ -2658,6 +2839,9 @@ padding-bottom: 20px;
       align-content: center;
     }
   }
+
+ 
+
   mat-drawer-content#pointages {
     display: block;
 
@@ -3178,7 +3362,7 @@ padding-bottom: 20px;
 
     }
 
-  
+
     .content_soushead {
       h2 {
 
@@ -3835,102 +4019,69 @@ padding-bottom: 20px;
   }
 }
 
-.wen-table-drawer-container8 {
+.wen-table-drawer-container_rev {
   min-height: 800px;
-
-  mat-drawer#table_edit_panne {
+  mat-drawer.devis_rev {
     width: 50%;
-
-    .table-update {
-      .table-update__header {
-        background-color: #cfddeb;
+    border: solid 1px map-get($wen-colors, border_botom_color);
+    .table-update_rev {
+      .table-update__header_rev {
+        display: block;
         width: 100%;
-        border-bottom: 1px solid map-get($wen-colors, divider);
+        background-color: map-get($wen-colors, drawer_title_go_pannes);
+        border-bottom: 1px solid map-get($wen-colors, border_botom_color);
+
 
         h2 {
-          color: map-get($wen-colors, primary-dark);
-          font-family: 'Roboto', sans-serif;
-          margin-bottom: 1rem;
-          padding-top: 0.5rem;
           text-align: center;
-          font-size: 20px;
+          font-size: 28px;
+          margin-top: 0px;
+          font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+
+        h3 {
+          text-align: center;
+          font-size: 24px;
+          margin-top: 5px;
         }
       }
 
-      .table-update__body {
+      .table-update__body_rev {
+        display: block;
         width: 100%;
-        padding-top: 10px;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-top: 20px;
+        padding-left: 5px;
+        padding-right: 20px;
         border-bottom: 1px solid map-get($wen-colors, divider);
 
+        h2 {
+          font-size: 24px;
+          text-align: center;
+          font-weight: bold;
+        }
         mat-form-field {
           width: 90%;
         }
-
-        h2 {
-          color: map-get($wen-colors, primary-dark);
-          font-family: 'Roboto', sans-serif;
-          margin-bottom: 1rem;
-          padding-top: 0.5rem;
-          text-align: center;
-          font-size: 24px;
-        }
       }
 
-      .table-update__footer {
-        padding-top: 10px;
+      .table-update__footer_rev {
+
+        padding-top: 20px;
         padding-left: 20px;
-        gap: 50px;
+        padding-right: 20px;
 
         button {
-          margin-right: 20px;
           width: 40%;
+          margin-left: 5%;
+          margin-right: 5%;
         }
       }
     }
 
-    .table-update2 {
-      width: 100%;
-      margin: 10px 10px 10px;
+  
 
-      .table-update__header {
-        width: 90%;
-
-        h2 {
-          color: map-get($wen-colors, primary-dark);
-          font-family: 'Roboto', sans-serif;
-          margin-bottom: 1rem;
-          padding-bottom: 0.5rem;
-          text-align: center;
-          text-align: center;
-        }
-
-        margin-bottom: 2rem;
-      }
-
-
-
-      .table-update__body {
-        width: 90%;
-
-        mat-form-field {
-          width: 100%;
-          margin-right: 20px;
-        }
-      }
-
-      .table-update__footer {
-        margin: 1.5rem 0;
-        gap: 20px;
-
-        button {
-          margin-right: 10px;
-          width: 40%;
-        }
-      }
-    }
   }
+
 }
 
 .wen-table-drawer-container2 {

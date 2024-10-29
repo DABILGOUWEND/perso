@@ -1,4 +1,4 @@
-import { Component, ViewChild, computed, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators, NonNullableFormBuilder } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator } from '@angular/material/paginator';
@@ -14,6 +14,7 @@ import { GasoilModelComponent } from '../gasoil-model/gasoil-model.component';
 
 import { TaskService } from '../../task.service';
 import { GasoilService } from '../../services/gasoil.service';
+import { sign } from 'node:crypto';
 @Component({
   selector: 'app-gasoil',
   standalone: true,
@@ -21,7 +22,9 @@ import { GasoilService } from '../../services/gasoil.service';
   templateUrl: './gasoil.component.html',
   styleUrl: './gasoil.component.scss'
 })
-export class GasoilComponent {
+export class GasoilComponent  implements OnInit{
+  
+
   //injections
   _engins_store = inject(EnginsStore);
   _classe_store = inject(ClasseEnginsStore);
@@ -76,8 +79,7 @@ export class GasoilComponent {
   @ViewChild(MatPaginator) paginator2: MatPaginator
   @ViewChild(MatSort) sort2: MatSort;
 
-  //computed signal
-
+//computed variables
   donnees_enginsByclass = computed(() => {
     if (this.selected_classe_id() === "") {
       return this._engins_store.donnees_engins();
@@ -180,15 +182,47 @@ export class GasoilComponent {
       date_fin: new FormControl(new Date(), Validators.required)
     });
     effect(() => {
-      this._gasoil_service.chartOptions().data[0].dataPoints = this._gasoil_store.historique_consogo()[0];
+      
+      //this.chartOptions.data[0].dataPoints=this._gasoil_store.historique_consogo()[0];
+    
     })
   }
+  datacourbe = computed(()=>{ return [{
+    type: "column", //change type to bar, line, area, pie, etc
+    indexLabel: "{y}", //Shows y value on all Data Points
+    indexLabelFontColor: "#5A5757",
+    dataPoints: this._gasoil_store.historique_consogo()[0]
+  }]})
+  chartOptions = computed(() => { return {  
+      title: {
+        text: "Historique consommation gasoil"
+      },
+      theme: "light2",
+      animationEnabled: true,
+      axisX: {
+        title: "Date",
+        gridThickness: 1,
+        tickLength: 10
+      },
+      axisY: {
+        title: "Gasoil(l)",
+        gridThickness: 1,
+        tickLength: 10,
+        includeZero: true
+
+      },
+      data:   this.datacourbe()
+
+    } })
+  
+  
   ngOnInit() {
     this.default_date.set(new Date());
     this.madate.set(new Date().toLocaleDateString());
     this._gasoil_store.setCurrentDate(this.madate());
+
     
-  }
+   }
   addEvent(event: MatDatepickerInputEvent<any>) {
     this.default_date.set(event.value);
     this.madate.set(event.value.toLocaleDateString());

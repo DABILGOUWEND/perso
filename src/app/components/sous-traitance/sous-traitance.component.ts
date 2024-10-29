@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, effect, inject, input, output, signal, ɵunwrapWritableSignal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, input, model, output, signal, ɵunwrapWritableSignal } from '@angular/core';
 import { DevisStore, LigneDevisStore, ProjetStore, SstraitantStore } from '../../store/appstore';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -25,28 +25,24 @@ import { AuthenService } from '../../authen.service';
 })
 export class SousTraitanceComponent implements OnInit {
 
+
   ngOnInit(): void {
     this.table_update_form.valueChanges.subscribe(x => {
       this.quantite.set(x.quantite)
       this.prix.set(x.prix_u)
     })
+    this.init_selection()
   }
 
   //injections
-  Devis_Store = inject(DevisStore)
+  _devis_Store = inject(DevisStore)
   LigneDevis_Store = inject(LigneDevisStore)
   SousTraitance_Store = inject(SstraitantStore)
   Projet_Store = inject(ProjetStore)
   _service = inject(WenService)
   authservice = inject(AuthenService);
 
-  selected_devis = input("", {
-    transform: (id: string) => {
-      this.init_selection(id)
-      return id
-    }
 
-  })
 
   onRowAdd = output()
   //signals variables
@@ -71,10 +67,15 @@ export class SousTraitanceComponent implements OnInit {
   ligne_parent: Ligne_devis = this.LigneDevis_Store.donnees_Lignedevis()[0];
   table_update_form: FormGroup
   //computed signals
+
+  entreprise = computed(() => {
+    return this.SousTraitance_Store.donnees_sstraitant().find(x => x.id ==this._devis_Store.current_devis()?.entreprise_id)
+  }
+  )
   last_num = computed(() => {
     let num: any = []
-    let devisid = this.selected_devis()
-    let devis = this.Devis_Store.donnees_devis().find(x => x.id == devisid)
+    let devisid = this._devis_Store.current_devis()?.id
+    let devis = this._devis_Store.donnees_devis().find(x => x.id == devisid)
     this.LigneDevis_Store.donnees_Lignedevis().forEach(element => {
       let mynum = element.code.split(devis?.code + 'LN')
       num.push(Number(mynum[1]))
@@ -83,7 +84,6 @@ export class SousTraitanceComponent implements OnInit {
   })
   donnees = computed(() => {
     let mydata = this.LigneDevis_Store.taches_classees()
-
     let init = mydata.map(x => x.parent_code).filter(x => x != '')
     let codes: any = []
     mydata.forEach(element => {
@@ -121,6 +121,9 @@ export class SousTraitanceComponent implements OnInit {
     let data = this.donnees().filter(x => this.ligne_parent0().includes(x.code)).map(x => x.montant)
     return this._service.somme(data)
   })
+
+
+  //lignes devis qui sont des parents
   has_child = computed(() => {
     let code_parent = this.LigneDevis_Store.donnees_Lignedevis().filter(x => x.parent_code != '').map(x => x.parent_code)
     return code_parent
@@ -144,8 +147,6 @@ export class SousTraitanceComponent implements OnInit {
   ligne_has_child = computed(() => {
     return this.LigneDevis_Store.donnees_Lignedevis().map(x => x.parent_code)
   })
-
-
 
   constructor(private fb: FormBuilder) {
     this.table_update_form = this.fb.group({
@@ -186,25 +187,8 @@ export class SousTraitanceComponent implements OnInit {
       this.table_update_form.get('montant')?.updateValueAndValidity()
 
     }
-    );
-
+    )
   }
-
-  selectChangeEntreprise(arg0: any) {
-    this.Devis_Store.filtrebyEntreprise(this.selected_sstraitant())
-  }
-  selectChangeProjet(arg0: any) {
-    this.Devis_Store.filtrebyProjet(this.selected_projet())
-  }
-  selectChangeDevis(arg0: string) {
-    this.LigneDevis_Store.filtrebyDevis(this.selected_devis())
-    let ent_id = this.Devis_Store.donnees_devis().find(x => x.id == this.selected_devis())?.entreprise_id
-    let ent_objet = this.Devis_Store.donnees_devis().find(x => x.id == this.selected_devis())?.objet
-    this.entreprise_id.set(ent_id ? ent_id : '')
-    this.devis_objet.set(ent_objet ? ent_objet : '')
-    this.expandedElement = null
-  }
-
   click_parent(data: Ligne_devis, ind: number) {
     let rep = !data.collapsed
     let code = data.code
@@ -270,7 +254,7 @@ export class SousTraitanceComponent implements OnInit {
     this.is_table_updated.set(false)
     this.is_table_opened.set(true)
     this.type_rubrique.set('1')
-    let devis = this.Devis_Store.donnees_devis().find(x => x.id == this.expandedElement?.devis_id)
+    let devis = this._devis_Store.donnees_devis().find(x => x.id == this.expandedElement?.devis_id)
     this.table_update_form.reset()
     this.table_update_form.patchValue(
       {
@@ -295,7 +279,7 @@ export class SousTraitanceComponent implements OnInit {
           let lignes = {
             id: value.id,
             code: this.table_update_form.getRawValue().code,
-            devis_id: this.selected_devis(),
+            devis_id: this._devis_Store.current_devis()?.id,
             parent_code: parent ? parent.code : '',
             designation: value.designation,
             prix_u: 0,
@@ -309,7 +293,7 @@ export class SousTraitanceComponent implements OnInit {
           let lignes = {
             id: value.id,
             code: this.table_update_form.getRawValue().code,
-            devis_id: this.selected_devis(),
+            devis_id: this._devis_Store.current_devis()?.id,
             parent_code: parent ? parent.code : '',
             designation: value.designation,
             prix_u: value.prix_u,
@@ -325,7 +309,7 @@ export class SousTraitanceComponent implements OnInit {
         if (this.type_rubrique() == "1") {
           let lignes = {
             code: this.table_update_form.getRawValue().code,
-            devis_id: this.selected_devis(),
+            devis_id: this._devis_Store.current_devis()?.id,
             parent_code: this.expandedElement != null ? this.expandedElement?.code : '',
             designation: value.designation,
             prix_u: 0,
@@ -338,7 +322,7 @@ export class SousTraitanceComponent implements OnInit {
         else {
           let lignes = {
             code: this.table_update_form.getRawValue().code,
-            devis_id: this.selected_devis(),
+            devis_id: this._devis_Store.current_devis()?.id,
             parent_code: this.expandedElement != null ? this.expandedElement?.code : '',
             designation: value.designation,
             prix_u: value.prix_u,
@@ -412,7 +396,7 @@ export class SousTraitanceComponent implements OnInit {
     this.is_table_opened.set(true)
     this.is_rubrique_parent.set(true)
     this.type_rubrique.set("1")
-    let devis = this.Devis_Store.donnees_devis().find(x => x.id == this.selected_devis())
+    let devis = this._devis_Store.donnees_devis().find(x => x.id == this._devis_Store.current_devis()?.id)
     this.table_update_form.reset()
     this.table_update_form.patchValue(
       {
@@ -424,13 +408,7 @@ export class SousTraitanceComponent implements OnInit {
   }
   choix_type_rubrique() {
   }
-  init_selection(id:string)
-  {
-    
-    this.LigneDevis_Store.filtrebyDevis(id);
-    let ent_id = this.Devis_Store.donnees_devis().find(x => x.id == id)?.entreprise_id
-    let ent_objet = this.Devis_Store.donnees_devis().find(x => x.id == id)?.objet
-    this.entreprise_id.set(ent_id ? ent_id : '')
-    this.devis_objet.set(ent_objet ? ent_objet : '')
+  init_selection() {
+    this.LigneDevis_Store.filtrebyDevis(this._devis_Store.current_devis_id());
   }
 }

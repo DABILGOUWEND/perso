@@ -21,6 +21,7 @@ export class GestionComponent implements OnInit {
     this._loader_service.setPath();
     this._loader_service.loadDataInit();
     this._loader_service.Load_gestion_Data();
+    
   }
   constructor() {
     effect(() => {

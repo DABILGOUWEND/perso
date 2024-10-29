@@ -1,8 +1,8 @@
-<mat-drawer-container class="wen-table-drawer-container">
-  <mat-drawer class="default"   mode="over" position="end" #table_update_drawer  [opened]="is_table_opened()"
+<mat-drawer-container class="wen-table-drawer-container_rev">
+  <mat-drawer class="devis_rev"   mode="over" position="start" #table_update_drawer  [opened]="is_table_opened()"
     disableClose="true">
-    <section class="table-update">
-      <div class="table-update__header">
+    <section class="table-update_rev">
+      <div class="table-update__header_rev">
         @if(!is_table_updated() && !is_rubrique_parent())
         {
         <h2> POSTE PARENT</h2>
@@ -17,7 +17,7 @@
         </h3>
         }
       </div>
-      <div class="table-update__header">
+      <div class="table-update__header_rev">
             <mat-radio-group [(ngModel)]="type_rubrique" (change)="choix_type_rubrique()">
               <mat-radio-button value="1">Avec sous niveaux</mat-radio-button>
               <mat-radio-button value="2" [checked]="true">Sans sous niveaux</mat-radio-button>
@@ -25,7 +25,7 @@
       </div>
 
       <form [formGroup]="table_update_form" (ngSubmit)="updateTableData()">
-        <div class="table-update__body">
+        <div class="table-update__body_rev">
           @if(is_table_updated() )
           {
           @if( type_rubrique()=="1")
@@ -47,7 +47,7 @@
             <mat-label>
               DESIGNATION
             </mat-label>
-            <input matInput formControlName="designation" type="text" placeholder="DESIGNATION">
+            <textarea matInput formControlName="designation" type="text" placeholder="DESIGNATION"></textarea>
           </mat-form-field>
           }@else {
           <mat-form-field>
@@ -67,7 +67,7 @@
             <mat-label>
               DESIGNATION
             </mat-label>
-            <input matInput formControlName="designation" type="text" placeholder="DESIGNATION">
+            <textarea matInput formControlName="designation" type="text" placeholder="DESIGNATION"> </textarea>
           </mat-form-field>
 
           <mat-form-field>
@@ -119,7 +119,7 @@
                 <mat-label>
                   DESIGNATION
                 </mat-label>
-                <input matInput formControlName="designation" type="text" placeholder="DESIGNATION">
+                <textarea matInput formControlName="designation" type="text" placeholder="DESIGNATION"></textarea>
               </mat-form-field>
             }@else{
               <mat-form-field>
@@ -139,7 +139,7 @@
                 <mat-label>
                   DESIGNATION
                 </mat-label>
-                <input matInput formControlName="designation" type="text" placeholder="DESIGNATION">
+                <textarea matInput formControlName="designation" type="text" placeholder="DESIGNATION"></textarea>
               </mat-form-field>
     
               <mat-form-field>
@@ -175,7 +175,7 @@
 
 
         </div>
-        <div class="table-update__footer">
+        <div class="table-update__footer_rev">
           <button mat-flat-button type="submit" color="primary" [disabled]="!table_update_form.valid">
             {{is_table_updated()?'Modifier':'Ajouter'}}
           </button>
@@ -186,7 +186,7 @@
 
     </section>
   </mat-drawer>
-  <mat-drawer-content class="devis">
+  <mat-drawer-content >
     
     <div class="content_head">
       <h2>DEVIS PRESTATIONS</h2>
@@ -194,12 +194,12 @@
 
 
     <div class="titre_devis">
-      <h3> {{entreprise_id()|entreprises:SousTraitance_Store.donnees_sstraitant()|async}}</h3>
-      <h4> {{devis_objet()}}</h4>
+      <h3> {{entreprise()?.enseigne}}</h3>
+      <h4> {{_devis_Store.current_devis()?.objet}}</h4>
     </div>
 
     <div class="actions5">
-      <button mat-flat-button (click)="ajouter_rubrique()" [disabled]="selected_devis()==''" > créer rubrique parent</button>
+      <button mat-flat-button (click)="ajouter_rubrique()" [disabled]="_devis_Store.current_devis()?.id ==''" > créer rubrique parent</button>
       <button mat-flat-button (click)="ajouter()" [disabled]="expandedElement==null || (!has_child().includes(expandedElement.code) && has_child().includes(expandedElement.parent_code))"> créer sous-niveau</button>
     </div>
     <div class="content_body">

@@ -62,7 +62,10 @@ const initialDevisState: tab_DevisStore =
     selectedEntreprise_id: '',
     selectedProjet_id: '',
     path_string: '',
-    current_devis   : ''
+    current_devis_id: '',
+    current_devis: undefined
+
+
 }
 //ligne devis
 const initialLigneDevisState: tab_LigneDevisStore =
@@ -408,9 +411,9 @@ export const ProjetStore = signalStore(
                     return _task_service.addProjets(projet).pipe(
                         tap(resp => {
                             let obsrv: Observable<any>[] = [];
-                            if (resp!="") {
-                              _compte_data.upload_data("unites", "unites", resp)
-                               _compte_data.upload_data("satut", "statuts_personnel", resp)
+                            if (resp != "") {
+                                _compte_data.upload_data("unites", "unites", resp)
+                                _compte_data.upload_data("satut", "statuts_personnel", resp)
                                 _compte_data.upload_data("classes", "classes_engins", resp)
                             }
                         }
@@ -1149,7 +1152,6 @@ export const GasoilStore = signalStore(
             }),
             historique_consogo: computed(() => {
                 let unique_dates = classement(store.conso_data().map(x => x.date).filter((value, index, self) => self.indexOf(value) === index))
-
                 let conso: any = [];
                 for (let i = 0; i <= 9; i++) {
                     let row = unique_dates[i];
@@ -1965,7 +1967,16 @@ export const DevisStore = signalStore(
                         return data.filter(x => x.entreprise_id == entrep_id)
                     }
                 }
-            })
+            }),
+            donnees_currentDevis: computed(() => {
+                let id = store.current_devis_id()
+                return store.devis_data().find(x => x.id == id)
+            }),
+            devisIds: computed(() => {
+                return store.devis_data().map(x => x.id)
+            }
+            ),
+
 
         }
     )),
@@ -1976,7 +1987,10 @@ export const DevisStore = signalStore(
 
         {
             setCurrentDevisId(id: string) {
-                patchState(store, {current_devis: id })
+                patchState(store, { current_devis_id: id })
+            },
+            setCurrentDevis(devis: Devis|undefined) {
+                patchState(store, { current_devis: devis })
             },
             setPathString(path: string) {
                 patchState(store, { path_string: path })
@@ -2004,7 +2018,9 @@ export const DevisStore = signalStore(
                     return _task_service.addModel(store.path_string(), devis).pipe(
                         tap({
                             next: (resp) => {
-                                patchState(store, { current_devis: resp })
+                                patchState(store, { current_devis_id: resp });
+                                patchState(store, { current_devis: { ...devis, id: resp } });
+
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -2031,6 +2047,8 @@ export const DevisStore = signalStore(
                     return _task_service.updateModel(store.path_string(), devis).pipe(
                         tap({
                             next: () => {
+                                patchState(store, { current_devis: devis });
+                                patchState(store, { current_devis_id: devis.id });
                                 Showsnackerbaralert('modifié avec succes', 'pass', snackbar)
                             }, error: () => {
                                 Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -3601,9 +3619,9 @@ export const SstraitantStore = signalStore(
         }
     )
     ),
-    withMethods((store, 
+    withMethods((store,
         _task_service = inject(TaskService),
-         snackbar = inject(MatSnackBar)) =>
+        snackbar = inject(MatSnackBar)) =>
     (
         {
             setPathString(path: string) {
@@ -3622,10 +3640,10 @@ export const SstraitantStore = signalStore(
             ))),
             addSstraitant: rxMethod<sous_traitant>(pipe(
                 switchMap((sstraitant) => {
-                    return _task_service.addModel(store.path_string(),sstraitant).pipe(
+                    return _task_service.addModel(store.path_string(), sstraitant).pipe(
                         tap({
                             next: () => {
-                               
+
                                 Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
                             }, error: () => { Showsnackerbaralert('échoué', 'fail', snackbar) }
                         }
@@ -3635,9 +3653,9 @@ export const SstraitantStore = signalStore(
             )),
             removeSstraitant: rxMethod<string>(pipe(
                 switchMap((id) => {
-                    return _task_service.deleteModel(store.path_string(),id).pipe(tap({
+                    return _task_service.deleteModel(store.path_string(), id).pipe(tap({
                         next: () => {
-                           
+
                             Showsnackerbaralert('élément supprimé', 'pass', snackbar)
                         }, error: () => {
                             Showsnackerbaralert('échoué', 'fail', snackbar)
@@ -3648,7 +3666,7 @@ export const SstraitantStore = signalStore(
                 }))),
             updateSstraitant: rxMethod<sous_traitant>(pipe(
                 switchMap((sstraitant) => {
-                    return _task_service.updateModel(store.path_string(),sstraitant).pipe(
+                    return _task_service.updateModel(store.path_string(), sstraitant).pipe(
                         tap({
                             next: () => {
                                 Showsnackerbaralert('modifié avec succès', 'pass', snackbar)

@@ -188,7 +188,6 @@ export class ListeDevisComponent {
 
       let donnees: any = []
       this._devis_tore.devis_data().forEach(element => {
-
         let client = this._clients_store.donnees_entreprise().find(x => x.id == element.client_id)
         let entreprise = this._sstraitant_store.sstraitant_data().find(x => x.id == element.entreprise_id)
         let projet = this._projets_store.donnees_projet().find(x => x.id == element.projet_id)
@@ -226,15 +225,14 @@ export class ListeDevisComponent {
   //methods
   updateData(data: any) {
     let element = data[0]
-    console.log(element)
     let current_row = data[1]
     let is_update = data[2]
     let mydata: any = []
 
     if (is_update) {
       mydata = {
-        id: element.id,
-        code: element.code,
+        id: current_row.id,
+        code: current_row.code,
         client_id: element.client_id,
         entreprise_id: element.entreprise_id,
         projet_id: element.projet_id,

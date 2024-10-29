@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { WenService } from '../wen.service';
@@ -7,15 +7,25 @@ import { CompteStore, EnginsStore, GasoilStore } from '../store/appstore';
   providedIn: 'root'
 })
 export class GasoilService {
-  _service=inject(WenService);
-  _engins_store=inject(EnginsStore);
-  _gasoil_store=inject(GasoilStore);
+  _service = inject(WenService);
+  _engins_store = inject(EnginsStore);
+  _gasoil_store = inject(GasoilStore);
+  datacourbe = computed(()=>{ return [{
+    type: "column", //change type to bar, line, area, pie, etc
+    indexLabel: "{y}", //Shows y value on all Data Points
+    indexLabelFontColor: "#5A5757",
+    dataPoints: this._gasoil_store.historique_consogo()[0]
+  }]})
+
+  constructor() {
+  }
+
   rapport_gasoil(
     choix_date: string,
     mydata: any,
     mytitre1: string,
     mytitre2: string,
-    total_conso:number
+    total_conso: number
   ) {
     const doc = new jsPDF({
       orientation: 'p',
@@ -262,6 +272,7 @@ export class GasoilService {
     }
     doc.save('rapportGo' + new Date().getTime() + '.pdf');
   }
+
   chartOptions = computed(() => {
     var mydata = this._gasoil_store.historique_consogo()[0];
     return {
@@ -283,12 +294,7 @@ export class GasoilService {
         includeZero: true
 
       },
-      data: [{
-        type: "column", //change type to bar, line, area, pie, etc
-        indexLabel: "{y}", //Shows y value on all Data Points
-        indexLabelFontColor: "#5A5757",
-        dataPoints: mydata
-      }]
+      data: this.datacourbe()
     }
   }
   )
