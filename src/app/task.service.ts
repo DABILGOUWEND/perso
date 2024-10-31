@@ -1,9 +1,9 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { AuthenService } from './authen.service';
-import { forkJoin, from, map, Observable, of, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, forkJoin, from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { addDoc, collection, collectionData, deleteDoc, doc, Firestore, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
-import { appro_gasoil, classe_engins, Constats, Devis, Engins, Gasoil, Ligne_devis, ModelAttachement, ModelDecompte, Pannes, Projet, sous_traitant, tab_personnel, tab_ProjetStore, taches, taches_engins, unites } from './models/modeles';
+import { appro_gasoil, classe_engins, Constats, Devis, element_devis, Engins, Gasoil, Ligne_devis, ModelAttachement, ModelDecompte, Pannes, Projet, sous_traitant, tab_personnel, tab_ProjetStore, taches, taches_engins, unites } from './models/modeles';
 import { environment } from '../environments/environment';
 import { response } from 'express';
 
@@ -13,13 +13,19 @@ import { response } from 'express';
 })
 export class TaskService {
   _http = inject(HttpClient);
-
+  dataChange: BehaviorSubject<element_devis[]> = new BehaviorSubject<element_devis[]>([]);
   db: Firestore = inject(Firestore);
   _auth_service = inject(AuthenService);
-
-
+  constructor() {
+    this.getaDevis().subscribe(data => {
+      this.dataChange.next([...data[0].data.sort((a, b) => b.poste.localeCompare(a.poste))])  ;
+    })
+  }
+  data_element(): element_devis[] { return this.dataChange.value; }
   //engins
   getallEngins(): Observable<Engins[]> {
+
+
     if (!environment.production) {
       return this._http.get<any[]>(this._auth_service.lodal_apiUrl() + '/engins').pipe(map((resp: any) => resp.map((x: any) => {
         return {
@@ -218,9 +224,9 @@ export class TaskService {
   //projets
   getallProjets(): Observable<Projet[]> {
 
-      const Collection = collection(this.db, '/projet');
-      return collectionData(Collection, { idField: 'id' }) as Observable<Projet[]>
-    
+    const Collection = collection(this.db, '/projet');
+    return collectionData(Collection, { idField: 'id' }) as Observable<Projet[]>
+
 
   }
   addProjets(data: any): Observable<string> {
@@ -314,12 +320,12 @@ export class TaskService {
   }
   updateApproGo(data: any): Observable<void> {
     let id = data.id
-    const docRef = doc(this.db, this._auth_service.current_projet_id() + '/appro_go/'+ id)
+    const docRef = doc(this.db, this._auth_service.current_projet_id() + '/appro_go/' + id)
     const promise = setDoc(docRef, data)
     return from(promise)
   }
   deleteApproGo(id: string): Observable<void> {
-    const docRef = doc(this.db, this._auth_service.current_projet_id() + '/appro_go/'+ id);
+    const docRef = doc(this.db, this._auth_service.current_projet_id() + '/appro_go/' + id);
     const promise = deleteDoc(docRef)
     return from(promise)
   }
@@ -370,7 +376,7 @@ export class TaskService {
   }
 
 
- 
+
   //DEVIS
   getallDevis(): Observable<Devis[]> {
     const DevisCollection = collection(this.db, 'comptes/' +
@@ -428,6 +434,17 @@ export class TaskService {
     const LDevisCollection = collection(this.db, 'comptes/' +
       this._auth_service.current_projet_id() + '/lignes_devis')
     return collectionData(LDevisCollection, { idField: 'id' }) as Observable<Ligne_devis[]>
+  }
+  getaDevis(): Observable<Devis[]> {
+    const LDevisCollection = collection(this.db, 'data_devis')
+    return collectionData(LDevisCollection, { idField: 'id' }) as Observable<Devis[]>
+  }
+  saveDevis(row: any, devis_id: string): Observable<void> {
+    const docRef1 = doc(this.db, 'data_devis/' + devis_id);
+    const docRef = updateDoc(docRef1, { data: row }).then
+      (response => { }
+      )
+    return from(docRef)
   }
   addLigneDevis(data: any): Observable<string> {
     const LdevisCollection = collection(this.db, 'comptes/' +
@@ -580,23 +597,23 @@ export class TaskService {
 
 
   //modeles 
-  getallModels(path_string:string): Observable<any[]> {
+  getallModels(path_string: string): Observable<any[]> {
     const my_collection = collection(this.db, path_string);
     return collectionData(my_collection, { idField: 'id' }) as Observable<any[]>;
   }
-  addModel(path_string:string,data:any): Observable<string> {
+  addModel(path_string: string, data: any): Observable<string> {
     const my_collection = collection(this.db, path_string);
     const docRef = addDoc(my_collection, data).then(response => response.id);
     return from(docRef);
   }
-  updateModel(path_string:string,data: any): Observable<void> {
+  updateModel(path_string: string, data: any): Observable<void> {
     let id = data.id;
-    const docRef = doc(this.db, path_string+'/' + id);
+    const docRef = doc(this.db, path_string + '/' + id);
     const promise = setDoc(docRef, data);
     return from(promise);
   }
-  deleteModel(path_string:string,id: string): Observable<void> {
-    const docRef = doc(this.db, path_string+'/' + id);
+  deleteModel(path_string: string, id: string): Observable<void> {
+    const docRef = doc(this.db, path_string + '/' + id);
     const promise = deleteDoc(docRef);
     return from(promise);
   }

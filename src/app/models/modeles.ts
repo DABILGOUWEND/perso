@@ -120,7 +120,8 @@ export interface Devis {
     objet: string,
     reference: string,
     montant: number,
-    avance: number
+    avance: number,
+    data: element_devis[]
 }
 export interface Ligne_devis {
     id: string,
@@ -136,6 +137,16 @@ export interface Ligne_devis {
     isvisible: boolean
     poste: string,
 }
+export interface element_devis {
+    poste: string,
+    designation: string,
+    prix_u?: number,
+    unite?: string,
+    quantite?: number,
+    children: element_devis[]
+
+}
+
 
 
 export interface Contrats {
