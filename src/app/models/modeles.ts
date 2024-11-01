@@ -140,9 +140,9 @@ export interface Ligne_devis {
 export interface element_devis {
     poste: string,
     designation: string,
-    prix_u?: number,
-    unite?: string,
-    quantite?: number,
+    prix_u: number|null,
+    unite: string,
+    quantite: number|null,
     children: element_devis[]
 
 }

@@ -5725,3 +5725,26 @@ th {
   margin-left: 20px;
   width: 200px;
 }
+.row_saisie{
+  text-align: center;
+  width: 100%;
+ 
+  input{
+    text-align: center;
+    font-size: 18px;
+    width: 100%;
+  }
+  textarea{
+    text-align: center;
+    font-size: 18px;
+    width: 100%;
+
+  }
+  .row_buttons{
+    display: flex;
+    text-align: center;
+    button{
+      margin-left: 10px;
+    }
+  }
+}

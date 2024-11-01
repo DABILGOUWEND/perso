@@ -4,6 +4,7 @@ import { addDoc, collection, collectionData, deleteDoc, doc, Firestore, getDoc, 
 import { Observable, from } from 'rxjs';
 import { AuthenService } from '../authen.service';
 import { Devis, Constats, Ligne_devis, ModelAttachement, ModelDecompte, unites, Gasoil, Statuts } from '../models/modeles';
+import { child } from 'firebase/database';
 
 @Injectable({
   providedIn: 'root'
@@ -44,28 +45,28 @@ export class TelechargerService {
   }
 
   //add personnel
- //appro gasoil
- addpersonnel(element: any): Observable<void> {
-  let mydata = {
-    nom: element.nom,
-    prenom: element.prenom,
-    fonction: element.fonction,
-    num_phone1: element.num_phone1 ? element.num_phone1 : "",
-    num_phone2: element.num_phone2  ? element.num_phone2 : "",
-    email: element.email  ? element.email : "",
-    num_matricule: element.num_matricule  ? element.num_matricule : "",
-    dates: element.dates  ? element.dates : [],
-    heuresN: element.heuresN  ? element.heuresN : [],
-    heureSup: element.heureSup  ? element.heureSup : [],
-    presence: element.Presence  ? element.Presence : [],
-    statut_id: element.statut_id  ? element.statut_id : "",   
-    statut: element.statut  ? element.statut: "",    
+  //appro gasoil
+  addpersonnel(element: any): Observable<void> {
+    let mydata = {
+      nom: element.nom,
+      prenom: element.prenom,
+      fonction: element.fonction,
+      num_phone1: element.num_phone1 ? element.num_phone1 : "",
+      num_phone2: element.num_phone2 ? element.num_phone2 : "",
+      email: element.email ? element.email : "",
+      num_matricule: element.num_matricule ? element.num_matricule : "",
+      dates: element.dates ? element.dates : [],
+      heuresN: element.heuresN ? element.heuresN : [],
+      heureSup: element.heureSup ? element.heureSup : [],
+      presence: element.Presence ? element.Presence : [],
+      statut_id: element.statut_id ? element.statut_id : "",
+      statut: element.statut ? element.statut : "",
+    }
+    const collection = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/personnel/' + element.id)
+    const docRef = setDoc(collection, mydata)
+    return from(docRef)
   }
-  const collection = doc(this.db, 'comptes/' +
-    this._auth_service.current_projet_id() + '/personnel/' + element.id)
-  const docRef = setDoc(collection, mydata)
-  return from(docRef)
-}
 
   //DEVIS
   getallDevis(): Observable<Devis[]> {
@@ -87,6 +88,23 @@ export class TelechargerService {
     const collection = doc(this.db, 'comptes/' +
       this._auth_service.current_projet_id() + '/devis/' + data.id)
     const docRef = setDoc(collection, mydata)
+    return from(docRef)
+  }
+  saveDevis(row: any, entreprise: string): Observable<void> {
+    const docRef1 = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/devis/' + row.id);
+    const docRef = updateDoc(docRef1, {
+      data: [{
+        'poste': row.code,
+        'designation': entreprise,
+        'prix_u': null,
+        'unite': '',
+        'quantite': null,
+        'children':[]
+      }]
+    }).then
+      (response => { }
+      )
     return from(docRef)
   }
   updateDevis(data: any): Observable<void> {
@@ -252,36 +270,36 @@ export class TelechargerService {
     const docRef = setDoc(Collection, mydata)
     return from(docRef)
   }
-//statut
-addStatut(path:string,data: any): Observable<void> {
-  let mydata = {
-    'designation': data.designation,
+  //statut
+  addStatut(path: string, data: any): Observable<void> {
+    let mydata = {
+      'designation': data.designation,
+    }
+    const Collection = doc(this.db, 'comptes/' +
+      path + '/statuts_personnel/' + data.id)
+    const docRef = setDoc(Collection, mydata)
+    return from(docRef)
   }
-  const Collection = doc(this.db, 'comptes/' +
-   path + '/statuts_personnel/' + data.id)
-  const docRef = setDoc(Collection, mydata)
-  return from(docRef)
-}
-//ENTREPRISES
-addEntreprises(data: any): Observable<void> {
-  let mydata = {
-    entreprise: data.entreprise ? data.entreprise : '',
-    enseigne:   data.enseigne ? data.enseigne : '',
-    ifu:  data.ifu ? data.ifu : '',
-    rccm:   data.rccm ? data.rccm : '',
-    adresse:  data.adresse ? data.adresse : '',
-    phone:  data.phone ? data.phone : '',
-    nom_responsable:  data.nom_responsable ? data.nom_responsable : '',
-    prenom_responsable:   data.prenom_responsable ? data.prenom_responsable : '',
-    date_naissance:   data.date_naissance ? data.date_naissance : '',
-    lieu_naissance:   data.lieu_naissance ? data.lieu_naissance : '',
-    num_cnib:   data.num_cnib ? data.num_cnib : '',
+  //ENTREPRISES
+  addEntreprises(data: any): Observable<void> {
+    let mydata = {
+      entreprise: data.entreprise ? data.entreprise : '',
+      enseigne: data.enseigne ? data.enseigne : '',
+      ifu: data.ifu ? data.ifu : '',
+      rccm: data.rccm ? data.rccm : '',
+      adresse: data.adresse ? data.adresse : '',
+      phone: data.phone ? data.phone : '',
+      nom_responsable: data.nom_responsable ? data.nom_responsable : '',
+      prenom_responsable: data.prenom_responsable ? data.prenom_responsable : '',
+      date_naissance: data.date_naissance ? data.date_naissance : '',
+      lieu_naissance: data.lieu_naissance ? data.lieu_naissance : '',
+      num_cnib: data.num_cnib ? data.num_cnib : '',
+    }
+    const Collection = doc(this.db, 'comptes/' +
+      this._auth_service.current_projet_id() + '/entreprises/' + data.id)
+    const docRef = setDoc(Collection, mydata)
+    return from(docRef)
   }
-  const Collection = doc(this.db, 'comptes/' +
-    this._auth_service.current_projet_id() + '/entreprises/' + data.id)
-  const docRef = setDoc(Collection, mydata)
-  return from(docRef)
-}
   //unites
   getAllUnites(): Observable<unites[]> {
     const Collection = collection(this.db, 'unites')

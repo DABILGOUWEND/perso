@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { Router } from 'express';
 import { AuthenService } from '../../authen.service';
 import { UserStore, EnginsStore, ClasseEnginsStore, PersonnelStore, ProjetStore, CompteStore, DevisStore, LigneDevisStore, ApproGasoilStore, GasoilStore, PannesStore, AttachementStore, DecompteStore, TachesStore, ConstatStore, UnitesStore, SstraitantStore, StatutStore } from '../../store/appstore';
@@ -10,6 +10,8 @@ import { TelechargerService } from '../../services/telecharger.service';
 import { ImportedModule } from '../../modules/imported/imported.module';
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { appro_gasoil, Entreprise, Gasoil, Statuts, tab_personnel } from '../../models/modeles';
+import { DataLoaderService } from '../../services/data-loader.service';
+import { Console } from 'console';
 
 @Component({
   selector: 'app-telecharger',
@@ -19,8 +21,14 @@ import { appro_gasoil, Entreprise, Gasoil, Statuts, tab_personnel } from '../../
   styleUrl: './telecharger.component.scss'
 })
 export class TelechargerComponent implements OnInit {
+  constructor() {
+    effect(() => console.log(this._devis_store.devis_data()));  
+
+   }
+
   ngOnInit() {
-    //this._devis_store.loadDevis();
+  
+   
     // this._lignedevis_store.loadLigneDevis();
     //this._attachement_store.loadAttachements();
     // this._decompte_store.loadAllDecomptes();
@@ -28,12 +36,13 @@ export class TelechargerComponent implements OnInit {
     // this._constat_store.loadConstats();
 
     //this._unite_store.loadUnites();
-    //this._sous_traitance_store.loadSstraitants();
+
   }
   telecharger() {
-    this.upload_entreprises().subscribe();
+    this.upload_devis().subscribe();
   }
   db = inject(Firestore)
+  _loader_service = inject(DataLoaderService);
   _user_store = inject(UserStore);
   _engins_store = inject(EnginsStore);
   _classes_engins_store = inject(ClasseEnginsStore);
@@ -57,7 +66,7 @@ export class TelechargerComponent implements OnInit {
   _unite_store = inject(UnitesStore);
   _sous_traitance_store = inject(SstraitantStore);
   _statut_store = inject(StatutStore);
-
+  _auth_service = inject(AuthenService);
 
   upload_personnel() {
     let obsrv: Observable<any>[] = [];
@@ -180,8 +189,9 @@ export class TelechargerComponent implements OnInit {
   upload_devis() {
     let obsrv: Observable<any>[] = []
     this._devis_store.devis_data().forEach((element) => {
+      let entreprise = this._sous_traitance_store.donnees_sstraitant().find(x => x.id == element.entreprise_id)
       obsrv.push(
-        this._telecharger_service.addDevis(element)
+        this._telecharger_service.saveDevis(element,entreprise?.enseigne?entreprise?.enseigne:'')
       )
     })
     return concat(obsrv)

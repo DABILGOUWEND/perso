@@ -34,6 +34,7 @@ import { TaskService } from "../task.service";
 import { DateAdapter } from "@angular/material/core";
 import { PassThrough } from "node:stream";
 import { ComptesDateInitService } from "../services/comptes-date-init.service";
+import { error } from "node:console";
 const initialGasoilState: gasoilStore = {
     conso_data: [],
     err: null,
@@ -1982,6 +1983,7 @@ export const DevisStore = signalStore(
     )),
     withMethods((store,
         _task_service = inject(TaskService),
+        _sous_traitance_store=inject(SstraitantStore),
         snackbar = inject(MatSnackBar)) =>
     (
 
@@ -1989,7 +1991,7 @@ export const DevisStore = signalStore(
             setCurrentDevisId(id: string) {
                 patchState(store, { current_devis_id: id })
             },
-            setCurrentDevis(devis: Devis|undefined) {
+            setCurrentDevis(devis: Devis | undefined) {
                 patchState(store, { current_devis: devis })
             },
             setPathString(path: string) {
@@ -2015,19 +2017,23 @@ export const DevisStore = signalStore(
             ,
             addDevis: rxMethod<Devis>(pipe(
                 switchMap((devis) => {
-                    return _task_service.addModel(store.path_string(), devis).pipe(
-                        tap({
-                            next: (resp) => {
-                                patchState(store, { current_devis_id: resp });
-                                patchState(store, { current_devis: { ...devis, id: resp } });
-
-                                Showsnackerbaralert('ajouté avec succes', 'pass', snackbar)
-                            }, error: () => {
-                                Showsnackerbaralert('échoué', 'fail', snackbar)
-                            }
+                    return _task_service.addModel(store.path_string(), devis).pipe(switchMap(
+                        resp => {
+                            let entreprise=_sous_traitance_store.donnees_sstraitant().find(x=>x.id==devis.entreprise_id)
+                            return _task_service.initialDevis(store.path_string(), devis,entreprise?.enseigne?entreprise.enseigne:'')
                         }
-                        )
-                    )
+                    ))
+
+                })
+            )),
+            addDataDevis: rxMethod<any>(pipe(
+                switchMap((row) => {
+                    return _task_service.addDataDevis(store.path_string(), store.current_devis_id(),row).pipe(tap({
+                        next:()=>
+                        {},
+                        error:()=>Showsnackerbaralert('échoué', 'fail', snackbar)
+                    }))
+
                 })
             )),
             removeDevis: rxMethod<string>(pipe(

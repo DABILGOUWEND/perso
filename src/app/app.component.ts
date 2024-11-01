@@ -34,17 +34,17 @@ export class AppComponent implements OnInit {
   _auth_service = inject(AuthenService);
 
   constructor() {
-  /*   this._auth.onAuthStateChanged(
+   this._auth.onAuthStateChanged(
       (userCredential) => {
         if (userCredential)
           this._auth_service.handleCreateUser(userCredential);
-      }) */
+      }) 
   }
 
 
   _auth = inject(Auth);
   title = signal('wenbtp');
   ngOnInit() {
-    //this._auth_service.autoLogin();
+    this._auth_service.autoLogin();
   }
 }

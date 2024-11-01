@@ -389,6 +389,31 @@ export class TaskService {
     const docRef = addDoc(devcollection, data).then(response => response.id)
     return from(docRef)
   }
+
+  initialDevis(path_string: string,row: Devis,entreprise:string): Observable<void> {
+    const docRef1 = doc(this.db, path_string+'/'+ row.id);
+    const docRef = updateDoc(docRef1, {
+      data: [{
+        'poste': row.code,
+        'designation': entreprise,
+        'prix_u': null,
+        'unite': '',
+        'quantite': null,
+        'children':[]
+      }]
+    }).then
+      (response => { }
+      )
+    return from(docRef)
+  }
+
+  addDataDevis(path_string:string,devis_id:string,row:any): Observable<void> {
+    const docRef1 = doc(this.db, path_string+'/' + devis_id);
+    const docRef = updateDoc(docRef1, { data: row }).then
+      (response => { }
+      )
+    return from(docRef)
+  }
   updateDevis(data: any): Observable<void> {
     let id = data.id
     const docRef = doc(this.db, 'comptes/' +
@@ -402,6 +427,7 @@ export class TaskService {
     const promise = deleteDoc(docRef)
     return from(promise)
   }
+
 
   //CONSTATS
   getallConstats(): Observable<Constats[]> {
