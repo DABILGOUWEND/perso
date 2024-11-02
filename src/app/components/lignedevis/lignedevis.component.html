@@ -60,16 +60,23 @@
       <h2>DEVIS PRESTATIONS</h2>
     </div>
 
-    <div class="titre_devis">
-      <div class="row">
-        <mat-form-field>
-          <mat-label> N° DEVIS </mat-label>
-          <mat-select [(value)]="current_devis_id" (selectionChange)="selecteDevis($event.value)">
-            <mat-option *ngFor="let devis of liste_devis()" [value]="devis.id"> {{devis.entreprise}} </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
+    <div [ngStyle]="{
+      'width.%':20,
+      'margin-top.px':20,
+      'margin-bottom.px':20,
+      'margin-left.px':20,
+      'background-color':'lightcoral'}">
+      <mat-form-field [ngStyle]="{
+        'width.%':90,
+        'margin-top.px':20,
+        'margin-left.%':5
+        }">
+        <mat-label> SELECTIONNER DEVIS </mat-label>
+        <mat-select [(value)]="current_devis_id" (selectionChange)="selecteDevis($event.value)">
+          <mat-option *ngFor="let devis of liste_devis()" [value]="devis.id"> {{devis.entreprise}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <div class="content_body">
@@ -79,14 +86,34 @@
             <span [style.paddingLeft.px]="40"> POSTE </span>
           </th>
 
-          <td mat-cell *matCellDef="let data;;let ind=index">
+          <td mat-cell *matCellDef="let data;let ind=index">
             @if(ligne_cliquer()==ind)
             {
-            <div class="row_saisie">
+            @if(data.level>0)
+            {
+            <div [ngStyle]="{
+                  'width.%':50,
+                  'text-align':'center' }">
 
-              <input matInput type="text" [(ngModel)]="current_poste" />
-
+              <input matInput type="text" [(ngModel)]="current_poste" [ngStyle]="{
+                    'width.%':50,
+                    'text align':'center',
+                    'font-size.px':20}" />
             </div>
+            }@else {
+            <div [ngStyle]="{
+              'padding-top.px':20,
+                'text-align':'center' }">
+
+              <textarea matInput type="text" [(ngModel)]="current_poste" [ngStyle]="{
+                  'width.px':400,
+                  'text align':'center',
+                  'padding-top.px':20,
+                  'padding-left.px':20,
+                  'font-size.px':20}" ></textarea>  
+            </div>
+            }
+
 
             }@else {
             <button mat-icon-button [style.visibility]="!data.expandable ? 'hidden' : ''"
@@ -109,7 +136,11 @@
             {
             <div class="row_saisie">
 
-              <textarea matInput type="text" [(ngModel)]="current_designation"></textarea>
+              <textarea matInput type="text" [(ngModel)]="current_designation" placeholder="designation" [ngStyle]="{
+                'width.%':100,
+                'height.px':50,
+                'padding-top.px':20,
+              'font-size.px':20}"></textarea>
 
             </div>
 
@@ -124,14 +155,19 @@
           <td mat-cell *matCellDef="let data;let ind=index">
             @if(ligne_cliquer()==ind && !data.expandable && data.level>0)
             {
-            <div class="row_saisie">
-
-              <input matInput type="text" [(ngModel)]="current_unite" placeholder="unité" />
+            <div [ngStyle]="{
+              'width.px':100,
+              'text-align':'center'
+            }">
+              <mat-select [(value)]="current_unite">
+                <mat-option *ngFor="let unite of liste_unites()" [value]="unite.id"> {{unite.unite}}
+                </mat-option>
+              </mat-select>
 
             </div>
 
             }@else {
-            {{data.unite}}
+            {{data.unite|unites:_unit_store.unites_data()}}
             }
           </td>
         </ng-container>
@@ -173,8 +209,8 @@
           <th mat-header-cell *matHeaderCellDef> MONTANT </th>
           <td mat-cell *matCellDef="let data;let ind=index">
             @if(ligne_cliquer()==ind && !data.expandable && data.level>0 )
-            {   <div class="row_saisie  ">
-              <input matInput type="number" [(ngModel)]="current_montant" [disabled]="true" (keyup)="saisie()"  />
+            { <div class="row_saisie  ">
+              <input matInput type="number" [(ngModel)]="current_montant" [disabled]="true" (keyup)="saisie()" />
             </div>
             }@else {
             {{data.montant|currency:'F CFA' }}
@@ -192,21 +228,24 @@
               <button mat-icon-button (click)="close(data)"> <mat-icon> close</mat-icon> </button>
             </div>
             }@else {
-              @if(data.level>0 && !data.expandable){
-                <button mat-icon-button (click)="modif_data(ind,data)"> <mat-icon> edit</mat-icon> </button>
-                <button mat-icon-button (click)="addrow(data)"> <mat-icon> add</mat-icon> </button>
-                <button mat-icon-button (click)="delete(data)"> <mat-icon> delete</mat-icon> </button>
-              }@else {
-                <button mat-icon-button (click)="addrow(data)"> <mat-icon> add</mat-icon> </button>
-                <button mat-icon-button (click)="modif_data(ind,data)"> <mat-icon> edit</mat-icon> </button>
-              }
-           
+            @if(data.level>0 && !data.expandable){
+            <button mat-icon-button (click)="modif_data(ind,data)"> <mat-icon> edit</mat-icon> </button>
+            <button mat-icon-button (click)="addrow(data)"> <mat-icon> add</mat-icon> </button>
+            <button mat-icon-button (click)="delete(data)"> <mat-icon> delete</mat-icon> </button>
+            }@else {
+            <button mat-icon-button (click)="addrow(data)"> <mat-icon> add</mat-icon> </button>
+            <button mat-icon-button (click)="modif_data(ind,data)"> <mat-icon> edit</mat-icon> </button>
+            }
+
             }
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns;"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;let ind=index "
-          [ngStyle]="{'font-weight':row.expandable==true?'bold':'normal','background-color':row_color[row.level]}"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;let ind=index " [ngStyle]="{  
+          'font-size.px':'11', 
+          'font-weight':row.expandable==true?'bold':'normal',
+          'background-color':row_color[row.level]}" [class.demo-row-is-clicked]="focus_row()==ind"
+     ></tr>
       </table>
     </div>
 

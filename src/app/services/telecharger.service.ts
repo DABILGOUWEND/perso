@@ -90,18 +90,11 @@ export class TelechargerService {
     const docRef = setDoc(collection, mydata)
     return from(docRef)
   }
-  saveDevis(row: any, entreprise: string): Observable<void> {
+  saveDevis(id:string,data:any): Observable<void> {
     const docRef1 = doc(this.db, 'comptes/' +
-      this._auth_service.current_projet_id() + '/devis/' + row.id);
+      this._auth_service.current_projet_id() + '/devis/' + id);
     const docRef = updateDoc(docRef1, {
-      data: [{
-        'poste': row.code,
-        'designation': entreprise,
-        'prix_u': null,
-        'unite': '',
-        'quantite': null,
-        'children':[]
-      }]
+      data: data
     }).then
       (response => { }
       )

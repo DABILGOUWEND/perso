@@ -22,13 +22,16 @@ import { Console } from 'console';
 })
 export class TelechargerComponent implements OnInit {
   constructor() {
-    effect(() => console.log(this._devis_store.devis_data()));  
+    effect(() => console.log(this._devis_store.devis_data()));
 
-   }
+  }
 
   ngOnInit() {
-  
-   
+
+    this._devis_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/devis');
+    this._sous_traitance_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/sous_traitants');
+    this._devis_store.loadDevis();
+    this._sous_traitance_store.loadSstraitants();
     // this._lignedevis_store.loadLigneDevis();
     //this._attachement_store.loadAttachements();
     // this._decompte_store.loadAllDecomptes();
@@ -188,10 +191,16 @@ export class TelechargerComponent implements OnInit {
   }
   upload_devis() {
     let obsrv: Observable<any>[] = []
+    let filtre = this._devis_store.devis_data().find(x => x.entreprise_id == 'T2cUO3uBcfCGKQpI7wNf')
+    let data = filtre?.data
     this._devis_store.devis_data().forEach((element) => {
       let entreprise = this._sous_traitance_store.donnees_sstraitant().find(x => x.id == element.entreprise_id)
+      if (data) {
+        let ent = data[0]
+        ent.poste = element.code+'/'+entreprise?.enseigne
+      }
       obsrv.push(
-        this._telecharger_service.saveDevis(element,entreprise?.enseigne?entreprise?.enseigne:'')
+        this._telecharger_service.saveDevis(element.id, data)
       )
     })
     return concat(obsrv)
@@ -222,7 +231,7 @@ export class TelechargerComponent implements OnInit {
       gasoil.forEach(
         (element: any) => {
           obsrv.push(
-            this._telecharger_service.addStatut(path,element)
+            this._telecharger_service.addStatut(path, element)
           )
         })
       return concat(obsrv)

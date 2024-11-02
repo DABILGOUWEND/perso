@@ -143,10 +143,37 @@ export interface element_devis {
     prix_u: number|null,
     unite: string,
     quantite: number|null,
+    constat: element_constat[],
     children: element_devis[]
 
 }
-
+export interface ExampleFlatNode {
+    expandable: boolean,
+    poste: string,
+    designation: string,
+    prix_u: number | null,
+    unite: string,
+    quantite: number | null,
+    level: number,
+    montant: number | null,
+  }
+  export interface ExampleFlatNode2 {
+    expandable: boolean,
+    poste: string,
+    designation: string,
+    prix_u: number | null,
+    unite: string,
+    quantite: number | null,
+    level: number,
+    quantite_prec: number | null,
+    quantite_periode: number | null,
+    quantite_cumul: number | null,
+  }
+export  interface  element_constat{
+    numero: number,
+    quantite_periode: number,
+    
+}
 
 
 export interface Contrats {

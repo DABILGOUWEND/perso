@@ -23,6 +23,7 @@ import { HomeComponent } from './components/home/home.component';
 import { ListeDevisComponent } from './components/liste-devis/liste-devis.component';
 import { ListeSstraitantsComponent } from './components/liste-sstraitants/liste-sstraitants.component';
 import { LignedevisComponent } from './components/lignedevis/lignedevis.component';
+import { MesConstatsComponent } from './components/mes-constats/mes-constats.component';
 
 export const routes: Routes = [
     {
@@ -129,5 +130,9 @@ export const routes: Routes = [
     {
         path: "telecharger",
         component: TelechargerComponent
+    },
+    {
+        path:"mes_constats",
+        component:MesConstatsComponent
     }
 ];
