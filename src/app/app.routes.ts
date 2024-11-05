@@ -24,6 +24,7 @@ import { ListeDevisComponent } from './components/liste-devis/liste-devis.compon
 import { ListeSstraitantsComponent } from './components/liste-sstraitants/liste-sstraitants.component';
 import { LignedevisComponent } from './components/lignedevis/lignedevis.component';
 import { MesConstatsComponent } from './components/mes-constats/mes-constats.component';
+import { MesAttachementsComponent } from './components/mes-attachements/mes-attachements.component';
 
 export const routes: Routes = [
     {
@@ -134,5 +135,9 @@ export const routes: Routes = [
     {
         path:"mes_constats",
         component:MesConstatsComponent
+    },
+    {
+        path:"mes_attachements",
+        component:MesAttachementsComponent
     }
 ];

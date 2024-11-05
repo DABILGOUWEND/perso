@@ -169,6 +169,21 @@ export interface ExampleFlatNode {
     quantite_periode: number | null,
     quantite_cumul: number | null,
   }
+  export interface FlatNodeAttachement {
+    expandable: boolean,
+    poste: string,
+    designation: string,
+    prix_u: number | null,
+    unite: string,
+    quantite: number | null,
+    level: number,
+    quantite_prec: number | null,
+    quantite_periode: number | null,
+    quantite_cumul: number | null,
+    montant_prec: number | null,
+    montant_periode: number | null,
+    montant_cumul: number | null,
+  }
 export  interface  element_constat{
     numero: number,
     quantite_periode: number,

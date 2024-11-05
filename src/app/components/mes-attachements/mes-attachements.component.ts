@@ -1,26 +1,26 @@
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { ImportedModule } from '../../modules/imported/imported.module';
-import { DevisStore, SstraitantStore, UnitesStore } from '../../store/appstore';
-import { element_constat, element_devis, ExampleFlatNode2 } from '../../models/modeles';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { AuthenService } from '../../authen.service';
-import { BehaviorSubject } from 'rxjs';
 import { UnitesPipe } from '../../unites.pipe';
+import { FlatTreeControl } from '@angular/cdk/tree';
+import { MatTreeFlattener, MatTreeFlatDataSource } from '@angular/material/tree';
+import { AuthenService } from '../../authen.service';
+import { element_constat, element_devis, FlatNodeAttachement } from '../../models/modeles';
+import { DevisStore, SstraitantStore, UnitesStore } from '../../store/appstore';
 
 @Component({
-  selector: 'app-mes-constats',
+  selector: 'app-mes-attachements',
   standalone: true,
   imports: [ImportedModule, UnitesPipe],
-  templateUrl: './mes-constats.component.html',
-  styleUrl: './mes-constats.component.scss'
+  templateUrl: './mes-attachements.component.html',
+  styleUrl: './mes-attachements.component.scss'
 })
-export class MesConstatsComponent implements OnInit {
+export class MesAttachementsComponent implements OnInit {
   //injections
   _devis_store = inject(DevisStore);
   _auth_service = inject(AuthenService);
   _ssTraitance_store = inject(SstraitantStore);
   _unit_store = inject(UnitesStore);
+  getchildren: element_constat[] = []
 
   //signals properties
   current_devis_id = signal('');
@@ -56,13 +56,26 @@ export class MesConstatsComponent implements OnInit {
     return constats_numero.length > 0 ? Math.max(...constats_numero) : 0;
   })
 
-  
+
   //current properties 
+  row_color = ['#5094D8', '#93B3BF', 'white', 'white', 'lightyellow', 'lightcoral', 'lightcyan'];
   constats: element_constat[] = [];
   ligne_clicked = signal(Infinity);
-  displayedColumns = ['poste', 'designation', 'unite', 'prix_u', 'quantite', 'quantite_prec', 'quantite_periode', 'quantite_cumul', 'actions'];
-  nestedNodeMap = new Map<element_devis, ExampleFlatNode2>();
-  flatNodeMap = new Map<ExampleFlatNode2, element_devis>();
+  displayedColumns = [
+    'poste',
+    'designation',
+    'unite',
+    'prix_u',
+    'quantite',
+    'quantite_prec',
+    'quantite_periode',
+    'quantite_cumul',
+    'montant_prec',
+    'montant_periode',
+    'montant_cumul'
+  ];
+  nestedNodeMap = new Map<element_devis, FlatNodeAttachement>();
+  flatNodeMap = new Map<FlatNodeAttachement, element_devis>();
   transformer = (node: element_devis, level: number) => {
     const existingNode = this.nestedNodeMap.get(node);
     const flatNode = existingNode && (existingNode.poste === node.poste
@@ -80,6 +93,9 @@ export class MesConstatsComponent implements OnInit {
         quantite_prec: null,
         quantite_periode: null,
         quantite_cumul: null,
+        montant_prec: null,
+        montant_periode: null,
+        montant_cumul: null,
 
       };
     flatNode.poste = node.poste;
@@ -92,13 +108,16 @@ export class MesConstatsComponent implements OnInit {
     flatNode.quantite_prec = null;
     flatNode.quantite_periode = null;
     flatNode.quantite_cumul = null;
+    flatNode.montant_prec = null;
+    flatNode.montant_periode = null;
+    flatNode.montant_cumul = null;
 
 
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;
   }
-  treeControl = new FlatTreeControl<ExampleFlatNode2>(
+  treeControl = new FlatTreeControl<FlatNodeAttachement>(
     node => node.level, node => node.expandable);
   treeFlattener = new MatTreeFlattener(
     this.transformer, node => node.level, node => node.expandable, node => node.children
@@ -120,6 +139,7 @@ export class MesConstatsComponent implements OnInit {
     this._devis_store.loadDevis();
     this._ssTraitance_store.loadSstraitants();
     this._unit_store.loadUnites();
+
   }
 
   init_dat(data: element_devis[] | undefined) {
@@ -129,7 +149,8 @@ export class MesConstatsComponent implements OnInit {
       data[0].children = sorting;
       this.dataSource.data = data;
       this.treeControl.expandAll();
-      for (let node of this.treeControl.dataNodes) {
+      for (let i = this.treeControl.dataNodes.length - 1; i >= 0; i--) {
+          let node = this.treeControl.dataNodes[i];
         if (!node.expandable) {
           let flatenNode = this.flatNodeMap.get(node);
           if (flatenNode) {
@@ -149,10 +170,34 @@ export class MesConstatsComponent implements OnInit {
               } else {
                 node.quantite_prec = 0;
               }
+              let prix = node.prix_u ? node.prix_u : 0;
               node.quantite_cumul = node.quantite_prec + node.quantite_periode;
+              node.montant_prec = node.quantite_prec * prix;
+              node.montant_periode = node.quantite_periode * prix;
+              node.montant_cumul = node.montant_prec + node.montant_periode;
             }
           }
         }
+        let parent = this.getParentNode(this.treeControl.dataNodes[i]);
+        if (parent) {
+          let montant_prec = this.treeControl.dataNodes[i].montant_prec;
+          let montant_periode = this.treeControl.dataNodes[i].montant_periode;
+          let montant_cumul = this.treeControl.dataNodes[i].montant_cumul;
+
+          let montantNodeprec = parent.montant_prec;
+          let montantNodePeriode = parent.montant_periode;
+          let montantNodeCumul = parent.montant_cumul;
+
+          let parentmontprec = (montantNodeprec ? montantNodeprec : 0) + (montant_prec ? montant_prec : 0);
+          let parentmontperiode = (montantNodePeriode ? montantNodePeriode : 0) + (montant_periode ? montant_periode : 0);
+          let parentmontcumul = (montantNodeCumul ? montantNodeCumul : 0) + (montant_cumul ? montant_cumul : 0);
+
+          parent.montant_prec = parentmontprec;
+          parent.montant_periode = parentmontperiode;
+          parent.montant_cumul = parentmontcumul;
+
+        }
+
 
       }
     }
@@ -163,6 +208,21 @@ export class MesConstatsComponent implements OnInit {
     this.current_constat.set(this.last_constat() + 1);
     this.NewConstat(this.data_loaded());
     this._devis_store.addDataDevis(this.data_loaded());
+  }
+  getLevel = (node: FlatNodeAttachement) => node.level
+  getParentNode(node: FlatNodeAttachement): FlatNodeAttachement | undefined {
+    const currentLevel = this.getLevel(node);
+    if (currentLevel < 1) {
+      return undefined;
+    }
+    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
+    for (let i = startIndex; i >= 0; i--) {
+      const currentNode = this.treeControl.dataNodes[i];
+      if (this.getLevel(currentNode) < currentLevel) {
+        return currentNode;
+      }
+    }
+    return undefined;
   }
   selecteDevis(devis_id: string) {
     this.numero_constat.set(0);
@@ -175,6 +235,7 @@ export class MesConstatsComponent implements OnInit {
   previous_constat() {
     this.current_constat.update(x => x - 1);
   }
+
   getChildren(data: element_devis[] | undefined) {
 
     if (data) {
@@ -188,7 +249,22 @@ export class MesConstatsComponent implements OnInit {
     }
     return this.constats;
   }
-  ligne_click(node: ExampleFlatNode2, ind: number) {
+  NewConstat(data: element_devis[] | undefined) {
+    if (data) {
+      data.forEach((each) => {
+        let flatenNode = this.nestedNodeMap.get(each);
+
+        if (!flatenNode?.expandable) {
+          each.constat.push({
+            numero: this.last_constat() + 1,
+            quantite_periode: 0
+          })
+        }
+        this.NewConstat(each.children);
+      });
+    }
+  }
+  ligne_click(node: FlatNodeAttachement, ind: number) {
     this.ligne_clicked.set(ind);
     let qtite_periode = node.quantite_periode;
     let qtite_prec = node.quantite_prec;
@@ -197,7 +273,11 @@ export class MesConstatsComponent implements OnInit {
     qtite_prec != null ? this.clicked_qte_prec.set(qtite_prec) : this.clicked_qte_prec.set(0);
     qtite_cumul != null ? this.clicked_qte_cumul.set(qtite_cumul) : this.clicked_qte_cumul.set(0);
   }
-  save(node: ExampleFlatNode2) {
+  add_ligne(data: any) {
+
+  }
+
+  save(node: FlatNodeAttachement) {
     let flatenNode = this.flatNodeMap.get(node);
     if (flatenNode) {
       let ind = flatenNode.constat.map(c => c.numero).indexOf(this.current_constat());
@@ -222,21 +302,6 @@ export class MesConstatsComponent implements OnInit {
     }
 
   }
-  NewConstat(data: element_devis[] | undefined) {
-    if (data) {
-      data.forEach((each) => {
-        let flatenNode = this.nestedNodeMap.get(each);
-
-        if (!flatenNode?.expandable) {
-          each.constat.push({
-            numero: this.last_constat() + 1,
-            quantite_periode: 0
-          })
-        }
-        this.NewConstat(each.children);
-      });
-    }
-  }
   RemoveConstat(data: element_devis[] | undefined) {
     if (data) {
       data.forEach((each) => {
@@ -251,20 +316,5 @@ export class MesConstatsComponent implements OnInit {
         this.RemoveConstat(each.children);
       });
     }
-  }
-  getLevel = (node: ExampleFlatNode2) => node.level
-  getParentNode(node: ExampleFlatNode2): ExampleFlatNode2 | undefined {
-    const currentLevel = this.getLevel(node);
-    if (currentLevel < 1) {
-      return undefined;
-    }
-    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
-    for (let i = startIndex; i >= 0; i--) {
-      const currentNode = this.treeControl.dataNodes[i];
-      if (this.getLevel(currentNode) < currentLevel) {
-        return currentNode;
-      }
-    }
-    return undefined;
   }
 }

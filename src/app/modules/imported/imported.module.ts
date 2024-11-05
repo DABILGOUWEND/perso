@@ -34,6 +34,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { QRCodeModule } from 'angularx-qrcode';
 import { QrCodeModule } from 'ng-qrcode';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 const MATERIAL_COMPONENTS = [
   CommonModule,
@@ -63,6 +64,7 @@ const MATERIAL_COMPONENTS = [
   MatButtonModule,
   MatToolbarModule,
   MatSlideToggleModule,
+  MatAutocompleteModule,
   FormsModule,
   MatTreeModule,
   MatSlideToggleModule,

@@ -1,14 +1,17 @@
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component, computed, effect, inject, model, OnInit, signal } from '@angular/core';
 import { MatTreeFlattener, MatTreeFlatDataSource } from '@angular/material/tree';
-import { element_devis, ExampleFlatNode, } from '../../models/modeles';
+import { element_devis, ExampleFlatNode, taches, taches_engins, } from '../../models/modeles';
 import { ImportedModule } from '../../modules/imported/imported.module';
 
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { DevisStore, SstraitantStore, UnitesStore } from '../../store/appstore';
+import { DevisStore, SstraitantStore, TachesEnginsStore, TachesStore, UnitesStore } from '../../store/appstore';
 import { AuthenService } from '../../authen.service';
 import { BehaviorSubject } from 'rxjs';
 import { UnitesPipe } from '../../unites.pipe';
+import { FilterTachesPipe } from '../../filter-taches.pipe';
+import { HightligthDirective } from '../../hightligth.directive';
+import { MatTableDataSource } from '@angular/material/table';
 
 
 
@@ -16,15 +19,19 @@ import { UnitesPipe } from '../../unites.pipe';
 @Component({
   selector: 'app-lignedevis',
   standalone: true,
-  imports: [ImportedModule, UnitesPipe],
+  imports: [ImportedModule, UnitesPipe, FilterTachesPipe, HightligthDirective],
   templateUrl: './lignedevis.component.html',
   styleUrl: './lignedevis.component.scss'
 })
 export class LignedevisComponent implements OnInit {
+  //injections
   _devis_store = inject(DevisStore);
   _ssTraitance_store = inject(SstraitantStore);
   _unit_store = inject(UnitesStore);
   _auth_service = inject(AuthenService);
+  _taches = inject(TachesStore);
+
+
   //signals
   ligne_cliquer = signal(Infinity);
   current_poste = signal('');
@@ -38,10 +45,24 @@ export class LignedevisComponent implements OnInit {
   is_table_opened = signal(false);
   selected_row = signal<element_devis | undefined>(undefined);
   focus_row = signal(Infinity);
+  designation_search = signal<taches[]>([]);
 
   //models
-  row_color = ['#5094D8', '#93B3BF', 'white', 'white', 'lightyellow', 'lightcoral', 'lightcyan'];
+  row_color = ['#b2b2b2', '#f0f0f0', 'white', 'white', 'lightyellow', 'lightcoral', 'lightcyan'];
   displayedColumns = ['poste', 'designation', 'unite', 'prix_u', 'quantite', 'montant', 'actions'];
+  displaytab_recherche = ['designation'];
+  searchText = '';
+  characters = [
+    'Ant-Man',
+    'Aquaman',
+    'Asterix',
+    'The Atom',
+    'The Avengers',
+    'Batgirl',
+    'Batman',
+    'Batwoman'
+  ]
+
 
   /** Map from nested node to flattened node. This helps us to keep the same object for selection */
   nestedNodeMap = new Map<element_devis, ExampleFlatNode>();
@@ -90,7 +111,9 @@ export class LignedevisComponent implements OnInit {
   table_update_form: FormGroup;
   data_loaded = computed(() => this._devis_store.donnees_currentDevis()?.data)
 
-
+  donnees_table = computed(() => {
+    return new MatTableDataSource<any>(this.designation_search())
+  })
   //constructor
   constructor(private _fb: FormBuilder) {
     this.table_update_form = this._fb.group({
@@ -127,9 +150,11 @@ export class LignedevisComponent implements OnInit {
     this._devis_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/devis');
     this._ssTraitance_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/sous_traitants');
     this._unit_store.setPathString('comptes/' + this._auth_service.current_projet_id() + '/unites');
+    this._taches.setPathString('comptes/' + this._auth_service.current_projet_id() + '/taches');
     this._devis_store.loadDevis();
     this._ssTraitance_store.loadSstraitants();
     this._unit_store.loadUnites();
+    this._taches.loadTaches();
   }
   init_dat(data: element_devis[] | undefined) {
     if (data) {
@@ -251,6 +276,7 @@ export class LignedevisComponent implements OnInit {
     return undefined;
   }
   modif_data(ind: number, node: ExampleFlatNode) {
+    this.designation_search.set([]);
     this.selected_row.set(this.flatNodeMap.get(node));
     this.ligne_cliquer.set(ind);
     this.current_poste.set(node.poste);
@@ -330,6 +356,27 @@ export class LignedevisComponent implements OnInit {
         this.modif_data(ind, nestedNode)
       }
     }
+  }
+Majuscule(text:string)
+{
+  if(!text) return '';
+   return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+}
+  search() {
+    let searchText = this.current_designation();
+    if (!searchText) {
+      this.designation_search.set([]);
+      return;
+    }
+    this.designation_search.set(this._taches.taches_data().filter(x => this.Majuscule(x.designation).includes(this.Majuscule(searchText))));
+
+  }
+  displayFn(taches: any): string {
+   //let unites = this._unit_store.unites_data().find(u => u.id == taches.uniteid);
+ 
+   this.current_unite.set( taches && taches.uniteid? taches.uniteid : '');
+   let id = taches && taches.uniteid? taches.uniteid : '';  
+    return taches && taches.classe? taches.classe : '';
   }
 }
 

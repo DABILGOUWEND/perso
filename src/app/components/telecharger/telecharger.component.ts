@@ -44,7 +44,7 @@ export class TelechargerComponent implements OnInit {
   telecharger() {
     this.upload_devis().subscribe();
   }
-  db = inject(Firestore)
+  db = inject(Firestore);
   _loader_service = inject(DataLoaderService);
   _user_store = inject(UserStore);
   _engins_store = inject(EnginsStore);
@@ -197,7 +197,8 @@ export class TelechargerComponent implements OnInit {
       let entreprise = this._sous_traitance_store.donnees_sstraitant().find(x => x.id == element.entreprise_id)
       if (data) {
         let ent = data[0]
-        ent.poste = element.code+'/'+entreprise?.enseigne
+        ent.poste = ''
+        ent.designation = element.code+'/'+entreprise?.enseigne
       }
       obsrv.push(
         this._telecharger_service.saveDevis(element.id, data)
