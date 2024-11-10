@@ -19,7 +19,7 @@ import { MatTableDataSource } from '@angular/material/table';
 @Component({
   selector: 'app-lignedevis',
   standalone: true,
-  imports: [ImportedModule, UnitesPipe, FilterTachesPipe, HightligthDirective],
+  imports: [ImportedModule, UnitesPipe],
   templateUrl: './lignedevis.component.html',
   styleUrl: './lignedevis.component.scss'
 })
@@ -45,7 +45,7 @@ export class LignedevisComponent implements OnInit {
   is_table_opened = signal(false);
   selected_row = signal<element_devis | undefined>(undefined);
   focus_row = signal(Infinity);
-  designation_search = signal<taches[]>([]);
+  designation_search = signal<string[]>([]);
 
   //models
   row_color = ['#b2b2b2', '#f0f0f0', 'white', 'white', 'lightyellow', 'lightcoral', 'lightcyan'];
@@ -331,7 +331,6 @@ export class LignedevisComponent implements OnInit {
   }
   save() {
     this._devis_store.addDataDevis(this.data_loaded());
-    //this.dataChange.next(this.data_element());
   }
   selecteDevis(devis_id: string) {
     this._devis_store.setCurrentDevisId(devis_id)
@@ -346,7 +345,6 @@ export class LignedevisComponent implements OnInit {
         quantite: null,
         constat: [],
         children: []
-
       }
       flatenNode.children.push(child)
       this.init_dat(this.data_loaded())
@@ -357,26 +355,27 @@ export class LignedevisComponent implements OnInit {
       }
     }
   }
-Majuscule(text:string)
-{
-  if(!text) return '';
-   return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-}
+  Majuscule(text: string) {
+    if (!text) return '';
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+  }
   search() {
     let searchText = this.current_designation();
     if (!searchText) {
       this.designation_search.set([]);
       return;
     }
-    this.designation_search.set(this._taches.taches_data().filter(x => this.Majuscule(x.designation).includes(this.Majuscule(searchText))));
+    let data = [...this._taches.taches_data().map(x => x.designation), ...this._taches.taches_data().map(x => x.type)]
+    this.designation_search.set(data.filter(x =>
+      this.Majuscule(x).includes(this.Majuscule(searchText))
+    ));
 
   }
   displayFn(taches: any): string {
-   //let unites = this._unit_store.unites_data().find(u => u.id == taches.uniteid);
- 
-   this.current_unite.set( taches && taches.uniteid? taches.uniteid : '');
-   let id = taches && taches.uniteid? taches.uniteid : '';  
-    return taches && taches.classe? taches.classe : '';
+    //let unites = this._unit_store.unites_data().find(u => u.id == taches.uniteid);
+    this.current_unite.set(taches && taches.uniteid ? taches.uniteid : '');
+    let id = taches && taches.uniteid ? taches.uniteid : '';
+    return taches && taches.designation ? taches.designation : '';
   }
 }
 

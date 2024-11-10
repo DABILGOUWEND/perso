@@ -85,26 +85,32 @@
           <td mat-cell *matCellDef="let data;let ind=index">
             @if(ligne_cliquer()==ind && data.level>0)
             {
-            <div [ngStyle]="{
-                  'width.%':50,
+            <div [ngStyle]="{'display':'flex','width.px':100,'margin-left.px':data.level*32,
+                  
                   'text-align':'center' 
                   }">
               <input matInput type="text" [(ngModel)]="current_poste" [ngStyle]="{
                     'width.%':50,
+                    'margin-left.px':40,
                     'text align':'center',
                     'font-size.px':20}" />
             </div>
 
             }@else {
-            <button mat-icon-button [style.visibility]="!data.expandable ? 'hidden' : ''"
-              [style.marginLeft.px]="data.level * 32" (click)="treeControl.toggle(data)">
-              <mat-icon class="mat-icon-rtl-mirror">
-                {{treeControl.isExpanded(data) ? 'expand_more' : 'chevron_right'}}
-              </mat-icon>
-            </button>
-            {{data.poste}}
+            <div  [ngStyle]="{'display':'flex','width.px':100,'margin-left.px':data.level*32}">
+              <div [ngStyle]="{'margin-top.px':5}">
+                <button mat-icon-button [style.visibility]="!data.expandable ? 'hidden' : ''"
+                  (click)="treeControl.toggle(data)" >
+                  <mat-icon class="mat-icon-rtl-mirror">
+                    {{treeControl.isExpanded(data) ? 'expand_more' : 'chevron_right'}}
+                  </mat-icon>
+                </button>
+              </div>
+              <div [ngStyle]="{'margin-top.px':12.5,'margin-left.px':10,'width.px':25}">
+                {{data.poste}}
+              </div>
+            </div>
             }
-
           </td>
         </ng-container>
 
@@ -119,24 +125,17 @@
                   'text align':'center',
                   'padding-top.px':20,
                   'padding-left.px':20,
-                  'font-size.px':20}" (keyup)="search()" [matAutocomplete]="auto" ></textarea>
-              <mat-autocomplete #auto="matAutocomplete"  [displayWith]="displayFn.bind(this)" >
+                  'font-size.px':20}" (keyup)="search()" [matAutocomplete]="auto"></textarea>
+              <mat-autocomplete #auto="matAutocomplete">
                 @for (shoe of designation_search(); track shoe) {
-                <mat-option [value]="shoe">{{shoe.designation}} </mat-option>
-                }
+                <mat-option [value]="shoe">{{shoe}} </mat-option>}
               </mat-autocomplete>
-
-
-
             </div>
-          
-
             }@else {
             {{data.designation}}
             }
           </td>
         </ng-container>
-
         <ng-container matColumnDef="unite">
           <th mat-header-cell *matHeaderCellDef> UNITE </th>
           <td mat-cell *matCellDef="let data;let ind=index">
