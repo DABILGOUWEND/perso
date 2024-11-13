@@ -10,7 +10,7 @@ import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import{provideAnimationsAsync} from '@angular/platform-browser/animations/async'
-import { functionalInterceptor } from './functional.interceptor';
+
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 
 export const appConfig: ApplicationConfig = {
