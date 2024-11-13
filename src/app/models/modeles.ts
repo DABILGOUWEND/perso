@@ -12,14 +12,14 @@ export interface classe {
     'niveau': string,
     'eleves': liste_eleves[],
 }
-export interface eleve {    
+export interface eleves {    
     'id': string,
     'nom': string,
     'prenom': string,
     'sexe': string,
     'date_naissance': string,
     'lieu_naissance': string,
-    'nom_perant': string,
+    'nom_parent': string,
     'prenom_parent': string,
     'profession_parent': string,
     'telephone_parent': string,
@@ -112,7 +112,7 @@ export interface liste_eleves{
 
 
 export interface eleve_state {
-    data_eleve: eleve[],
+    data_eleve: eleves[],
     message: string,
     selectedEleve: string
 }

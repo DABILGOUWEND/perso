@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 
 import { Auth } from '@angular/fire/auth';
 import { ImportedModule } from './modules/imported/imported.module';
+import { eleves_store } from './store/appstore';
 
 
 @Component({
@@ -13,10 +14,11 @@ import { ImportedModule } from './modules/imported/imported.module';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  
-  constructor() {
- 
+  constructor() { 
+    effect(()=>console.log(this.eleves_store.data_eleve()))
   }
+ eleves_store=inject(eleves_store)
   ngOnInit() {
+    this.eleves_store.loadEleves( )
 }
 }

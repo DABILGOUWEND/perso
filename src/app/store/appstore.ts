@@ -16,7 +16,7 @@ const initial_eleve_state: eleve_state = {
 
 
 /*************************** */
-export const eleveçstore = signalStore(
+export const eleves_store = signalStore(
     { providedIn: 'root' },
     withState(initial_eleve_state),
     withComputed((store)=>({
@@ -27,7 +27,7 @@ export const eleveçstore = signalStore(
     withMethods((store, snackbar = inject(MatSnackBar), wen_service=inject(WenService)) =>
     (
         {
-            loadPannes: rxMethod<void>(pipe(switchMap(() => {
+            loadEleves: rxMethod<void>(pipe(switchMap(() => {
                 return wen_service.get_all_eleves().pipe(
                     tap((data) => {
                         patchState(store, { data_eleve: data })
