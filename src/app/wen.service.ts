@@ -9,7 +9,6 @@ import { formatNumber } from '@angular/common';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, user } from '@angular/fire/auth';
 import { sign } from 'crypto';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TaskService } from './task.service';
 @Injectable({
   providedIn: 'root'
 })
