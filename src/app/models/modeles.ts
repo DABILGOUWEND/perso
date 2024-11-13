@@ -110,3 +110,9 @@ export interface liste_eleves{
     'annnee_id': string
 }
 
+
+export interface eleve_state {
+    data_eleve: eleve[],
+    message: string,
+    selectedEleve: string
+}
