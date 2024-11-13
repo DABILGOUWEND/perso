@@ -8,7 +8,8 @@ import { eleve_state } from "../models/modeles";
 
 const initial_eleve_state: eleve_state = {
     data_eleve: [],
-    message: ''
+    message: '',
+    selectedEleve: ''
 }
 
 
@@ -16,6 +17,7 @@ const initial_eleve_state: eleve_state = {
 export const eleveçstore = signalStore(
     { providedIn: 'root' },
     withState(initial_eleve_state),
+    withComputed(()=>)
     withMethods((store, snackbar = inject(MatSnackBar)) =>
     (
         {
