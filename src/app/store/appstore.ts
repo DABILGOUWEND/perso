@@ -6,6 +6,7 @@ import { patchState, signalStore, withComputed, withMethods, withState } from "@
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { eleve_state } from "../models/modeles";
 import { get } from "http";
+import { WenService } from "../wen.service";
 
 const initial_eleve_state: eleve_state = {
     data_eleve: [],
@@ -23,22 +24,17 @@ export const eleveçstore = signalStore(
             return store.data_eleve.length
         }),
     })),
-    withMethods((store, snackbar = inject(MatSnackBar)) =>
+    withMethods((store, snackbar = inject(MatSnackBar), wen_service=inject(WenService)) =>
     (
         {
-            getEleves: rxMethod((store, id: string) => {
-                return of(id).pipe(
-                    switchMap((id) => {
-                        return getDoc(doc(collectionData(collection(store.firestore, 'eleves')), id))
-                    }),
-                    map((doc) => {
-                        return doc.data() as eleve_state
-                    }),
+            loadPannes: rxMethod<void>(pipe(switchMap(() => {
+                return wen_service.get_all_eleves().pipe(
                     tap((data) => {
-                        store.dispatch(patchState(data))
+                        patchState(store, { data_eleve: data })
                     })
                 )
-            }),
+            }
+            ))),
             
 
         }

@@ -13,4 +13,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class WenService {
 
+
+  htp: HttpClient=inject(HttpClient)
+
+  get_all_eleves(): Observable<any> {
+    return this.htp.get('http://localhost:3000/school')
+  }
 }
