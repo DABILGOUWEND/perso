@@ -14,11 +14,9 @@ import { eleves_store } from './store/appstore';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  constructor() { 
-    effect(()=>console.log(this.eleves_store.data_eleve()))
-  }
+
  eleves_store=inject(eleves_store)
   ngOnInit() {
-    this.eleves_store.loadEleves( )
+   
 }
 }
