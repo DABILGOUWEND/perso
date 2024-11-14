@@ -22,4 +22,9 @@ export class WenService {
     const eleves_collection = collection(this.db, 'schools/la_source/eleves')
     return collectionData(eleves_collection, { idField: 'id' }) as Observable<eleves[]>
   }
+  create_eleve(data:any):Observable<string>{
+       const eleves_collection = collection(this.db, 'schools/la_source/eleves')
+       return Promise(addDoc(eleves_collection,data))
+     
+  }
 }
