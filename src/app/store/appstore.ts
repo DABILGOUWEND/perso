@@ -35,6 +35,14 @@ export const eleves_store = signalStore(
                 )
             }
             ))),
+            addEleves: rxMethod<any>(pipe(switchMap((data) => {
+                return wen_service.add_eleve(data).pipe(
+                    tap((data) => {
+                       
+                    })
+                )
+            }
+            ))),
             
 
         }
