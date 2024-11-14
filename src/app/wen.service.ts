@@ -9,18 +9,33 @@ import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updat
 import { sign } from 'crypto';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { eleves } from './models/modeles';
+import { response } from 'express';
 @Injectable({
   providedIn: 'root'
 })
 export class WenService {
-
-
-  htp: HttpClient=inject(HttpClient)
-  db: Firestore = inject(Firestore) 
+  htp: HttpClient = inject(HttpClient)
+  firestore: Firestore = inject(Firestore)
 
   get_all_eleves(): Observable<eleves[]> {
-    const eleves_collection = collection(this.db, 'schools/la_source/eleves')
-    return collectionData(eleves_collection, { idField: 'id' }) as Observable<eleves[]>
+    const eleves_collection = collection(this.firestore, 'schools/la_source/eleves')
+    return collectionData(eleves_collection, { idField: 'id' }) as Observable<eleves[]>;
+  }
+  add_eleve(data: any): Observable<string> {
+    const eleves_collection = collection(this.firestore, 'schools/la_source/eleves');
+    const promise = addDoc(eleves_collection, data).then(response => response.id);
+    return from(promise);
+  }
+  update_eleve(data: any): Observable<void> {
+    const eleves_collection = doc(this.firestore, 'schools/la_source/eleves/' + data.id);
+    const { id, ...new_data } = data;
+    const promise = setDoc(eleves_collection, new_data);
+    return from(promise);
+  }
+  remove_eleve(id: string): Observable<void> {
+    const eleves_collection = doc(this.firestore, 'schools/la_source/eleves/' + id);
+    const promise = deleteDoc(eleves_collection);
+    return from(promise);
   }
 
 }
